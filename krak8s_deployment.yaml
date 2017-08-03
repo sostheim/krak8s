@@ -1,0 +1,21 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: krak8s
+  labels:
+    name: krak8s
+    app: krak8s
+    version: 0.1.0
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: krak8s
+        version: 0.1.0
+    spec:
+      containers:
+      - name: krak8s
+        image: quay.io/samsung_cnct/krak8s:latest
+        args: ["--v=2", "--logtostderr=true"]
+ 
