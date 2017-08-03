@@ -17,7 +17,7 @@ As noted [above](#overview), krak8s can run as a static binary, a container imag
 $ ./krak8s --help
 Usage of ./krak8s:
       --alsologtostderr                  log to standard error as well as files
-      --health-check                     enable health checking for API servcie (default true)
+      --health-check                     enable health checking for API servcie (default false)
       --kubeconfig string                absolute path to the kubeconfig file
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory

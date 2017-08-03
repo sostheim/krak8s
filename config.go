@@ -40,7 +40,7 @@ func newConfig() *config {
 		proxy:       flag.String("proxy", "", "kubctl proxy server running at the given url"),
 		serviceName: flag.String("service-name", "", "API Service name"),
 		version:     flag.Bool("version", false, "display version info and exit"),
-		healthCheck: flag.Bool("health-check", true, "enable health checking for API service"),
+		healthCheck: flag.Bool("health-check", false, "enable health checking for API service"),
 	}
 }
 
