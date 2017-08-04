@@ -1,0 +1,44 @@
+consumes:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+host: localhost:8080
+info:
+  description: API Service for Kraken and Kubernetes Commands
+  title: krak8s API Server
+  version: ""
+paths:
+  /deploy/{client}/{namespace}:
+    get:
+      description: deploy MongoDB for client to namespace
+      operationId: methods#deploy
+      parameters:
+      - description: Left operand
+        in: path
+        name: client
+        required: true
+        type: string
+      - description: Right operand
+        in: path
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+      schemes:
+      - http
+      summary: deploy methods
+      tags:
+      - methods
+produces:
+- application/json
+- application/xml
+- application/gob
+- application/x-gob
+schemes:
+- http
+swagger: "2.0"

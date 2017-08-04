@@ -1,11 +1,11 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/samsung-cnct/krak8s)](https://goreportcard.com/badge/github.com/samsung-cnct/krak8s)
 [![Docker Repository on Quay.io](https://quay.io/repository/samsung_cnct/krak8s/status "Docker Repository on Quay.io")](https://quay.io/repository/samsung_cnct/krak8s)
+
 [![maturity](https://img.shields.io/badge/status-alpha-red.svg)](https://github.com/github.com/samsung-cnct/krak8s)
 
 # API Service for Kraken and Kubernetes Commands
 ## Overview
 
-A REST based API for managing Kraken and Kubernetes (k8s) actions. is a Kubernetes Service Load balancer.
+A REST based API for managing [Kraken](https://github.com/samsung-cnct/k2) and [Kubernetes](https://kubernetes.io/) actions. is a Kubernetes Service Load balancer.
 
 ### Connectivity
 A deployment of krak8s requires, at a minimum, network connectivity to both the Kubernetes API server and an execution environment for Kraken. The Kubernetes API server can be accessed via `kubectl proxy` for development, but this is not recommended for production deployments. For normal operation, the standard access via [`kubeconfig`](https://kubernetes.io/docs/concepts/cluster-administration/authenticate-across-clusters-kubeconfig/) or the Kubernetes API Server endpoint is supported.

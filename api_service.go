@@ -20,6 +20,11 @@ import (
 	"time"
 
 	"k8s.io/client-go/kubernetes"
+
+	"github.com/goadesign/goa"
+	"github.com/goadesign/goa/middleware"
+
+	"krak8s/app"
 )
 
 var (
@@ -34,6 +39,8 @@ type apiServer struct {
 	clientset *kubernetes.Clientset
 
 	stopCh chan struct{}
+
+	server *goa.Service
 }
 
 func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
@@ -44,7 +51,18 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 		clientset: clientset,
 		stopCh:    make(chan struct{}),
 		cfg:       cfg,
+		server:    goa.New("krak8s"),
 	}
+
+	// Mount middleware
+	as.server.Use(middleware.RequestID())
+	as.server.Use(middleware.LogRequest(true))
+	as.server.Use(middleware.ErrorHandler(as.server, true))
+	as.server.Use(middleware.Recover())
+
+	// Mount "operands" controller
+	c := NewMethodsController(as.server)
+	app.MountMethodsController(as.server, c)
 
 	return &as
 }
