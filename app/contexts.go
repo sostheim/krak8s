@@ -16,39 +16,39 @@ import (
 	"net/http"
 )
 
-// DeployMethodsContext provides the methods deploy action context.
-type DeployMethodsContext struct {
+// DeployMongodbContext provides the mongodb deploy action context.
+type DeployMongodbContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Client    string
-	Namespace string
+	Client *string
+	Ns     *string
 }
 
-// NewDeployMethodsContext parses the incoming request URL and body, performs validations and creates the
-// context used by the methods controller deploy action.
-func NewDeployMethodsContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeployMethodsContext, error) {
+// NewDeployMongodbContext parses the incoming request URL and body, performs validations and creates the
+// context used by the mongodb controller deploy action.
+func NewDeployMongodbContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeployMongodbContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := DeployMethodsContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := DeployMongodbContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramClient := req.Params["client"]
 	if len(paramClient) > 0 {
 		rawClient := paramClient[0]
-		rctx.Client = rawClient
+		rctx.Client = &rawClient
 	}
-	paramNamespace := req.Params["namespace"]
-	if len(paramNamespace) > 0 {
-		rawNamespace := paramNamespace[0]
-		rctx.Namespace = rawNamespace
+	paramNs := req.Params["ns"]
+	if len(paramNs) > 0 {
+		rawNs := paramNs[0]
+		rctx.Ns = &rawNs
 	}
 	return &rctx, err
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *DeployMethodsContext) OK(resp []byte) error {
+func (ctx *DeployMongodbContext) OK(resp []byte) error {
 	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
 	ctx.ResponseData.WriteHeader(200)
 	_, err := ctx.ResponseData.Write(resp)

@@ -10,15 +10,18 @@ var _ = API("krak8s", func() {
 	Description("API Service for Kraken and Kubernetes Commands")
 	Host("localhost:8080")
 	Scheme("http")
+	BasePath("/v1")
 })
 
-var _ = Resource("methods", func() {
+var _ = Resource("mongodb", func() {
+	BasePath("/mongo")
+
 	Action("deploy", func() {
-		Routing(GET("deploy/:client/:namespace"))
+		Routing(POST("/"))
 		Description("deploy MongoDB for client to namespace")
 		Params(func() {
-			Param("client", String, "Left operand")
-			Param("namespace", String, "Right operand")
+			Param("client", String, "client identifier")
+			Param("ns", String, "namesace identifier")
 		})
 		Response(OK, "text/plain")
 	})

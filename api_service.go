@@ -61,8 +61,8 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	as.server.Use(middleware.Recover())
 
 	// Mount "operands" controller
-	c := NewMethodsController(as.server)
-	app.MountMethodsController(as.server, c)
+	c := NewMongodbController(as.server)
+	app.MountMongodbController(as.server, c)
 
 	return &as
 }

@@ -1,3 +1,4 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/samsung-cnct/krak8s)](https://goreportcard.com/report/github.com/samsung-cnct/krak8s)
 [![Docker Repository on Quay.io](https://quay.io/repository/samsung_cnct/krak8s/status "Docker Repository on Quay.io")](https://quay.io/repository/samsung_cnct/krak8s)
 [![maturity](https://img.shields.io/badge/status-alpha-red.svg)](https://github.com/github.com/samsung-cnct/krak8s)
 

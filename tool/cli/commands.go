@@ -13,14 +13,12 @@ package cli
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"github.com/goadesign/goa"
 	goaclient "github.com/goadesign/goa/client"
 	uuid "github.com/goadesign/goa/uuid"
 	"github.com/spf13/cobra"
 	"krak8s/client"
 	"log"
-	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -28,12 +26,12 @@ import (
 )
 
 type (
-	// DeployMethodsCommand is the command line data structure for the deploy action of methods
-	DeployMethodsCommand struct {
-		// Left operand
+	// DeployMongodbCommand is the command line data structure for the deploy action of mongodb
+	DeployMongodbCommand struct {
+		// client identifier
 		Client string
-		// Right operand
-		Namespace   string
+		// namesace identifier
+		Ns          string
 		PrettyPrint bool
 	}
 )
@@ -45,9 +43,9 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 		Use:   "deploy",
 		Short: `deploy MongoDB for client to namespace`,
 	}
-	tmp1 := new(DeployMethodsCommand)
+	tmp1 := new(DeployMongodbCommand)
 	sub = &cobra.Command{
-		Use:   `methods ["/deploy/CLIENT/NAMESPACE"]`,
+		Use:   `mongodb ["/v1/mongo/"]`,
 		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
@@ -210,17 +208,17 @@ func boolArray(ins []string) ([]bool, error) {
 	return vals, nil
 }
 
-// Run makes the HTTP request corresponding to the DeployMethodsCommand command.
-func (cmd *DeployMethodsCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the DeployMongodbCommand command.
+func (cmd *DeployMongodbCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/deploy/%v/%v", url.QueryEscape(cmd.Client), url.QueryEscape(cmd.Namespace))
+		path = "/v1/mongo/"
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.DeployMethods(ctx, path)
+	resp, err := c.DeployMongodb(ctx, path, stringFlagVal("client", cmd.Client), stringFlagVal("ns", cmd.Ns))
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -231,9 +229,9 @@ func (cmd *DeployMethodsCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *DeployMethodsCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *DeployMongodbCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var client_ string
-	cc.Flags().StringVar(&cmd.Client, "client", client_, `Left operand`)
-	var namespace string
-	cc.Flags().StringVar(&cmd.Namespace, "namespace", namespace, `Right operand`)
+	cc.Flags().StringVar(&cmd.Client, "client", client_, `client identifier`)
+	var ns string
+	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namesace identifier`)
 }

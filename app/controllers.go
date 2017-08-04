@@ -31,14 +31,14 @@ func initService(service *goa.Service) {
 	service.Decoder.Register(goa.NewJSONDecoder, "*/*")
 }
 
-// MethodsController is the controller interface for the Methods actions.
-type MethodsController interface {
+// MongodbController is the controller interface for the Mongodb actions.
+type MongodbController interface {
 	goa.Muxer
-	Deploy(*DeployMethodsContext) error
+	Deploy(*DeployMongodbContext) error
 }
 
-// MountMethodsController "mounts" a Methods resource controller on the given service.
-func MountMethodsController(service *goa.Service, ctrl MethodsController) {
+// MountMongodbController "mounts" a Mongodb resource controller on the given service.
+func MountMongodbController(service *goa.Service, ctrl MongodbController) {
 	initService(service)
 	var h goa.Handler
 
@@ -48,12 +48,12 @@ func MountMethodsController(service *goa.Service, ctrl MethodsController) {
 			return err
 		}
 		// Build the context
-		rctx, err := NewDeployMethodsContext(ctx, req, service)
+		rctx, err := NewDeployMongodbContext(ctx, req, service)
 		if err != nil {
 			return err
 		}
 		return ctrl.Deploy(rctx)
 	}
-	service.Mux.Handle("GET", "/deploy/:client/:namespace", ctrl.MuxHandler("deploy", h, nil))
-	service.LogInfo("mount", "ctrl", "Methods", "action", "Deploy", "route", "GET /deploy/:client/:namespace")
+	service.Mux.Handle("POST", "/v1/mongo/", ctrl.MuxHandler("deploy", h, nil))
+	service.LogInfo("mount", "ctrl", "Mongodb", "action", "Deploy", "route", "POST /v1/mongo/")
 }
