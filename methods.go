@@ -20,6 +20,8 @@ func (c *MethodsController) Deploy(ctx *app.DeployMethodsContext) error {
 	// MethodsController_Deploy: start_implement
 
 	// Put your logic here
+	// This is a stub only at the moment... 
+	// TODO: add kubectl / k2 / helm stuff 
 
 	// MethodsController_Deploy: end_implement
 	return nil
