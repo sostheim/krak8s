@@ -25,8 +25,8 @@ The following are the major categories of resources administered by the API.
 
 * OpenAPI - The OpenAPI (Swagger 2.0) specification for this interface
 * Swagger - The Swagger 2.0 (OpenAPI) specification for this interface
-* Projects Collection - The primary unit of isolation for user's or tennant's 
-  * Namespaces Collection - The project's namespaces, e.g. "proj-dev", "prog-test", "prog-prod" 
+* Projects Collection - The primary unit of isolation for users, tennant, teams, etc... 
+  * Namespaces Collection - The project's namespace(s), e.g. "proj-dev", "prog-test", "prog-prod" 
     * MongoDB Replica Set - The namespace's MongoDB Replica Set
     * Cluster - The namespace's Kraken orchestrated Kubernetes cluster resources 
     * Chart - The namespace's Helm installed entities (charts)
