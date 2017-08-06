@@ -7,7 +7,7 @@ import (
 
 // API Resources
 
-// The top level resource is /projects which conatins a collection of the existing
+// The top level resource is /projects which contains a collection of the existing
 // users in the system (users and projects are synonyms).
 var _ = Resource("goa_project", func() {
 	Description("Manage {create, delete} individual projects, read the list of all projects, read a specific project")

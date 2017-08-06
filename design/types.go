@@ -5,7 +5,7 @@ import (
 	. "github.com/goadesign/goa/design/apidsl"
 )
 
-// Common Types and MediaTypes used accross the API resources.
+// Common Types and MediaTypes used across the API resources.
 
 // Project is the project resource media type.
 var Project = MediaType("application/project+json", func() {
@@ -61,6 +61,7 @@ var Namespace = MediaType("application/namespace+json", func() {
 	})
 })
 
+// MongoPostBody is the HTTP request body type.
 var MongoPostBody = Type("MongoPostBody", func() {
 	Attribute("application", String, func() {
 		Description("Appplication Registry Identifier")
@@ -73,6 +74,7 @@ var MongoPostBody = Type("MongoPostBody", func() {
 	Required("application", "version")
 })
 
+// Mongo is the MongoDB resource's MediaType.
 var Mongo = MediaType("application/mongo+json", func() {
 	Description("MongoDB ReplicaSet instance representation type")
 	Attributes(func() {
