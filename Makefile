@@ -1,21 +1,33 @@
 NAME      := krak8s
-VERSION   := 0.1.0
+VERSION   := 0.1.11
 TYPE      := alpha
 COMMIT    := $(shell git rev-parse HEAD)
 IMAGE     := quay.io/samsung_cnct/krak8s
 TAG       ?= latest
 godep=GOPATH=$(shell godep path):${GOPATH}
 
+TIMESTAMP    := $(shell date +"%s")
+GOAGEN_FILES := $(shell find . -maxdepth 1 -name "goa_*.go")
+
+design: # Execute goagen to rebuild API, save existing impl files
+	@for f in $(GOAGEN_FILES); do \
+		if [ -f ./$$f ] ; \
+		then \
+			 mv -f ./$$f ./$$f.$(TIMESTAMP) ; \
+		fi; \
+	done
+	@goagen bootstrap -d krak8s/design
+
 build:
-	@go build -ldflags "-X main.MajorMinorPatch=$(VERSION) \
+	go build -ldflags "-X main.MajorMinorPatch=$(VERSION) \
 		-X main.ReleaseType=$(TYPE) \
 		-X main.GitCommit=$(COMMIT)"
 
 compile: deps
 	@rm -rf build/
-	@$(GODEP) gox -ldflags "-X main.MajorMinorPatch=$(VERSION) \
-									-X main.ReleaseType=$(TYPE) \
-									-X main.GitCommit=$(COMMIT) -w" \
+	$(GODEP) gox -ldflags "-X main.MajorMinorPatch=$(VERSION) \
+		-X main.ReleaseType=$(TYPE) \
+		-X main.GitCommit=$(COMMIT) -w" \
 	-osarch="linux/386" \
 	-osarch="linux/amd64" \
 	-osarch="darwin/amd64" \
@@ -23,9 +35,9 @@ compile: deps
 	./...
 
 install:
-	@godep go install -ldflags "-X main.MajorMinorPatch=$(VERSION) \
-									-X main.ReleaseType=$(TYPE) \
-									-X main.GitCommit=$(COMMIT) -w"
+	godep go install -ldflags "-X main.MajorMinorPatch=$(VERSION) \
+		-X main.ReleaseType=$(TYPE) \
+		-X main.GitCommit=$(COMMIT) -w"
 
 deps:
 	go get github.com/mitchellh/gox
@@ -41,9 +53,9 @@ dist: compile
 	done
 
 container:
-	@$(GODEP) gox -ldflags "-X main.MajorMinorPatch=$(VERSION) \
-									-X main.ReleaseType=$(TYPE) \
-									-X main.GitCommit=$(COMMIT) -w" \
+	$(GODEP) gox -ldflags "-X main.MajorMinorPatch=$(VERSION) \
+		-X main.ReleaseType=$(TYPE) \
+		-X main.GitCommit=$(COMMIT) -w" \
 	-osarch="linux/amd64" \
 	-output "build/{{.OS}}_{{.Arch}}/$(NAME)" \
 	./...
@@ -64,4 +76,4 @@ release: dist push
 	github-release samsung-cnct/$(NAME) $(VERSION) "$$(git rev-parse --abbrev-ref HEAD)" "**Changelog**<br/>$$changelog" 'dist/*'; \
 	git pull
 
-.PHONY: build compile install deps dist release push tag container
+.PHONY: design build compile install deps dist release push tag container
