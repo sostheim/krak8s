@@ -7,6 +7,8 @@
 
 A REST based API for managing [Kraken](https://github.com/samsung-cnct/k2) and [Kubernetes](https://kubernetes.io/) actions. is a Kubernetes Service Load balancer.
 
+Go direclty to the [API Documentaiton and Secification](https://github.com/samsung-cnct/krak8s/blob/master/API%20Definitions.md).
+
 ### Connectivity
 A deployment of krak8s requires, at a minimum, network connectivity to both the Kubernetes API server and an execution environment for Kraken. The Kubernetes API server can be accessed via `kubectl proxy` for development, but this is not recommended for production deployments. For normal operation, the standard access via [`kubeconfig`](https://kubernetes.io/docs/concepts/cluster-administration/authenticate-across-clusters-kubeconfig/) or the Kubernetes API Server endpoint is supported.
 
