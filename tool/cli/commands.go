@@ -28,8 +28,8 @@ import (
 )
 
 type (
-	// CreateGoaChartCommand is the command line data structure for the create action of goa_chart
-	CreateGoaChartCommand struct {
+	// CreateChartCommand is the command line data structure for the create action of chart
+	CreateChartCommand struct {
 		Payload     string
 		ContentType string
 		// namespace identifier
@@ -39,8 +39,8 @@ type (
 		PrettyPrint bool
 	}
 
-	// DeleteGoaChartCommand is the command line data structure for the delete action of goa_chart
-	DeleteGoaChartCommand struct {
+	// DeleteChartCommand is the command line data structure for the delete action of chart
+	DeleteChartCommand struct {
 		Chart string
 		// namespace identifier
 		Ns string
@@ -49,8 +49,8 @@ type (
 		PrettyPrint bool
 	}
 
-	// GetGoaChartCommand is the command line data structure for the get action of goa_chart
-	GetGoaChartCommand struct {
+	// GetChartCommand is the command line data structure for the get action of chart
+	GetChartCommand struct {
 		Chart string
 		// namespace identifier
 		Ns string
@@ -59,8 +59,8 @@ type (
 		PrettyPrint bool
 	}
 
-	// ListGoaChartCommand is the command line data structure for the list action of goa_chart
-	ListGoaChartCommand struct {
+	// ListChartCommand is the command line data structure for the list action of chart
+	ListChartCommand struct {
 		// namespace identifier
 		Ns string
 		// project name
@@ -68,8 +68,8 @@ type (
 		PrettyPrint bool
 	}
 
-	// CreateGoaMongoCommand is the command line data structure for the create action of goa_mongo
-	CreateGoaMongoCommand struct {
+	// CreateMongoCommand is the command line data structure for the create action of mongo
+	CreateMongoCommand struct {
 		Payload     string
 		ContentType string
 		// namespace identifier
@@ -79,8 +79,8 @@ type (
 		PrettyPrint bool
 	}
 
-	// DeleteGoaMongoCommand is the command line data structure for the delete action of goa_mongo
-	DeleteGoaMongoCommand struct {
+	// DeleteMongoCommand is the command line data structure for the delete action of mongo
+	DeleteMongoCommand struct {
 		// namespace identifier
 		Ns string
 		// project name
@@ -88,8 +88,8 @@ type (
 		PrettyPrint bool
 	}
 
-	// GetGoaMongoCommand is the command line data structure for the get action of goa_mongo
-	GetGoaMongoCommand struct {
+	// GetMongoCommand is the command line data structure for the get action of mongo
+	GetMongoCommand struct {
 		// namespace identifier
 		Ns string
 		// project name
@@ -97,8 +97,8 @@ type (
 		PrettyPrint bool
 	}
 
-	// CreateGoaNamespaceCommand is the command line data structure for the create action of goa_namespace
-	CreateGoaNamespaceCommand struct {
+	// CreateNamespaceCommand is the command line data structure for the create action of namespace
+	CreateNamespaceCommand struct {
 		Payload     string
 		ContentType string
 		// project name
@@ -106,8 +106,8 @@ type (
 		PrettyPrint bool
 	}
 
-	// DeleteGoaNamespaceCommand is the command line data structure for the delete action of goa_namespace
-	DeleteGoaNamespaceCommand struct {
+	// DeleteNamespaceCommand is the command line data structure for the delete action of namespace
+	DeleteNamespaceCommand struct {
 		// namespace identifier
 		Ns string
 		// project name
@@ -115,8 +115,8 @@ type (
 		PrettyPrint bool
 	}
 
-	// GetGoaNamespaceCommand is the command line data structure for the get action of goa_namespace
-	GetGoaNamespaceCommand struct {
+	// GetNamespaceCommand is the command line data structure for the get action of namespace
+	GetNamespaceCommand struct {
 		// namespace identifier
 		Ns string
 		// project name
@@ -124,36 +124,36 @@ type (
 		PrettyPrint bool
 	}
 
-	// ListGoaNamespaceCommand is the command line data structure for the list action of goa_namespace
-	ListGoaNamespaceCommand struct {
+	// ListNamespaceCommand is the command line data structure for the list action of namespace
+	ListNamespaceCommand struct {
 		// project name
 		Project     string
 		PrettyPrint bool
 	}
 
-	// CreateGoaProjectCommand is the command line data structure for the create action of goa_project
-	CreateGoaProjectCommand struct {
+	// CreateProjectCommand is the command line data structure for the create action of project
+	CreateProjectCommand struct {
 		Payload     string
 		ContentType string
 		PrettyPrint bool
 	}
 
-	// DeleteGoaProjectCommand is the command line data structure for the delete action of goa_project
-	DeleteGoaProjectCommand struct {
+	// DeleteProjectCommand is the command line data structure for the delete action of project
+	DeleteProjectCommand struct {
 		// project name
 		Project     string
 		PrettyPrint bool
 	}
 
-	// GetGoaProjectCommand is the command line data structure for the get action of goa_project
-	GetGoaProjectCommand struct {
+	// GetProjectCommand is the command line data structure for the get action of project
+	GetProjectCommand struct {
 		// project name
 		Project     string
 		PrettyPrint bool
 	}
 
-	// ListGoaProjectCommand is the command line data structure for the list action of goa_project
-	ListGoaProjectCommand struct {
+	// ListProjectCommand is the command line data structure for the list action of project
+	ListProjectCommand struct {
 		PrettyPrint bool
 	}
 
@@ -171,66 +171,68 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 		Use:   "create",
 		Short: `create action`,
 	}
-	tmp1 := new(CreateGoaChartCommand)
+	tmp1 := new(CreateChartCommand)
 	sub = &cobra.Command{
-		Use:   `goa-chart ["/v1/projects/PROJECT/ns/NS/chart"]`,
+		Use:   `chart ["/v1/projects/PROJECT/ns/NS/chart"]`,
 		Short: `Manage {create, delete}, and get namespaces's Helm Chart deployment(s)`,
 		Long: `Manage {create, delete}, and get namespaces's Helm Chart deployment(s)
 
 Payload example:
 
 {
-   "application": "Eos non et.",
-   "version": "Consequatur distinctio cumque repellat."
+   "name": "Voluptatem illum aut corrupti.",
+   "registry": "Atque maxime autem et ea corporis.",
+   "set": "Id saepe aut provident occaecati.",
+   "version": "Minima inventore et nam aut et soluta."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
 	tmp1.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp1.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp2 := new(CreateGoaMongoCommand)
+	tmp2 := new(CreateMongoCommand)
 	sub = &cobra.Command{
-		Use:   `goa-mongo ["/v1/projects/PROJECT/ns/NS/mongo"]`,
+		Use:   `mongo ["/v1/projects/PROJECT/ns/NS/mongo"]`,
 		Short: `Manage {create, delete}, and get namespaces's MongoDB deployment`,
 		Long: `Manage {create, delete}, and get namespaces's MongoDB deployment
 
 Payload example:
 
 {
-   "application": "Libero qui facere est nostrum.",
-   "version": "Perferendis enim."
+   "application": "Iusto sint et quidem alias et corporis.",
+   "version": "Explicabo enim dicta perferendis sunt nihil ratione."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
 	tmp2.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp2.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp3 := new(CreateGoaNamespaceCommand)
+	tmp3 := new(CreateNamespaceCommand)
 	sub = &cobra.Command{
-		Use:   `goa-namespace ["/v1/projects/PROJECT/ns"]`,
+		Use:   `namespace ["/v1/projects/PROJECT/ns"]`,
 		Short: `Manage {create, delete}, and get project's namespace(s)`,
 		Long: `Manage {create, delete}, and get project's namespace(s)
 
 Payload example:
 
 {
-   "name": "Perspiciatis iusto inventore tempora."
+   "name": "Adipisci est iste voluptas."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
 	tmp3.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp3.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp4 := new(CreateGoaProjectCommand)
+	tmp4 := new(CreateProjectCommand)
 	sub = &cobra.Command{
-		Use:   `goa-project ["/v1/projects"]`,
+		Use:   `project ["/v1/projects"]`,
 		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
 		Long: `Manage {create, delete} individual projects, read the list of all projects, read a specific project
 
 Payload example:
 
 {
-   "identity": "Qui sed et voluptates."
+   "identity": "Est nostrum id perferendis enim laboriosam."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp4.Run(c, args) },
 	}
@@ -242,36 +244,36 @@ Payload example:
 		Use:   "delete",
 		Short: `delete action`,
 	}
-	tmp5 := new(DeleteGoaChartCommand)
+	tmp5 := new(DeleteChartCommand)
 	sub = &cobra.Command{
-		Use:   `goa-chart ["/v1/projects/PROJECT/ns/NS/chart/CHART"]`,
+		Use:   `chart ["/v1/projects/PROJECT/ns/NS/chart/CHART"]`,
 		Short: `Manage {create, delete}, and get namespaces's Helm Chart deployment(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp5.Run(c, args) },
 	}
 	tmp5.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp5.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp6 := new(DeleteGoaMongoCommand)
+	tmp6 := new(DeleteMongoCommand)
 	sub = &cobra.Command{
-		Use:   `goa-mongo ["/v1/projects/PROJECT/ns/NS/mongo"]`,
+		Use:   `mongo ["/v1/projects/PROJECT/ns/NS/mongo"]`,
 		Short: `Manage {create, delete}, and get namespaces's MongoDB deployment`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp6.Run(c, args) },
 	}
 	tmp6.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp6.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp7 := new(DeleteGoaNamespaceCommand)
+	tmp7 := new(DeleteNamespaceCommand)
 	sub = &cobra.Command{
-		Use:   `goa-namespace ["/v1/projects/PROJECT/ns/NS"]`,
+		Use:   `namespace ["/v1/projects/PROJECT/ns/NS"]`,
 		Short: `Manage {create, delete}, and get project's namespace(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp7.Run(c, args) },
 	}
 	tmp7.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp7.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp8 := new(DeleteGoaProjectCommand)
+	tmp8 := new(DeleteProjectCommand)
 	sub = &cobra.Command{
-		Use:   `goa-project ["/v1/projects/PROJECT"]`,
+		Use:   `project ["/v1/projects/PROJECT"]`,
 		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
 	}
@@ -283,36 +285,36 @@ Payload example:
 		Use:   "get",
 		Short: `get action`,
 	}
-	tmp9 := new(GetGoaChartCommand)
+	tmp9 := new(GetChartCommand)
 	sub = &cobra.Command{
-		Use:   `goa-chart ["/v1/projects/PROJECT/ns/NS/chart/CHART"]`,
+		Use:   `chart ["/v1/projects/PROJECT/ns/NS/chart/CHART"]`,
 		Short: `Manage {create, delete}, and get namespaces's Helm Chart deployment(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp9.Run(c, args) },
 	}
 	tmp9.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp9.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp10 := new(GetGoaMongoCommand)
+	tmp10 := new(GetMongoCommand)
 	sub = &cobra.Command{
-		Use:   `goa-mongo ["/v1/projects/PROJECT/ns/NS/mongo"]`,
+		Use:   `mongo ["/v1/projects/PROJECT/ns/NS/mongo"]`,
 		Short: `Manage {create, delete}, and get namespaces's MongoDB deployment`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp10.Run(c, args) },
 	}
 	tmp10.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp10.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp11 := new(GetGoaNamespaceCommand)
+	tmp11 := new(GetNamespaceCommand)
 	sub = &cobra.Command{
-		Use:   `goa-namespace ["/v1/projects/PROJECT/ns/NS"]`,
+		Use:   `namespace ["/v1/projects/PROJECT/ns/NS"]`,
 		Short: `Manage {create, delete}, and get project's namespace(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp11.Run(c, args) },
 	}
 	tmp11.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp11.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp12 := new(GetGoaProjectCommand)
+	tmp12 := new(GetProjectCommand)
 	sub = &cobra.Command{
-		Use:   `goa-project ["/v1/projects/PROJECT"]`,
+		Use:   `project ["/v1/projects/PROJECT"]`,
 		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp12.Run(c, args) },
 	}
@@ -324,27 +326,27 @@ Payload example:
 		Use:   "list",
 		Short: `list action`,
 	}
-	tmp13 := new(ListGoaChartCommand)
+	tmp13 := new(ListChartCommand)
 	sub = &cobra.Command{
-		Use:   `goa-chart ["/v1/projects/PROJECT/ns/NS/chart"]`,
+		Use:   `chart ["/v1/projects/PROJECT/ns/NS/chart"]`,
 		Short: `Manage {create, delete}, and get namespaces's Helm Chart deployment(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp13.Run(c, args) },
 	}
 	tmp13.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp13.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp14 := new(ListGoaNamespaceCommand)
+	tmp14 := new(ListNamespaceCommand)
 	sub = &cobra.Command{
-		Use:   `goa-namespace ["/v1/projects/PROJECT/ns"]`,
+		Use:   `namespace ["/v1/projects/PROJECT/ns"]`,
 		Short: `Manage {create, delete}, and get project's namespace(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp14.Run(c, args) },
 	}
 	tmp14.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp14.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp15 := new(ListGoaProjectCommand)
+	tmp15 := new(ListProjectCommand)
 	sub = &cobra.Command{
-		Use:   `goa-project ["/v1/projects"]`,
+		Use:   `project ["/v1/projects"]`,
 		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp15.Run(c, args) },
 	}
@@ -592,8 +594,8 @@ found:
 	return nil
 }
 
-// Run makes the HTTP request corresponding to the CreateGoaChartCommand command.
-func (cmd *CreateGoaChartCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the CreateChartCommand command.
+func (cmd *CreateChartCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -609,7 +611,7 @@ func (cmd *CreateGoaChartCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.CreateGoaChart(ctx, path, &payload, cmd.ContentType)
+	resp, err := c.CreateChart(ctx, path, &payload, cmd.ContentType)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -620,7 +622,7 @@ func (cmd *CreateGoaChartCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *CreateGoaChartCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *CreateChartCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
 	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
 	var ns string
@@ -629,8 +631,8 @@ func (cmd *CreateGoaChartCommand) RegisterFlags(cc *cobra.Command, c *client.Cli
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the DeleteGoaChartCommand command.
-func (cmd *DeleteGoaChartCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the DeleteChartCommand command.
+func (cmd *DeleteChartCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -639,7 +641,7 @@ func (cmd *DeleteGoaChartCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.DeleteGoaChart(ctx, path)
+	resp, err := c.DeleteChart(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -650,7 +652,7 @@ func (cmd *DeleteGoaChartCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *DeleteGoaChartCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *DeleteChartCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var chart string
 	cc.Flags().StringVar(&cmd.Chart, "chart", chart, ``)
 	var ns string
@@ -659,8 +661,8 @@ func (cmd *DeleteGoaChartCommand) RegisterFlags(cc *cobra.Command, c *client.Cli
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the GetGoaChartCommand command.
-func (cmd *GetGoaChartCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the GetChartCommand command.
+func (cmd *GetChartCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -669,7 +671,7 @@ func (cmd *GetGoaChartCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.GetGoaChart(ctx, path)
+	resp, err := c.GetChart(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -680,7 +682,7 @@ func (cmd *GetGoaChartCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *GetGoaChartCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *GetChartCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var chart string
 	cc.Flags().StringVar(&cmd.Chart, "chart", chart, ``)
 	var ns string
@@ -689,8 +691,8 @@ func (cmd *GetGoaChartCommand) RegisterFlags(cc *cobra.Command, c *client.Client
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the ListGoaChartCommand command.
-func (cmd *ListGoaChartCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the ListChartCommand command.
+func (cmd *ListChartCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -699,7 +701,7 @@ func (cmd *ListGoaChartCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.ListGoaChart(ctx, path)
+	resp, err := c.ListChart(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -710,15 +712,15 @@ func (cmd *ListGoaChartCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *ListGoaChartCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *ListChartCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var ns string
 	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the CreateGoaMongoCommand command.
-func (cmd *CreateGoaMongoCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the CreateMongoCommand command.
+func (cmd *CreateMongoCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -734,7 +736,7 @@ func (cmd *CreateGoaMongoCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.CreateGoaMongo(ctx, path, &payload, cmd.ContentType)
+	resp, err := c.CreateMongo(ctx, path, &payload, cmd.ContentType)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -745,7 +747,7 @@ func (cmd *CreateGoaMongoCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *CreateGoaMongoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *CreateMongoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
 	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
 	var ns string
@@ -754,8 +756,8 @@ func (cmd *CreateGoaMongoCommand) RegisterFlags(cc *cobra.Command, c *client.Cli
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the DeleteGoaMongoCommand command.
-func (cmd *DeleteGoaMongoCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the DeleteMongoCommand command.
+func (cmd *DeleteMongoCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -764,7 +766,7 @@ func (cmd *DeleteGoaMongoCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.DeleteGoaMongo(ctx, path)
+	resp, err := c.DeleteMongo(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -775,15 +777,15 @@ func (cmd *DeleteGoaMongoCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *DeleteGoaMongoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *DeleteMongoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var ns string
 	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the GetGoaMongoCommand command.
-func (cmd *GetGoaMongoCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the GetMongoCommand command.
+func (cmd *GetMongoCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -792,7 +794,7 @@ func (cmd *GetGoaMongoCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.GetGoaMongo(ctx, path)
+	resp, err := c.GetMongo(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -803,22 +805,22 @@ func (cmd *GetGoaMongoCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *GetGoaMongoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *GetMongoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var ns string
 	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the CreateGoaNamespaceCommand command.
-func (cmd *CreateGoaNamespaceCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the CreateNamespaceCommand command.
+func (cmd *CreateNamespaceCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
 	} else {
 		path = fmt.Sprintf("/v1/projects/%v/ns", url.QueryEscape(cmd.Project))
 	}
-	var payload client.CreateGoaNamespacePayload
+	var payload client.CreateNamespacePayload
 	if cmd.Payload != "" {
 		err := json.Unmarshal([]byte(cmd.Payload), &payload)
 		if err != nil {
@@ -827,7 +829,7 @@ func (cmd *CreateGoaNamespaceCommand) Run(c *client.Client, args []string) error
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.CreateGoaNamespace(ctx, path, &payload, cmd.ContentType)
+	resp, err := c.CreateNamespace(ctx, path, &payload, cmd.ContentType)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -838,15 +840,15 @@ func (cmd *CreateGoaNamespaceCommand) Run(c *client.Client, args []string) error
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *CreateGoaNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *CreateNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
 	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the DeleteGoaNamespaceCommand command.
-func (cmd *DeleteGoaNamespaceCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the DeleteNamespaceCommand command.
+func (cmd *DeleteNamespaceCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -855,7 +857,7 @@ func (cmd *DeleteGoaNamespaceCommand) Run(c *client.Client, args []string) error
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.DeleteGoaNamespace(ctx, path)
+	resp, err := c.DeleteNamespace(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -866,15 +868,15 @@ func (cmd *DeleteGoaNamespaceCommand) Run(c *client.Client, args []string) error
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *DeleteGoaNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *DeleteNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var ns string
 	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the GetGoaNamespaceCommand command.
-func (cmd *GetGoaNamespaceCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the GetNamespaceCommand command.
+func (cmd *GetNamespaceCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -883,7 +885,7 @@ func (cmd *GetGoaNamespaceCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.GetGoaNamespace(ctx, path)
+	resp, err := c.GetNamespace(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -894,15 +896,15 @@ func (cmd *GetGoaNamespaceCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *GetGoaNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *GetNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var ns string
 	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the ListGoaNamespaceCommand command.
-func (cmd *ListGoaNamespaceCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the ListNamespaceCommand command.
+func (cmd *ListNamespaceCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -911,7 +913,7 @@ func (cmd *ListGoaNamespaceCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.ListGoaNamespace(ctx, path)
+	resp, err := c.ListNamespace(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -922,20 +924,20 @@ func (cmd *ListGoaNamespaceCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *ListGoaNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *ListNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the CreateGoaProjectCommand command.
-func (cmd *CreateGoaProjectCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the CreateProjectCommand command.
+func (cmd *CreateProjectCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
 	} else {
 		path = "/v1/projects"
 	}
-	var payload client.CreateGoaProjectPayload
+	var payload client.CreateProjectPayload
 	if cmd.Payload != "" {
 		err := json.Unmarshal([]byte(cmd.Payload), &payload)
 		if err != nil {
@@ -944,7 +946,7 @@ func (cmd *CreateGoaProjectCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.CreateGoaProject(ctx, path, &payload, cmd.ContentType)
+	resp, err := c.CreateProject(ctx, path, &payload, cmd.ContentType)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -955,13 +957,13 @@ func (cmd *CreateGoaProjectCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *CreateGoaProjectCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *CreateProjectCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
 	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
 }
 
-// Run makes the HTTP request corresponding to the DeleteGoaProjectCommand command.
-func (cmd *DeleteGoaProjectCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the DeleteProjectCommand command.
+func (cmd *DeleteProjectCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -970,7 +972,7 @@ func (cmd *DeleteGoaProjectCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.DeleteGoaProject(ctx, path)
+	resp, err := c.DeleteProject(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -981,13 +983,13 @@ func (cmd *DeleteGoaProjectCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *DeleteGoaProjectCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *DeleteProjectCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the GetGoaProjectCommand command.
-func (cmd *GetGoaProjectCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the GetProjectCommand command.
+func (cmd *GetProjectCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -996,7 +998,7 @@ func (cmd *GetGoaProjectCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.GetGoaProject(ctx, path)
+	resp, err := c.GetProject(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -1007,13 +1009,13 @@ func (cmd *GetGoaProjectCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *GetGoaProjectCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *GetProjectCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
 
-// Run makes the HTTP request corresponding to the ListGoaProjectCommand command.
-func (cmd *ListGoaProjectCommand) Run(c *client.Client, args []string) error {
+// Run makes the HTTP request corresponding to the ListProjectCommand command.
+func (cmd *ListProjectCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
@@ -1022,7 +1024,7 @@ func (cmd *ListGoaProjectCommand) Run(c *client.Client, args []string) error {
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.ListGoaProject(ctx, path)
+	resp, err := c.ListProject(ctx, path)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -1033,5 +1035,5 @@ func (cmd *ListGoaProjectCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *ListGoaProjectCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+func (cmd *ListProjectCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 }

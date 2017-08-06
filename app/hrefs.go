@@ -15,30 +15,30 @@ import (
 	"strings"
 )
 
-// GoaChartHref returns the resource href.
-func GoaChartHref(project, ns, chart interface{}) string {
+// ChartHref returns the resource href.
+func ChartHref(project, ns, chart interface{}) string {
 	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
 	paramns := strings.TrimLeftFunc(fmt.Sprintf("%v", ns), func(r rune) bool { return r == '/' })
 	paramchart := strings.TrimLeftFunc(fmt.Sprintf("%v", chart), func(r rune) bool { return r == '/' })
 	return fmt.Sprintf("/v1/projects/%v/ns/%v/chart/%v", paramproject, paramns, paramchart)
 }
 
-// GoaMongoHref returns the resource href.
-func GoaMongoHref(project, ns interface{}) string {
+// MongoHref returns the resource href.
+func MongoHref(project, ns interface{}) string {
 	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
 	paramns := strings.TrimLeftFunc(fmt.Sprintf("%v", ns), func(r rune) bool { return r == '/' })
 	return fmt.Sprintf("/v1/projects/%v/ns/%v/mongo", paramproject, paramns)
 }
 
-// GoaNamespaceHref returns the resource href.
-func GoaNamespaceHref(project, ns interface{}) string {
+// NamespaceHref returns the resource href.
+func NamespaceHref(project, ns interface{}) string {
 	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
 	paramns := strings.TrimLeftFunc(fmt.Sprintf("%v", ns), func(r rune) bool { return r == '/' })
 	return fmt.Sprintf("/v1/projects/%v/ns/%v", paramproject, paramns)
 }
 
-// GoaProjectHref returns the resource href.
-func GoaProjectHref(project interface{}) string {
+// ProjectHref returns the resource href.
+func ProjectHref(project interface{}) string {
 	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
 	return fmt.Sprintf("/v1/projects/%v", paramproject)
 }

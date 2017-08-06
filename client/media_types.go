@@ -21,19 +21,39 @@ import (
 //
 // Identifier: application/chart+json; view=default
 type Chart struct {
-	// Application registry identifier
-	Application string `form:"application" json:"application" xml:"application"`
+	// Chart name
+	Name   string `form:"name" json:"name" xml:"name"`
+	Status *struct {
+		// Last deployment time
+		DeployedAt time.Time `form:"deployed_at" json:"deployed_at" xml:"deployed_at"`
+		// Additional chart notes (if provided)
+		Notes *string `form:"notes,omitempty" json:"notes,omitempty" xml:"notes,omitempty"`
+		// Deployment state
+		State string `form:"state" json:"state" xml:"state"`
+	} `form:"status" json:"status" xml:"status"`
 	// Application version
 	Version string `form:"version" json:"version" xml:"version"`
 }
 
 // Validate validates the Chart media type instance.
 func (mt *Chart) Validate() (err error) {
-	if mt.Application == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
+	if mt.Name == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
 	if mt.Version == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
+	}
+	if mt.Status == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "status"))
+	}
+	if mt.Status != nil {
+
+		if mt.Status.State == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.status`, "state"))
+		}
+		if !(mt.Status.State == "UNKNOWN" || mt.Status.State == "DEPLOYED" || mt.Status.State == "DELETED" || mt.Status.State == "SUPERSEDED" || mt.Status.State == "FAILED" || mt.Status.State == "DELETING") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError(`response.status.state`, mt.Status.State, []interface{}{"UNKNOWN", "DEPLOYED", "DELETED", "SUPERSEDED", "FAILED", "DELETING"}))
+		}
 	}
 	return
 }

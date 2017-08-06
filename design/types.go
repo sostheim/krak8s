@@ -97,26 +97,44 @@ var Mongo = MediaType("application/mongo+json", func() {
 
 // ChartPostBody is the HTTP POST Request body type.
 var ChartPostBody = Type("ChartPostBody", func() {
-	Attribute("application", String, func() {
-		Description("Chart identifier")
+	Attribute("name", String, func() {
+		Description("Chart name")
 	})
 	Attribute("version", String, func() {
 		Description("Chart version string")
 	})
-	Required("application", "version")
+	Attribute("set", String, func() {
+		Description("Chart config --set argument string")
+	})
+	Attribute("registry", String, func() {
+		Description("Chart's registry")
+	})
+	Required("name", "version")
 })
 
 // Chart is the Helm Chart resource's MediaType.
 var Chart = MediaType("application/chart+json", func() {
 	Description("Helm chart representation type")
 	Attributes(func() {
-		Attribute("application", String, "Application registry identifier")
+		Attribute("name", String, "Chart name")
 		Attribute("version", String, "Application version")
-		Required("application", "version")
+		Attribute("config", String, "Configuration value settings string")
+		Attribute("registry", String, "Application registry identifier")
+		Attribute("status", func() {
+			Attribute("deployed_at", DateTime, "Last deployment time")
+			Attribute("state", func() {
+				Description("Deployment state")
+				Enum("UNKNOWN", "DEPLOYED", "DELETED", "SUPERSEDED", "FAILED", "DELETING")
+			})
+			Attribute("notes", String, "Additional chart notes (if provided)")
+			Required("deployed_at", "state")
+		})
+		Required("name", "version", "status")
 	})
 
 	View("default", func() {
-		Attribute("application")
+		Attribute("name")
 		Attribute("version")
+		Attribute("status")
 	})
 })

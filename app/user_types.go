@@ -16,16 +16,20 @@ import (
 
 // chartPostBody user type.
 type chartPostBody struct {
-	// Chart identifier
-	Application *string `form:"application,omitempty" json:"application,omitempty" xml:"application,omitempty"`
+	// Chart name
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// Chart's registry
+	Registry *string `form:"registry,omitempty" json:"registry,omitempty" xml:"registry,omitempty"`
+	// Chart config --set argument string
+	Set *string `form:"set,omitempty" json:"set,omitempty" xml:"set,omitempty"`
 	// Chart version string
 	Version *string `form:"version,omitempty" json:"version,omitempty" xml:"version,omitempty"`
 }
 
 // Validate validates the chartPostBody type instance.
 func (ut *chartPostBody) Validate() (err error) {
-	if ut.Application == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
+	if ut.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
 	if ut.Version == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
@@ -36,8 +40,14 @@ func (ut *chartPostBody) Validate() (err error) {
 // Publicize creates ChartPostBody from chartPostBody
 func (ut *chartPostBody) Publicize() *ChartPostBody {
 	var pub ChartPostBody
-	if ut.Application != nil {
-		pub.Application = *ut.Application
+	if ut.Name != nil {
+		pub.Name = *ut.Name
+	}
+	if ut.Registry != nil {
+		pub.Registry = ut.Registry
+	}
+	if ut.Set != nil {
+		pub.Set = ut.Set
 	}
 	if ut.Version != nil {
 		pub.Version = *ut.Version
@@ -47,16 +57,20 @@ func (ut *chartPostBody) Publicize() *ChartPostBody {
 
 // ChartPostBody user type.
 type ChartPostBody struct {
-	// Chart identifier
-	Application string `form:"application" json:"application" xml:"application"`
+	// Chart name
+	Name string `form:"name" json:"name" xml:"name"`
+	// Chart's registry
+	Registry *string `form:"registry,omitempty" json:"registry,omitempty" xml:"registry,omitempty"`
+	// Chart config --set argument string
+	Set *string `form:"set,omitempty" json:"set,omitempty" xml:"set,omitempty"`
 	// Chart version string
 	Version string `form:"version" json:"version" xml:"version"`
 }
 
 // Validate validates the ChartPostBody type instance.
 func (ut *ChartPostBody) Validate() (err error) {
-	if ut.Application == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
+	if ut.Name == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
 	if ut.Version == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))

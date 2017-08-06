@@ -16,8 +16,8 @@ import (
 	"net/http"
 )
 
-// CreateGoaChartContext provides the goa_chart create action context.
-type CreateGoaChartContext struct {
+// CreateChartContext provides the chart create action context.
+type CreateChartContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -26,15 +26,15 @@ type CreateGoaChartContext struct {
 	Payload *ChartPostBody
 }
 
-// NewCreateGoaChartContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_chart controller create action.
-func NewCreateGoaChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateGoaChartContext, error) {
+// NewCreateChartContext parses the incoming request URL and body, performs validations and creates the
+// context used by the chart controller create action.
+func NewCreateChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateChartContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := CreateGoaChartContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := CreateChartContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
 		rawNs := paramNs[0]
@@ -49,19 +49,19 @@ func NewCreateGoaChartContext(ctx context.Context, r *http.Request, service *goa
 }
 
 // Accepted sends a HTTP response with status code 202.
-func (ctx *CreateGoaChartContext) Accepted() error {
+func (ctx *CreateChartContext) Accepted() error {
 	ctx.ResponseData.WriteHeader(202)
 	return nil
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *CreateGoaChartContext) BadRequest(r error) error {
+func (ctx *CreateChartContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
-// DeleteGoaChartContext provides the goa_chart delete action context.
-type DeleteGoaChartContext struct {
+// DeleteChartContext provides the chart delete action context.
+type DeleteChartContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -70,15 +70,15 @@ type DeleteGoaChartContext struct {
 	Project string
 }
 
-// NewDeleteGoaChartContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_chart controller delete action.
-func NewDeleteGoaChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteGoaChartContext, error) {
+// NewDeleteChartContext parses the incoming request URL and body, performs validations and creates the
+// context used by the chart controller delete action.
+func NewDeleteChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteChartContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := DeleteGoaChartContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := DeleteChartContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramChart := req.Params["chart"]
 	if len(paramChart) > 0 {
 		rawChart := paramChart[0]
@@ -98,25 +98,25 @@ func NewDeleteGoaChartContext(ctx context.Context, r *http.Request, service *goa
 }
 
 // NoContent sends a HTTP response with status code 204.
-func (ctx *DeleteGoaChartContext) NoContent() error {
+func (ctx *DeleteChartContext) NoContent() error {
 	ctx.ResponseData.WriteHeader(204)
 	return nil
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *DeleteGoaChartContext) BadRequest(r error) error {
+func (ctx *DeleteChartContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
 // NotFound sends a HTTP response with status code 404.
-func (ctx *DeleteGoaChartContext) NotFound() error {
+func (ctx *DeleteChartContext) NotFound() error {
 	ctx.ResponseData.WriteHeader(404)
 	return nil
 }
 
-// GetGoaChartContext provides the goa_chart get action context.
-type GetGoaChartContext struct {
+// GetChartContext provides the chart get action context.
+type GetChartContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -125,15 +125,15 @@ type GetGoaChartContext struct {
 	Project string
 }
 
-// NewGetGoaChartContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_chart controller get action.
-func NewGetGoaChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetGoaChartContext, error) {
+// NewGetChartContext parses the incoming request URL and body, performs validations and creates the
+// context used by the chart controller get action.
+func NewGetChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetChartContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := GetGoaChartContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := GetChartContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramChart := req.Params["chart"]
 	if len(paramChart) > 0 {
 		rawChart := paramChart[0]
@@ -153,13 +153,13 @@ func NewGetGoaChartContext(ctx context.Context, r *http.Request, service *goa.Se
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *GetGoaChartContext) OK(r *Chart) error {
+func (ctx *GetChartContext) OK(r *Chart) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/chart+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
-// ListGoaChartContext provides the goa_chart list action context.
-type ListGoaChartContext struct {
+// ListChartContext provides the chart list action context.
+type ListChartContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -167,15 +167,15 @@ type ListGoaChartContext struct {
 	Project string
 }
 
-// NewListGoaChartContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_chart controller list action.
-func NewListGoaChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListGoaChartContext, error) {
+// NewListChartContext parses the incoming request URL and body, performs validations and creates the
+// context used by the chart controller list action.
+func NewListChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListChartContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := ListGoaChartContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := ListChartContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
 		rawNs := paramNs[0]
@@ -190,7 +190,7 @@ func NewListGoaChartContext(ctx context.Context, r *http.Request, service *goa.S
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *ListGoaChartContext) OK(r ChartCollection) error {
+func (ctx *ListChartContext) OK(r ChartCollection) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/chart+json; type=collection")
 	if r == nil {
 		r = ChartCollection{}
@@ -198,8 +198,8 @@ func (ctx *ListGoaChartContext) OK(r ChartCollection) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
-// CreateGoaMongoContext provides the goa_mongo create action context.
-type CreateGoaMongoContext struct {
+// CreateMongoContext provides the mongo create action context.
+type CreateMongoContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -208,15 +208,15 @@ type CreateGoaMongoContext struct {
 	Payload *MongoPostBody
 }
 
-// NewCreateGoaMongoContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_mongo controller create action.
-func NewCreateGoaMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateGoaMongoContext, error) {
+// NewCreateMongoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the mongo controller create action.
+func NewCreateMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateMongoContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := CreateGoaMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := CreateMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
 		rawNs := paramNs[0]
@@ -231,19 +231,19 @@ func NewCreateGoaMongoContext(ctx context.Context, r *http.Request, service *goa
 }
 
 // Accepted sends a HTTP response with status code 202.
-func (ctx *CreateGoaMongoContext) Accepted() error {
+func (ctx *CreateMongoContext) Accepted() error {
 	ctx.ResponseData.WriteHeader(202)
 	return nil
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *CreateGoaMongoContext) BadRequest(r error) error {
+func (ctx *CreateMongoContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
-// DeleteGoaMongoContext provides the goa_mongo delete action context.
-type DeleteGoaMongoContext struct {
+// DeleteMongoContext provides the mongo delete action context.
+type DeleteMongoContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -251,15 +251,15 @@ type DeleteGoaMongoContext struct {
 	Project string
 }
 
-// NewDeleteGoaMongoContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_mongo controller delete action.
-func NewDeleteGoaMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteGoaMongoContext, error) {
+// NewDeleteMongoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the mongo controller delete action.
+func NewDeleteMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteMongoContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := DeleteGoaMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := DeleteMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
 		rawNs := paramNs[0]
@@ -274,25 +274,25 @@ func NewDeleteGoaMongoContext(ctx context.Context, r *http.Request, service *goa
 }
 
 // NoContent sends a HTTP response with status code 204.
-func (ctx *DeleteGoaMongoContext) NoContent() error {
+func (ctx *DeleteMongoContext) NoContent() error {
 	ctx.ResponseData.WriteHeader(204)
 	return nil
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *DeleteGoaMongoContext) BadRequest(r error) error {
+func (ctx *DeleteMongoContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
 // NotFound sends a HTTP response with status code 404.
-func (ctx *DeleteGoaMongoContext) NotFound() error {
+func (ctx *DeleteMongoContext) NotFound() error {
 	ctx.ResponseData.WriteHeader(404)
 	return nil
 }
 
-// GetGoaMongoContext provides the goa_mongo get action context.
-type GetGoaMongoContext struct {
+// GetMongoContext provides the mongo get action context.
+type GetMongoContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -300,15 +300,15 @@ type GetGoaMongoContext struct {
 	Project string
 }
 
-// NewGetGoaMongoContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_mongo controller get action.
-func NewGetGoaMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetGoaMongoContext, error) {
+// NewGetMongoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the mongo controller get action.
+func NewGetMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetMongoContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := GetGoaMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := GetMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
 		rawNs := paramNs[0]
@@ -323,29 +323,29 @@ func NewGetGoaMongoContext(ctx context.Context, r *http.Request, service *goa.Se
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *GetGoaMongoContext) OK(r *Mongo) error {
+func (ctx *GetMongoContext) OK(r *Mongo) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/mongo+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
-// CreateGoaNamespaceContext provides the goa_namespace create action context.
-type CreateGoaNamespaceContext struct {
+// CreateNamespaceContext provides the namespace create action context.
+type CreateNamespaceContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
 	Project string
-	Payload *CreateGoaNamespacePayload
+	Payload *CreateNamespacePayload
 }
 
-// NewCreateGoaNamespaceContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_namespace controller create action.
-func NewCreateGoaNamespaceContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateGoaNamespaceContext, error) {
+// NewCreateNamespaceContext parses the incoming request URL and body, performs validations and creates the
+// context used by the namespace controller create action.
+func NewCreateNamespaceContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateNamespaceContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := CreateGoaNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := CreateNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramProject := req.Params["project"]
 	if len(paramProject) > 0 {
 		rawProject := paramProject[0]
@@ -354,35 +354,35 @@ func NewCreateGoaNamespaceContext(ctx context.Context, r *http.Request, service 
 	return &rctx, err
 }
 
-// createGoaNamespacePayload is the goa_namespace create action payload.
-type createGoaNamespacePayload struct {
+// createNamespacePayload is the namespace create action payload.
+type createNamespacePayload struct {
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 }
 
 // Validate runs the validation rules defined in the design.
-func (payload *createGoaNamespacePayload) Validate() (err error) {
+func (payload *createNamespacePayload) Validate() (err error) {
 	if payload.Name == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "name"))
 	}
 	return
 }
 
-// Publicize creates CreateGoaNamespacePayload from createGoaNamespacePayload
-func (payload *createGoaNamespacePayload) Publicize() *CreateGoaNamespacePayload {
-	var pub CreateGoaNamespacePayload
+// Publicize creates CreateNamespacePayload from createNamespacePayload
+func (payload *createNamespacePayload) Publicize() *CreateNamespacePayload {
+	var pub CreateNamespacePayload
 	if payload.Name != nil {
 		pub.Name = *payload.Name
 	}
 	return &pub
 }
 
-// CreateGoaNamespacePayload is the goa_namespace create action payload.
-type CreateGoaNamespacePayload struct {
+// CreateNamespacePayload is the namespace create action payload.
+type CreateNamespacePayload struct {
 	Name string `form:"name" json:"name" xml:"name"`
 }
 
 // Validate runs the validation rules defined in the design.
-func (payload *CreateGoaNamespacePayload) Validate() (err error) {
+func (payload *CreateNamespacePayload) Validate() (err error) {
 	if payload.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "name"))
 	}
@@ -390,19 +390,19 @@ func (payload *CreateGoaNamespacePayload) Validate() (err error) {
 }
 
 // Created sends a HTTP response with status code 201.
-func (ctx *CreateGoaNamespaceContext) Created() error {
+func (ctx *CreateNamespaceContext) Created() error {
 	ctx.ResponseData.WriteHeader(201)
 	return nil
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *CreateGoaNamespaceContext) BadRequest(r error) error {
+func (ctx *CreateNamespaceContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
-// DeleteGoaNamespaceContext provides the goa_namespace delete action context.
-type DeleteGoaNamespaceContext struct {
+// DeleteNamespaceContext provides the namespace delete action context.
+type DeleteNamespaceContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -410,15 +410,15 @@ type DeleteGoaNamespaceContext struct {
 	Project string
 }
 
-// NewDeleteGoaNamespaceContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_namespace controller delete action.
-func NewDeleteGoaNamespaceContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteGoaNamespaceContext, error) {
+// NewDeleteNamespaceContext parses the incoming request URL and body, performs validations and creates the
+// context used by the namespace controller delete action.
+func NewDeleteNamespaceContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteNamespaceContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := DeleteGoaNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := DeleteNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
 		rawNs := paramNs[0]
@@ -433,25 +433,25 @@ func NewDeleteGoaNamespaceContext(ctx context.Context, r *http.Request, service 
 }
 
 // NoContent sends a HTTP response with status code 204.
-func (ctx *DeleteGoaNamespaceContext) NoContent() error {
+func (ctx *DeleteNamespaceContext) NoContent() error {
 	ctx.ResponseData.WriteHeader(204)
 	return nil
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *DeleteGoaNamespaceContext) BadRequest(r error) error {
+func (ctx *DeleteNamespaceContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
 // NotFound sends a HTTP response with status code 404.
-func (ctx *DeleteGoaNamespaceContext) NotFound() error {
+func (ctx *DeleteNamespaceContext) NotFound() error {
 	ctx.ResponseData.WriteHeader(404)
 	return nil
 }
 
-// GetGoaNamespaceContext provides the goa_namespace get action context.
-type GetGoaNamespaceContext struct {
+// GetNamespaceContext provides the namespace get action context.
+type GetNamespaceContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -459,15 +459,15 @@ type GetGoaNamespaceContext struct {
 	Project string
 }
 
-// NewGetGoaNamespaceContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_namespace controller get action.
-func NewGetGoaNamespaceContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetGoaNamespaceContext, error) {
+// NewGetNamespaceContext parses the incoming request URL and body, performs validations and creates the
+// context used by the namespace controller get action.
+func NewGetNamespaceContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetNamespaceContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := GetGoaNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := GetNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
 		rawNs := paramNs[0]
@@ -482,34 +482,34 @@ func NewGetGoaNamespaceContext(ctx context.Context, r *http.Request, service *go
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *GetGoaNamespaceContext) OK(r *Namespace) error {
+func (ctx *GetNamespaceContext) OK(r *Namespace) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/namespace+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // OKLink sends a HTTP response with status code 200.
-func (ctx *GetGoaNamespaceContext) OKLink(r *NamespaceLink) error {
+func (ctx *GetNamespaceContext) OKLink(r *NamespaceLink) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/namespace+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
-// ListGoaNamespaceContext provides the goa_namespace list action context.
-type ListGoaNamespaceContext struct {
+// ListNamespaceContext provides the namespace list action context.
+type ListNamespaceContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
 	Project string
 }
 
-// NewListGoaNamespaceContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_namespace controller list action.
-func NewListGoaNamespaceContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListGoaNamespaceContext, error) {
+// NewListNamespaceContext parses the incoming request URL and body, performs validations and creates the
+// context used by the namespace controller list action.
+func NewListNamespaceContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListNamespaceContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := ListGoaNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := ListNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramProject := req.Params["project"]
 	if len(paramProject) > 0 {
 		rawProject := paramProject[0]
@@ -519,7 +519,7 @@ func NewListGoaNamespaceContext(ctx context.Context, r *http.Request, service *g
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *ListGoaNamespaceContext) OK(r NamespaceCollection) error {
+func (ctx *ListNamespaceContext) OK(r NamespaceCollection) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/namespace+json; type=collection")
 	if r == nil {
 		r = NamespaceCollection{}
@@ -528,7 +528,7 @@ func (ctx *ListGoaNamespaceContext) OK(r NamespaceCollection) error {
 }
 
 // OKLink sends a HTTP response with status code 200.
-func (ctx *ListGoaNamespaceContext) OKLink(r NamespaceLinkCollection) error {
+func (ctx *ListNamespaceContext) OKLink(r NamespaceLinkCollection) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/namespace+json; type=collection")
 	if r == nil {
 		r = NamespaceLinkCollection{}
@@ -536,55 +536,55 @@ func (ctx *ListGoaNamespaceContext) OKLink(r NamespaceLinkCollection) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
-// CreateGoaProjectContext provides the goa_project create action context.
-type CreateGoaProjectContext struct {
+// CreateProjectContext provides the project create action context.
+type CreateProjectContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Payload *CreateGoaProjectPayload
+	Payload *CreateProjectPayload
 }
 
-// NewCreateGoaProjectContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_project controller create action.
-func NewCreateGoaProjectContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateGoaProjectContext, error) {
+// NewCreateProjectContext parses the incoming request URL and body, performs validations and creates the
+// context used by the project controller create action.
+func NewCreateProjectContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateProjectContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := CreateGoaProjectContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := CreateProjectContext{Context: ctx, ResponseData: resp, RequestData: req}
 	return &rctx, err
 }
 
-// createGoaProjectPayload is the goa_project create action payload.
-type createGoaProjectPayload struct {
+// createProjectPayload is the project create action payload.
+type createProjectPayload struct {
 	Identity *string `form:"identity,omitempty" json:"identity,omitempty" xml:"identity,omitempty"`
 }
 
 // Validate runs the validation rules defined in the design.
-func (payload *createGoaProjectPayload) Validate() (err error) {
+func (payload *createProjectPayload) Validate() (err error) {
 	if payload.Identity == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "identity"))
 	}
 	return
 }
 
-// Publicize creates CreateGoaProjectPayload from createGoaProjectPayload
-func (payload *createGoaProjectPayload) Publicize() *CreateGoaProjectPayload {
-	var pub CreateGoaProjectPayload
+// Publicize creates CreateProjectPayload from createProjectPayload
+func (payload *createProjectPayload) Publicize() *CreateProjectPayload {
+	var pub CreateProjectPayload
 	if payload.Identity != nil {
 		pub.Identity = *payload.Identity
 	}
 	return &pub
 }
 
-// CreateGoaProjectPayload is the goa_project create action payload.
-type CreateGoaProjectPayload struct {
+// CreateProjectPayload is the project create action payload.
+type CreateProjectPayload struct {
 	Identity string `form:"identity" json:"identity" xml:"identity"`
 }
 
 // Validate runs the validation rules defined in the design.
-func (payload *CreateGoaProjectPayload) Validate() (err error) {
+func (payload *CreateProjectPayload) Validate() (err error) {
 	if payload.Identity == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "identity"))
 	}
@@ -592,34 +592,34 @@ func (payload *CreateGoaProjectPayload) Validate() (err error) {
 }
 
 // Created sends a HTTP response with status code 201.
-func (ctx *CreateGoaProjectContext) Created() error {
+func (ctx *CreateProjectContext) Created() error {
 	ctx.ResponseData.WriteHeader(201)
 	return nil
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *CreateGoaProjectContext) BadRequest(r error) error {
+func (ctx *CreateProjectContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
-// DeleteGoaProjectContext provides the goa_project delete action context.
-type DeleteGoaProjectContext struct {
+// DeleteProjectContext provides the project delete action context.
+type DeleteProjectContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
 	Project string
 }
 
-// NewDeleteGoaProjectContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_project controller delete action.
-func NewDeleteGoaProjectContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteGoaProjectContext, error) {
+// NewDeleteProjectContext parses the incoming request URL and body, performs validations and creates the
+// context used by the project controller delete action.
+func NewDeleteProjectContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteProjectContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := DeleteGoaProjectContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := DeleteProjectContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramProject := req.Params["project"]
 	if len(paramProject) > 0 {
 		rawProject := paramProject[0]
@@ -629,40 +629,40 @@ func NewDeleteGoaProjectContext(ctx context.Context, r *http.Request, service *g
 }
 
 // NoContent sends a HTTP response with status code 204.
-func (ctx *DeleteGoaProjectContext) NoContent() error {
+func (ctx *DeleteProjectContext) NoContent() error {
 	ctx.ResponseData.WriteHeader(204)
 	return nil
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *DeleteGoaProjectContext) BadRequest(r error) error {
+func (ctx *DeleteProjectContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
 // NotFound sends a HTTP response with status code 404.
-func (ctx *DeleteGoaProjectContext) NotFound() error {
+func (ctx *DeleteProjectContext) NotFound() error {
 	ctx.ResponseData.WriteHeader(404)
 	return nil
 }
 
-// GetGoaProjectContext provides the goa_project get action context.
-type GetGoaProjectContext struct {
+// GetProjectContext provides the project get action context.
+type GetProjectContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
 	Project string
 }
 
-// NewGetGoaProjectContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_project controller get action.
-func NewGetGoaProjectContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetGoaProjectContext, error) {
+// NewGetProjectContext parses the incoming request URL and body, performs validations and creates the
+// context used by the project controller get action.
+func NewGetProjectContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetProjectContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := GetGoaProjectContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := GetProjectContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramProject := req.Params["project"]
 	if len(paramProject) > 0 {
 		rawProject := paramProject[0]
@@ -672,50 +672,50 @@ func NewGetGoaProjectContext(ctx context.Context, r *http.Request, service *goa.
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *GetGoaProjectContext) OK(r *Project) error {
+func (ctx *GetProjectContext) OK(r *Project) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/project+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // OKLink sends a HTTP response with status code 200.
-func (ctx *GetGoaProjectContext) OKLink(r *ProjectLink) error {
+func (ctx *GetProjectContext) OKLink(r *ProjectLink) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/project+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *GetGoaProjectContext) BadRequest(r error) error {
+func (ctx *GetProjectContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
 // NotFound sends a HTTP response with status code 404.
-func (ctx *GetGoaProjectContext) NotFound() error {
+func (ctx *GetProjectContext) NotFound() error {
 	ctx.ResponseData.WriteHeader(404)
 	return nil
 }
 
-// ListGoaProjectContext provides the goa_project list action context.
-type ListGoaProjectContext struct {
+// ListProjectContext provides the project list action context.
+type ListProjectContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
 }
 
-// NewListGoaProjectContext parses the incoming request URL and body, performs validations and creates the
-// context used by the goa_project controller list action.
-func NewListGoaProjectContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListGoaProjectContext, error) {
+// NewListProjectContext parses the incoming request URL and body, performs validations and creates the
+// context used by the project controller list action.
+func NewListProjectContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListProjectContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := ListGoaProjectContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := ListProjectContext{Context: ctx, ResponseData: resp, RequestData: req}
 	return &rctx, err
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *ListGoaProjectContext) OK(r ProjectCollection) error {
+func (ctx *ListProjectContext) OK(r ProjectCollection) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/project+json; type=collection")
 	if r == nil {
 		r = ProjectCollection{}
@@ -724,7 +724,7 @@ func (ctx *ListGoaProjectContext) OK(r ProjectCollection) error {
 }
 
 // OKLink sends a HTTP response with status code 200.
-func (ctx *ListGoaProjectContext) OKLink(r ProjectLinkCollection) error {
+func (ctx *ListProjectContext) OKLink(r ProjectLinkCollection) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/project+json; type=collection")
 	if r == nil {
 		r = ProjectLinkCollection{}
