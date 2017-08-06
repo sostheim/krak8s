@@ -13,12 +13,14 @@ package cli
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/goadesign/goa"
 	goaclient "github.com/goadesign/goa/client"
 	uuid "github.com/goadesign/goa/uuid"
 	"github.com/spf13/cobra"
 	"krak8s/client"
 	"log"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -26,13 +28,35 @@ import (
 )
 
 type (
-	// DeployMongodbCommand is the command line data structure for the deploy action of mongodb
-	DeployMongodbCommand struct {
-		// client identifier
-		Client string
-		// namesace identifier
-		Ns          string
+	// CreateGoaMongoCommand is the command line data structure for the create action of goa_mongo
+	CreateGoaMongoCommand struct {
+		Payload     string
+		ContentType string
 		PrettyPrint bool
+	}
+
+	// DeleteGoaMongoCommand is the command line data structure for the delete action of goa_mongo
+	DeleteGoaMongoCommand struct {
+		// namespace identifier
+		Ns string
+		// user identity
+		User        string
+		PrettyPrint bool
+	}
+
+	// ReadGoaMongoCommand is the command line data structure for the read action of goa_mongo
+	ReadGoaMongoCommand struct {
+		// namespace identifier
+		Ns string
+		// user identity
+		User        string
+		PrettyPrint bool
+	}
+
+	// DownloadCommand is the command line data structure for the download command.
+	DownloadCommand struct {
+		// OutFile is the path to the download output file.
+		OutFile string
 	}
 )
 
@@ -40,19 +64,67 @@ type (
 func RegisterCommands(app *cobra.Command, c *client.Client) {
 	var command, sub *cobra.Command
 	command = &cobra.Command{
-		Use:   "deploy",
-		Short: `deploy MongoDB for client to namespace`,
+		Use:   "create",
+		Short: `Create a MongoDB for a user in a namespace`,
 	}
-	tmp1 := new(DeployMongodbCommand)
+	tmp1 := new(CreateGoaMongoCommand)
 	sub = &cobra.Command{
-		Use:   `mongodb ["/v1/mongo/"]`,
-		Short: ``,
-		RunE:  func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
+		Use:   `goa-mongo ["/v1/mongo/"]`,
+		Short: `Manage {create, delete}, and check the status of MongoDB deployments`,
+		Long: `Manage {create, delete}, and check the status of MongoDB deployments
+
+Payload example:
+
+{
+   "application": "Nam ut incidunt.",
+   "namespace": "Quos nobis placeat iusto itaque.",
+   "user": "Aliquam nemo veniam alias."
+}`,
+		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
 	tmp1.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp1.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "delete",
+		Short: `Delete the user/namespace specified MongoDB Deloyment`,
+	}
+	tmp2 := new(DeleteGoaMongoCommand)
+	sub = &cobra.Command{
+		Use:   `goa-mongo ["/v1/mongo/USER/NS"]`,
+		Short: `Manage {create, delete}, and check the status of MongoDB deployments`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
+	}
+	tmp2.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp2.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "read",
+		Short: `Get the status of the specified user/namespace(ns) MongoDB Deloyment`,
+	}
+	tmp3 := new(ReadGoaMongoCommand)
+	sub = &cobra.Command{
+		Use:   `goa-mongo ["/v1/mongo/USER/NS"]`,
+		Short: `Manage {create, delete}, and check the status of MongoDB deployments`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
+	}
+	tmp3.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp3.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	app.AddCommand(command)
+
+	dl := new(DownloadCommand)
+	dlc := &cobra.Command{
+		Use:   "download [PATH]",
+		Short: "Download file with given path",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return dl.Run(c, args)
+		},
+	}
+	dlc.Flags().StringVar(&dl.OutFile, "out", "", "Output file")
+	app.AddCommand(dlc)
 }
 
 func intFlagVal(name string, parsed int) *int {
@@ -208,17 +280,98 @@ func boolArray(ins []string) ([]bool, error) {
 	return vals, nil
 }
 
-// Run makes the HTTP request corresponding to the DeployMongodbCommand command.
-func (cmd *DeployMongodbCommand) Run(c *client.Client, args []string) error {
+// Run downloads files with given paths.
+func (cmd *DownloadCommand) Run(c *client.Client, args []string) error {
+	var (
+		fnf func(context.Context, string) (int64, error)
+		fnd func(context.Context, string, string) (int64, error)
+
+		rpath   = args[0]
+		outfile = cmd.OutFile
+		logger  = goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+		ctx     = goa.WithLogger(context.Background(), logger)
+		err     error
+	)
+
+	if rpath[0] != '/' {
+		rpath = "/" + rpath
+	}
+	if rpath == "/openapi" {
+		fnf = c.DownloadOpenapi
+		if outfile == "" {
+			outfile = "swagger.json"
+		}
+		goto found
+	}
+	if rpath == "/openapi.json" {
+		fnf = c.DownloadOpenapiJSON
+		if outfile == "" {
+			outfile = "swagger.json"
+		}
+		goto found
+	}
+	if rpath == "/openapi.yaml" {
+		fnf = c.DownloadOpenapiYaml
+		if outfile == "" {
+			outfile = "swagger.yaml"
+		}
+		goto found
+	}
+	if rpath == "/swagger" {
+		fnf = c.DownloadSwagger
+		if outfile == "" {
+			outfile = "swagger.json"
+		}
+		goto found
+	}
+	if rpath == "/swagger.json" {
+		fnf = c.DownloadSwaggerJSON
+		if outfile == "" {
+			outfile = "swagger.json"
+		}
+		goto found
+	}
+	if rpath == "/swagger.yaml" {
+		fnf = c.DownloadSwaggerYaml
+		if outfile == "" {
+			outfile = "swagger.yaml"
+		}
+		goto found
+	}
+	return fmt.Errorf("don't know how to download %s", rpath)
+found:
+	ctx = goa.WithLogContext(ctx, "file", outfile)
+	if fnf != nil {
+		_, err = fnf(ctx, outfile)
+	} else {
+		_, err = fnd(ctx, rpath, outfile)
+	}
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	return nil
+}
+
+// Run makes the HTTP request corresponding to the CreateGoaMongoCommand command.
+func (cmd *CreateGoaMongoCommand) Run(c *client.Client, args []string) error {
 	var path string
 	if len(args) > 0 {
 		path = args[0]
 	} else {
 		path = "/v1/mongo/"
 	}
+	var payload client.MongoPostBody
+	if cmd.Payload != "" {
+		err := json.Unmarshal([]byte(cmd.Payload), &payload)
+		if err != nil {
+			return fmt.Errorf("failed to deserialize payload: %s", err)
+		}
+	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.DeployMongodb(ctx, path, stringFlagVal("client", cmd.Client), stringFlagVal("ns", cmd.Ns))
+	resp, err := c.CreateGoaMongo(ctx, path, &payload)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -229,9 +382,63 @@ func (cmd *DeployMongodbCommand) Run(c *client.Client, args []string) error {
 }
 
 // RegisterFlags registers the command flags with the command line.
-func (cmd *DeployMongodbCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var client_ string
-	cc.Flags().StringVar(&cmd.Client, "client", client_, `client identifier`)
+func (cmd *CreateGoaMongoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
+	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
+}
+
+// Run makes the HTTP request corresponding to the DeleteGoaMongoCommand command.
+func (cmd *DeleteGoaMongoCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = fmt.Sprintf("/v1/mongo/%v/%v", url.QueryEscape(cmd.User), url.QueryEscape(cmd.Ns))
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.DeleteGoaMongo(ctx, path)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *DeleteGoaMongoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var ns string
-	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namesace identifier`)
+	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
+	var user string
+	cc.Flags().StringVar(&cmd.User, "user", user, `user identity`)
+}
+
+// Run makes the HTTP request corresponding to the ReadGoaMongoCommand command.
+func (cmd *ReadGoaMongoCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = fmt.Sprintf("/v1/mongo/%v/%v", url.QueryEscape(cmd.User), url.QueryEscape(cmd.Ns))
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.ReadGoaMongo(ctx, path)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *ReadGoaMongoCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	var ns string
+	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
+	var user string
+	cc.Flags().StringVar(&cmd.User, "user", user, `user identity`)
 }

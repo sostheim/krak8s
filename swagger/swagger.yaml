@@ -1,45 +1,149 @@
-basePath: /v1
 consumes:
 - application/json
-- application/xml
-- application/gob
-- application/x-gob
+definitions:
+  MongoPostBody:
+    example:
+      application: Nam ut incidunt.
+      namespace: Quos nobis placeat iusto itaque.
+      user: Aliquam nemo veniam alias.
+    properties:
+      application:
+        default: quay.io/samsung_cnct/mongodb-replicaset
+        description: Appplication Registry Identifier
+        example: Nam ut incidunt.
+        type: string
+      namespace:
+        description: Associated amespace identitfier
+        example: Quos nobis placeat iusto itaque.
+        type: string
+      user:
+        description: Associated user identity
+        example: Aliquam nemo veniam alias.
+        type: string
+    required:
+    - application
+    - user
+    - namespace
+    title: MongoPostBody
+    type: object
 host: localhost:8080
 info:
-  description: API Service for Kraken and Kubernetes Commands
+  description: API Service for Kubernetes, Kraken, and Helm Commands
+  license:
+    name: Apache-2.0
+    url: https://github.com/samsung-cnct/krak8s/blob/master/LICENSE
   title: krak8s API Server
-  version: ""
+  version: v1
 paths:
-  /mongo/:
+  /openapi:
+    get:
+      operationId: goa_openapi#/openapi
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      schemes:
+      - http
+      summary: Download swagger/swagger.json
+  /openapi.json:
+    get:
+      operationId: goa_openapi#/openapi.json
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      schemes:
+      - http
+      summary: Download swagger/swagger.json
+  /openapi.yaml:
+    get:
+      operationId: goa_openapi#/openapi.yaml
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      schemes:
+      - http
+      summary: Download swagger/swagger.yaml
+  /swagger:
+    get:
+      operationId: goa_swagger#/swagger
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      schemes:
+      - http
+      summary: Download swagger/swagger.json
+  /swagger.json:
+    get:
+      operationId: goa_swagger#/swagger.json
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      schemes:
+      - http
+      summary: Download swagger/swagger.json
+  /swagger.yaml:
+    get:
+      operationId: goa_swagger#/swagger.yaml
+      responses:
+        "200":
+          description: File downloaded
+          schema:
+            type: file
+      schemes:
+      - http
+      summary: Download swagger/swagger.yaml
+  /v1/mongo/:
     post:
-      description: deploy MongoDB for client to namespace
-      operationId: mongodb#deploy
+      description: Create a MongoDB for a user in a namespace
+      operationId: goa_mongo#create
       parameters:
-      - description: client identifier
-        in: query
-        name: client
-        required: false
-        type: string
-      - description: namesace identifier
-        in: query
-        name: ns
-        required: false
-        type: string
-      produces:
-      - text/plain
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/MongoPostBody'
       responses:
         "200":
           description: OK
       schemes:
       - http
-      summary: deploy mongodb
+      summary: create goa_mongo
       tags:
-      - mongodb
+      - goa_mongo
+  /v1/mongo/{user}/{ns}:
+    get:
+      description: Get the status of the specified user/namespace(ns) MongoDB Deloyment
+      operationId: goa_mongo#read
+      parameters:
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: user identity
+        in: path
+        name: user
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+      schemes:
+      - http
+      summary: read goa_mongo
+      tags:
+      - goa_mongo
 produces:
 - application/json
-- application/xml
-- application/gob
-- application/x-gob
 schemes:
 - http
 swagger: "2.0"

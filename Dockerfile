@@ -25,5 +25,6 @@ RUN apt update
 RUN apt install netcat-openbsd net-tools iproute2 -y
 
 COPY build/linux_amd64/krak8s /
+COPY swagger /
 
 ENTRYPOINT ["/krak8s"]

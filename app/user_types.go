@@ -9,3 +9,78 @@
 // --version=v1.2.0-dirty
 
 package app
+
+import (
+	"github.com/goadesign/goa"
+)
+
+// mongoPostBody user type.
+type mongoPostBody struct {
+	// Appplication Registry Identifier
+	Application *string `form:"application,omitempty" json:"application,omitempty" xml:"application,omitempty"`
+	// Associated amespace identitfier
+	Namespace *string `form:"namespace,omitempty" json:"namespace,omitempty" xml:"namespace,omitempty"`
+	// Associated user identity
+	User *string `form:"user,omitempty" json:"user,omitempty" xml:"user,omitempty"`
+}
+
+// Finalize sets the default values for mongoPostBody type instance.
+func (ut *mongoPostBody) Finalize() {
+	var defaultApplication = "quay.io/samsung_cnct/mongodb-replicaset"
+	if ut.Application == nil {
+		ut.Application = &defaultApplication
+	}
+}
+
+// Validate validates the mongoPostBody type instance.
+func (ut *mongoPostBody) Validate() (err error) {
+	if ut.Application == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
+	}
+	if ut.User == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "user"))
+	}
+	if ut.Namespace == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace"))
+	}
+	return
+}
+
+// Publicize creates MongoPostBody from mongoPostBody
+func (ut *mongoPostBody) Publicize() *MongoPostBody {
+	var pub MongoPostBody
+	if ut.Application != nil {
+		pub.Application = *ut.Application
+	}
+	if ut.Namespace != nil {
+		pub.Namespace = *ut.Namespace
+	}
+	if ut.User != nil {
+		pub.User = *ut.User
+	}
+	return &pub
+}
+
+// MongoPostBody user type.
+type MongoPostBody struct {
+	// Appplication Registry Identifier
+	Application string `form:"application" json:"application" xml:"application"`
+	// Associated amespace identitfier
+	Namespace string `form:"namespace" json:"namespace" xml:"namespace"`
+	// Associated user identity
+	User string `form:"user" json:"user" xml:"user"`
+}
+
+// Validate validates the MongoPostBody type instance.
+func (ut *MongoPostBody) Validate() (err error) {
+	if ut.Application == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
+	}
+	if ut.User == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "user"))
+	}
+	if ut.Namespace == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace"))
+	}
+	return
+}

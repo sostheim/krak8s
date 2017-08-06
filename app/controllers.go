@@ -20,25 +20,23 @@ import (
 func initService(service *goa.Service) {
 	// Setup encoders and decoders
 	service.Encoder.Register(goa.NewJSONEncoder, "application/json")
-	service.Encoder.Register(goa.NewGobEncoder, "application/gob", "application/x-gob")
-	service.Encoder.Register(goa.NewXMLEncoder, "application/xml")
 	service.Decoder.Register(goa.NewJSONDecoder, "application/json")
-	service.Decoder.Register(goa.NewGobDecoder, "application/gob", "application/x-gob")
-	service.Decoder.Register(goa.NewXMLDecoder, "application/xml")
 
 	// Setup default encoder and decoder
 	service.Encoder.Register(goa.NewJSONEncoder, "*/*")
 	service.Decoder.Register(goa.NewJSONDecoder, "*/*")
 }
 
-// MongodbController is the controller interface for the Mongodb actions.
-type MongodbController interface {
+// GoaMongoController is the controller interface for the GoaMongo actions.
+type GoaMongoController interface {
 	goa.Muxer
-	Deploy(*DeployMongodbContext) error
+	Create(*CreateGoaMongoContext) error
+	Delete(*DeleteGoaMongoContext) error
+	Read(*ReadGoaMongoContext) error
 }
 
-// MountMongodbController "mounts" a Mongodb resource controller on the given service.
-func MountMongodbController(service *goa.Service, ctrl MongodbController) {
+// MountGoaMongoController "mounts" a GoaMongo resource controller on the given service.
+func MountGoaMongoController(service *goa.Service, ctrl GoaMongoController) {
 	initService(service)
 	var h goa.Handler
 
@@ -48,12 +46,112 @@ func MountMongodbController(service *goa.Service, ctrl MongodbController) {
 			return err
 		}
 		// Build the context
-		rctx, err := NewDeployMongodbContext(ctx, req, service)
+		rctx, err := NewCreateGoaMongoContext(ctx, req, service)
 		if err != nil {
 			return err
 		}
-		return ctrl.Deploy(rctx)
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*MongoPostBody)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Create(rctx)
 	}
-	service.Mux.Handle("POST", "/v1/mongo/", ctrl.MuxHandler("deploy", h, nil))
-	service.LogInfo("mount", "ctrl", "Mongodb", "action", "Deploy", "route", "POST /v1/mongo/")
+	service.Mux.Handle("POST", "/v1/mongo/", ctrl.MuxHandler("create", h, unmarshalCreateGoaMongoPayload))
+	service.LogInfo("mount", "ctrl", "GoaMongo", "action", "Create", "route", "POST /v1/mongo/")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeleteGoaMongoContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Delete(rctx)
+	}
+	service.Mux.Handle("GET", "/v1/mongo/:user/:ns", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaMongo", "action", "Delete", "route", "GET /v1/mongo/:user/:ns")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewReadGoaMongoContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Read(rctx)
+	}
+	service.Mux.Handle("GET", "/v1/mongo/:user/:ns", ctrl.MuxHandler("read", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaMongo", "action", "Read", "route", "GET /v1/mongo/:user/:ns")
+}
+
+// unmarshalCreateGoaMongoPayload unmarshals the request body into the context request data Payload field.
+func unmarshalCreateGoaMongoPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &mongoPostBody{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	payload.Finalize()
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
+// GoaOpenapiController is the controller interface for the GoaOpenapi actions.
+type GoaOpenapiController interface {
+	goa.Muxer
+	goa.FileServer
+}
+
+// MountGoaOpenapiController "mounts" a GoaOpenapi resource controller on the given service.
+func MountGoaOpenapiController(service *goa.Service, ctrl GoaOpenapiController) {
+	initService(service)
+	var h goa.Handler
+
+	h = ctrl.FileHandler("/openapi", "swagger/swagger.json")
+	service.Mux.Handle("GET", "/openapi", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaOpenapi", "files", "swagger/swagger.json", "route", "GET /openapi")
+
+	h = ctrl.FileHandler("/openapi.json", "swagger/swagger.json")
+	service.Mux.Handle("GET", "/openapi.json", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaOpenapi", "files", "swagger/swagger.json", "route", "GET /openapi.json")
+
+	h = ctrl.FileHandler("/openapi.yaml", "swagger/swagger.yaml")
+	service.Mux.Handle("GET", "/openapi.yaml", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaOpenapi", "files", "swagger/swagger.yaml", "route", "GET /openapi.yaml")
+}
+
+// GoaSwaggerController is the controller interface for the GoaSwagger actions.
+type GoaSwaggerController interface {
+	goa.Muxer
+	goa.FileServer
+}
+
+// MountGoaSwaggerController "mounts" a GoaSwagger resource controller on the given service.
+func MountGoaSwaggerController(service *goa.Service, ctrl GoaSwaggerController) {
+	initService(service)
+	var h goa.Handler
+
+	h = ctrl.FileHandler("/swagger", "swagger/swagger.json")
+	service.Mux.Handle("GET", "/swagger", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaSwagger", "files", "swagger/swagger.json", "route", "GET /swagger")
+
+	h = ctrl.FileHandler("/swagger.json", "swagger/swagger.json")
+	service.Mux.Handle("GET", "/swagger.json", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaSwagger", "files", "swagger/swagger.json", "route", "GET /swagger.json")
+
+	h = ctrl.FileHandler("/swagger.yaml", "swagger/swagger.yaml")
+	service.Mux.Handle("GET", "/swagger.yaml", ctrl.MuxHandler("serve", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaSwagger", "files", "swagger/swagger.yaml", "route", "GET /swagger.yaml")
 }

@@ -16,40 +16,107 @@ import (
 	"net/http"
 )
 
-// DeployMongodbContext provides the mongodb deploy action context.
-type DeployMongodbContext struct {
+// CreateGoaMongoContext provides the goa_mongo create action context.
+type CreateGoaMongoContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Client *string
-	Ns     *string
+	Payload *MongoPostBody
 }
 
-// NewDeployMongodbContext parses the incoming request URL and body, performs validations and creates the
-// context used by the mongodb controller deploy action.
-func NewDeployMongodbContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeployMongodbContext, error) {
+// NewCreateGoaMongoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the goa_mongo controller create action.
+func NewCreateGoaMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateGoaMongoContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := DeployMongodbContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramClient := req.Params["client"]
-	if len(paramClient) > 0 {
-		rawClient := paramClient[0]
-		rctx.Client = &rawClient
-	}
+	rctx := CreateGoaMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *CreateGoaMongoContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/json")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
+// DeleteGoaMongoContext provides the goa_mongo delete action context.
+type DeleteGoaMongoContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Ns   string
+	User string
+}
+
+// NewDeleteGoaMongoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the goa_mongo controller delete action.
+func NewDeleteGoaMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteGoaMongoContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := DeleteGoaMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
 		rawNs := paramNs[0]
-		rctx.Ns = &rawNs
+		rctx.Ns = rawNs
+	}
+	paramUser := req.Params["user"]
+	if len(paramUser) > 0 {
+		rawUser := paramUser[0]
+		rctx.User = rawUser
 	}
 	return &rctx, err
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *DeployMongodbContext) OK(resp []byte) error {
-	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+func (ctx *DeleteGoaMongoContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/json")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
+// ReadGoaMongoContext provides the goa_mongo read action context.
+type ReadGoaMongoContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Ns   string
+	User string
+}
+
+// NewReadGoaMongoContext parses the incoming request URL and body, performs validations and creates the
+// context used by the goa_mongo controller read action.
+func NewReadGoaMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*ReadGoaMongoContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := ReadGoaMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramNs := req.Params["ns"]
+	if len(paramNs) > 0 {
+		rawNs := paramNs[0]
+		rctx.Ns = rawNs
+	}
+	paramUser := req.Params["user"]
+	if len(paramUser) > 0 {
+		rawUser := paramUser[0]
+		rctx.User = rawUser
+	}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *ReadGoaMongoContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/json")
 	ctx.ResponseData.WriteHeader(200)
 	_, err := ctx.ResponseData.Write(resp)
 	return err

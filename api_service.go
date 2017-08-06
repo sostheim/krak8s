@@ -60,9 +60,14 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	as.server.Use(middleware.ErrorHandler(as.server, true))
 	as.server.Use(middleware.Recover())
 
-	// Mount "operands" controller
-	c := NewMongodbController(as.server)
-	app.MountMongodbController(as.server, c)
+	swagger := NewGoaSwaggerController(as.server)
+	app.MountGoaSwaggerController(as.server, swagger)
+
+	openapi := NewGoaOpenapiController(as.server)
+	app.MountGoaOpenapiController(as.server, openapi)
+
+	mongo := NewGoaMongoController(as.server)
+	app.MountGoaMongoController(as.server, mongo)
 
 	return &as
 }
