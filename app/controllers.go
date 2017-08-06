@@ -31,6 +31,102 @@ func initService(service *goa.Service) {
 	service.Decoder.Register(goa.NewJSONDecoder, "*/*")
 }
 
+// GoaChartController is the controller interface for the GoaChart actions.
+type GoaChartController interface {
+	goa.Muxer
+	Create(*CreateGoaChartContext) error
+	Delete(*DeleteGoaChartContext) error
+	Get(*GetGoaChartContext) error
+	List(*ListGoaChartContext) error
+}
+
+// MountGoaChartController "mounts" a GoaChart resource controller on the given service.
+func MountGoaChartController(service *goa.Service, ctrl GoaChartController) {
+	initService(service)
+	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewCreateGoaChartContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*ChartPostBody)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Create(rctx)
+	}
+	service.Mux.Handle("POST", "/v1/projects/:project/ns/:ns/chart", ctrl.MuxHandler("create", h, unmarshalCreateGoaChartPayload))
+	service.LogInfo("mount", "ctrl", "GoaChart", "action", "Create", "route", "POST /v1/projects/:project/ns/:ns/chart")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeleteGoaChartContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Delete(rctx)
+	}
+	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns/chart/:chart", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaChart", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns/chart/:chart")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewGetGoaChartContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Get(rctx)
+	}
+	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/chart/:chart", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaChart", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns/chart/:chart")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewListGoaChartContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.List(rctx)
+	}
+	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/chart", ctrl.MuxHandler("list", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaChart", "action", "List", "route", "GET /v1/projects/:project/ns/:ns/chart")
+}
+
+// unmarshalCreateGoaChartPayload unmarshals the request body into the context request data Payload field.
+func unmarshalCreateGoaChartPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &chartPostBody{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
 // GoaMongoController is the controller interface for the GoaMongo actions.
 type GoaMongoController interface {
 	goa.Muxer

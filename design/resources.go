@@ -107,7 +107,7 @@ var _ = Resource("goa_namespace", func() {
 })
 
 var _ = Resource("goa_mongo", func() {
-	Description("Manage {create, delete}, and get project's MongoDB deployment(s)")
+	Description("Manage {create, delete}, and get namespaces's MongoDB deployment")
 
 	Parent("goa_namespace")
 	BasePath("mongo")
@@ -131,6 +131,43 @@ var _ = Resource("goa_mongo", func() {
 	Action("delete", func() {
 		Routing(DELETE(""))
 		Description("Delete the MongoDB Deloyment)")
+		Response(NoContent)
+		Response(NotFound)
+		Response(BadRequest, ErrorMedia)
+	})
+})
+
+var _ = Resource("goa_chart", func() {
+	Description("Manage {create, delete}, and get namespaces's Helm Chart deployment(s)")
+
+	Parent("goa_namespace")
+	BasePath("chart")
+
+	CanonicalActionName("get")
+
+	Action("create", func() {
+		Routing(POST(""))
+		Description("Create a Helm Chart deployment")
+		Payload(ChartPostBody)
+		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/ns/[a-z,A-Z,0-9]+/charts[a-z,A-Z,0-9]+")
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("list", func() {
+		Routing(GET(""))
+		Description("Retrieve the collection of all Helm Charts in the namespace.")
+		Response(OK, CollectionOf(Chart))
+	})
+
+	Action("get", func() {
+		Routing(GET("/:chart"))
+		Description("Get the status of the specified Helm Chart deployment")
+		Response(OK, Chart)
+	})
+
+	Action("delete", func() {
+		Routing(DELETE("/:chart"))
+		Description("Delete the specified Helm Chart deloyment")
 		Response(NoContent)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)

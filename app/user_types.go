@@ -14,6 +14,56 @@ import (
 	"github.com/goadesign/goa"
 )
 
+// chartPostBody user type.
+type chartPostBody struct {
+	// Chart identifier
+	Application *string `form:"application,omitempty" json:"application,omitempty" xml:"application,omitempty"`
+	// Chart version string
+	Version *string `form:"version,omitempty" json:"version,omitempty" xml:"version,omitempty"`
+}
+
+// Validate validates the chartPostBody type instance.
+func (ut *chartPostBody) Validate() (err error) {
+	if ut.Application == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
+	}
+	if ut.Version == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
+	}
+	return
+}
+
+// Publicize creates ChartPostBody from chartPostBody
+func (ut *chartPostBody) Publicize() *ChartPostBody {
+	var pub ChartPostBody
+	if ut.Application != nil {
+		pub.Application = *ut.Application
+	}
+	if ut.Version != nil {
+		pub.Version = *ut.Version
+	}
+	return &pub
+}
+
+// ChartPostBody user type.
+type ChartPostBody struct {
+	// Chart identifier
+	Application string `form:"application" json:"application" xml:"application"`
+	// Chart version string
+	Version string `form:"version" json:"version" xml:"version"`
+}
+
+// Validate validates the ChartPostBody type instance.
+func (ut *ChartPostBody) Validate() (err error) {
+	if ut.Application == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
+	}
+	if ut.Version == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
+	}
+	return
+}
+
 // mongoPostBody user type.
 type mongoPostBody struct {
 	// Appplication Registry Identifier

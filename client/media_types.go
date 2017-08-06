@@ -17,6 +17,58 @@ import (
 	"unicode/utf8"
 )
 
+// Helm chart representation type (default view)
+//
+// Identifier: application/chart+json; view=default
+type Chart struct {
+	// Application registry identifier
+	Application string `form:"application" json:"application" xml:"application"`
+	// Application version
+	Version string `form:"version" json:"version" xml:"version"`
+}
+
+// Validate validates the Chart media type instance.
+func (mt *Chart) Validate() (err error) {
+	if mt.Application == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
+	}
+	if mt.Version == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
+	}
+	return
+}
+
+// DecodeChart decodes the Chart instance encoded in resp body.
+func (c *Client) DecodeChart(resp *http.Response) (*Chart, error) {
+	var decoded Chart
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
+// ChartCollection is the media type for an array of Chart (default view)
+//
+// Identifier: application/chart+json; type=collection; view=default
+type ChartCollection []*Chart
+
+// Validate validates the ChartCollection media type instance.
+func (mt ChartCollection) Validate() (err error) {
+	for _, e := range mt {
+		if e != nil {
+			if err2 := e.Validate(); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
+	}
+	return
+}
+
+// DecodeChartCollection decodes the ChartCollection instance encoded in resp body.
+func (c *Client) DecodeChartCollection(resp *http.Response) (ChartCollection, error) {
+	var decoded ChartCollection
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return decoded, err
+}
+
 // MongoDB ReplicaSet instance representation type (default view)
 //
 // Identifier: application/mongo+json; view=default

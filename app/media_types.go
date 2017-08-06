@@ -16,6 +16,44 @@ import (
 	"unicode/utf8"
 )
 
+// Helm chart representation type (default view)
+//
+// Identifier: application/chart+json; view=default
+type Chart struct {
+	// Application registry identifier
+	Application string `form:"application" json:"application" xml:"application"`
+	// Application version
+	Version string `form:"version" json:"version" xml:"version"`
+}
+
+// Validate validates the Chart media type instance.
+func (mt *Chart) Validate() (err error) {
+	if mt.Application == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
+	}
+	if mt.Version == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
+	}
+	return
+}
+
+// ChartCollection is the media type for an array of Chart (default view)
+//
+// Identifier: application/chart+json; type=collection; view=default
+type ChartCollection []*Chart
+
+// Validate validates the ChartCollection media type instance.
+func (mt ChartCollection) Validate() (err error) {
+	for _, e := range mt {
+		if e != nil {
+			if err2 := e.Validate(); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
+	}
+	return
+}
+
 // MongoDB ReplicaSet instance representation type (default view)
 //
 // Identifier: application/mongo+json; view=default

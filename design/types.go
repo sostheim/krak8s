@@ -94,3 +94,29 @@ var Mongo = MediaType("application/mongo+json", func() {
 		Attribute("created_at")
 	})
 })
+
+// ChartPostBody is the HTTP POST Request body type.
+var ChartPostBody = Type("ChartPostBody", func() {
+	Attribute("application", String, func() {
+		Description("Chart identifier")
+	})
+	Attribute("version", String, func() {
+		Description("Chart version string")
+	})
+	Required("application", "version")
+})
+
+// Chart is the Helm Chart resource's MediaType.
+var Chart = MediaType("application/chart+json", func() {
+	Description("Helm chart representation type")
+	Attributes(func() {
+		Attribute("application", String, "Application registry identifier")
+		Attribute("version", String, "Application version")
+		Required("application", "version")
+	})
+
+	View("default", func() {
+		Attribute("application")
+		Attribute("version")
+	})
+})

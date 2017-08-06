@@ -75,6 +75,9 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	mongo := NewGoaMongoController(as.server)
 	app.MountGoaMongoController(as.server, mongo)
 
+	chart := NewGoaChartController(as.server)
+	app.MountGoaChartController(as.server, chart)
+
 	return &as
 }
 

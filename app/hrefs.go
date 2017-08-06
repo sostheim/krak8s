@@ -15,6 +15,14 @@ import (
 	"strings"
 )
 
+// GoaChartHref returns the resource href.
+func GoaChartHref(project, ns, chart interface{}) string {
+	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
+	paramns := strings.TrimLeftFunc(fmt.Sprintf("%v", ns), func(r rune) bool { return r == '/' })
+	paramchart := strings.TrimLeftFunc(fmt.Sprintf("%v", chart), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/v1/projects/%v/ns/%v/chart/%v", paramproject, paramns, paramchart)
+}
+
 // GoaMongoHref returns the resource href.
 func GoaMongoHref(project, ns interface{}) string {
 	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })

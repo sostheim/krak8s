@@ -4,12 +4,63 @@ consumes:
 - application/gob
 - application/x-gob
 definitions:
+  Chart:
+    description: Helm chart representation type (default view)
+    example:
+      application: Nam ut incidunt.
+      version: Quos nobis placeat iusto itaque.
+    properties:
+      application:
+        description: Application registry identifier
+        example: Nam ut incidunt.
+        type: string
+      version:
+        description: Application version
+        example: Quos nobis placeat iusto itaque.
+        type: string
+    required:
+    - application
+    - version
+    title: 'Mediatype identifier: application/chart+json; view=default'
+    type: object
+  ChartCollection:
+    description: ChartCollection is the media type for an array of Chart (default
+      view)
+    example:
+    - application: Nam ut incidunt.
+      version: Quos nobis placeat iusto itaque.
+    - application: Nam ut incidunt.
+      version: Quos nobis placeat iusto itaque.
+    - application: Nam ut incidunt.
+      version: Quos nobis placeat iusto itaque.
+    items:
+      $ref: '#/definitions/Chart'
+    title: 'Mediatype identifier: application/chart+json; type=collection; view=default'
+    type: array
+  ChartPostBody:
+    example:
+      application: Eos non et.
+      version: Consequatur distinctio cumque repellat.
+    properties:
+      application:
+        description: Chart identifier
+        example: Eos non et.
+        type: string
+      version:
+        description: Chart version string
+        example: Consequatur distinctio cumque repellat.
+        type: string
+    required:
+    - application
+    - version
+    title: ChartPostBody
+    type: object
   CreateGoaNamespacePayload:
     example:
-      name: Omnis et.
+      name: Perspiciatis iusto inventore tempora.
     properties:
       name:
-        example: Omnis et.
+        example: Perspiciatis iusto inventore tempora.
         type: string
     required:
     - name
@@ -17,10 +68,10 @@ definitions:
     type: object
   CreateGoaProjectPayload:
     example:
-      identity: Dolore impedit iste beatae odit.
+      identity: Qui sed et voluptates.
     properties:
       identity:
-        example: Dolore impedit iste beatae odit.
+        example: Qui sed et voluptates.
         type: string
     required:
     - identity
@@ -29,22 +80,22 @@ definitions:
   Mongo:
     description: MongoDB ReplicaSet instance representation type (default view)
     example:
-      application: Nam ut incidunt.
-      created_at: 2007-12-31T06:53:54-08:00
-      version: Placeat iusto itaque tempora.
+      application: Nemo veniam.
+      created_at: 2009-07-06T02:47:01-07:00
+      version: Impedit iste beatae odit et omnis.
     properties:
       application:
         description: Application registry identifier
-        example: Nam ut incidunt.
+        example: Nemo veniam.
         type: string
       created_at:
         description: Date of creation
-        example: 2007-12-31T06:53:54-08:00
+        example: 2009-07-06T02:47:01-07:00
         format: date-time
         type: string
       version:
         description: Application version
-        example: Placeat iusto itaque tempora.
+        example: Impedit iste beatae odit et omnis.
         type: string
     required:
     - application
@@ -54,18 +105,18 @@ definitions:
     type: object
   MongoPostBody:
     example:
-      application: Dolores in hic qui sed et voluptates.
-      version: Perspiciatis iusto inventore tempora.
+      application: Libero qui facere est nostrum.
+      version: Perferendis enim.
     properties:
       application:
         default: quay.io/samsung_cnct/mongodb-replicaset
         description: Appplication Registry Identifier
-        example: Dolores in hic qui sed et voluptates.
+        example: Libero qui facere est nostrum.
         type: string
       version:
         default: v1.2.0
         description: Appplication Version
-        example: Perspiciatis iusto inventore tempora.
+        example: Perferendis enim.
         type: string
     required:
     - application
@@ -76,13 +127,13 @@ definitions:
     description: Users and tennants of the system are represented as the type Project
       (default view)
     example:
-      created_at: 1972-08-24T08:36:03-07:00
+      created_at: 2005-06-27T04:44:12-07:00
       href: /projects/newco/ns/newco-prod
       name: newco-prod
     properties:
       created_at:
         description: Date of creation
-        example: 1972-08-24T08:36:03-07:00
+        example: 2005-06-27T04:44:12-07:00
         format: date-time
         type: string
       href:
@@ -104,13 +155,13 @@ definitions:
     description: NamespaceCollection is the media type for an array of Namespace (default
       view)
     example:
-    - created_at: 1972-08-24T08:36:03-07:00
+    - created_at: 2005-06-27T04:44:12-07:00
       href: /projects/newco/ns/newco-prod
       name: newco-prod
-    - created_at: 1972-08-24T08:36:03-07:00
+    - created_at: 2005-06-27T04:44:12-07:00
       href: /projects/newco/ns/newco-prod
       name: newco-prod
-    - created_at: 1972-08-24T08:36:03-07:00
+    - created_at: 2005-06-27T04:44:12-07:00
       href: /projects/newco/ns/newco-prod
       name: newco-prod
     items:
@@ -121,13 +172,13 @@ definitions:
     description: Users and tennants of the system are represented as the type Project
       (default view)
     example:
-      created_at: 2004-01-23T19:13:45-08:00
+      created_at: 1990-01-22T21:27:26-08:00
       href: /projects/newco
       id: newco
     properties:
       created_at:
         description: Date of creation
-        example: 2004-01-23T19:13:45-08:00
+        example: 1990-01-22T21:27:26-08:00
         format: date-time
         type: string
       href:
@@ -149,7 +200,7 @@ definitions:
     description: ProjectCollection is the media type for an array of Project (default
       view)
     example:
-    - created_at: 2004-01-23T19:13:45-08:00
+    - created_at: 1990-01-22T21:27:26-08:00
       href: /projects/newco
       id: newco
     items:
@@ -467,6 +518,131 @@ paths:
       summary: get goa_namespace
       tags:
       - goa_namespace
+  /v1/projects/{project}/ns/{ns}/chart:
+    get:
+      description: Retrieve the collection of all Helm Charts in the namespace.
+      operationId: goa_chart#list
+      parameters:
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/chart+json; type=collection
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ChartCollection'
+      schemes:
+      - http
+      summary: list goa_chart
+      tags:
+      - goa_chart
+    post:
+      description: Create a Helm Chart deployment
+      operationId: goa_chart#create
+      parameters:
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/ChartPostBody'
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "202":
+          description: The request has been accepted for processing
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: create goa_chart
+      tags:
+      - goa_chart
+  /v1/projects/{project}/ns/{ns}/chart/{chart}:
+    delete:
+      description: Delete the specified Helm Chart deloyment
+      operationId: goa_chart#delete
+      parameters:
+      - in: path
+        name: chart
+        required: true
+        type: string
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: delete goa_chart
+      tags:
+      - goa_chart
+    get:
+      description: Get the status of the specified Helm Chart deployment
+      operationId: goa_chart#get
+      parameters:
+      - in: path
+        name: chart
+        required: true
+        type: string
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/chart+json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Chart'
+      schemes:
+      - http
+      summary: get goa_chart
+      tags:
+      - goa_chart
   /v1/projects/{project}/ns/{ns}/mongo:
     delete:
       description: Delete the MongoDB Deloyment)
