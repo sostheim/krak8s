@@ -9,7 +9,7 @@ import (
 
 // The top level resource is /projects which contains a collection of the existing
 // users in the system (users and projects are synonyms).
-var _ = Resource("goa_project", func() {
+var _ = Resource("project", func() {
 	Description("Manage {create, delete} individual projects, read the list of all projects, read a specific project")
 
 	DefaultMedia(Project)
@@ -58,10 +58,10 @@ var _ = Resource("goa_project", func() {
 	})
 })
 
-var _ = Resource("goa_namespace", func() {
+var _ = Resource("namespace", func() {
 	Description("Manage {create, delete}, and get project's namespace(s)")
 
-	Parent("goa_project")
+	Parent("project")
 	BasePath("ns")
 
 	CanonicalActionName("get")
@@ -106,10 +106,10 @@ var _ = Resource("goa_namespace", func() {
 	})
 })
 
-var _ = Resource("goa_mongo", func() {
+var _ = Resource("mongo", func() {
 	Description("Manage {create, delete}, and get namespaces's MongoDB deployment")
 
-	Parent("goa_namespace")
+	Parent("namespace")
 	BasePath("mongo")
 
 	CanonicalActionName("get")
@@ -137,10 +137,10 @@ var _ = Resource("goa_mongo", func() {
 	})
 })
 
-var _ = Resource("goa_chart", func() {
+var _ = Resource("chart", func() {
 	Description("Manage {create, delete}, and get namespaces's Helm Chart deployment(s)")
 
-	Parent("goa_namespace")
+	Parent("namespace")
 	BasePath("chart")
 
 	CanonicalActionName("get")

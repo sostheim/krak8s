@@ -60,23 +60,23 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	as.server.Use(middleware.ErrorHandler(as.server, true))
 	as.server.Use(middleware.Recover())
 
-	swagger := NewGoaSwaggerController(as.server)
-	app.MountGoaSwaggerController(as.server, swagger)
+	swagger := NewSwaggerController(as.server)
+	app.MountSwaggerController(as.server, swagger)
 
-	openapi := NewGoaOpenapiController(as.server)
-	app.MountGoaOpenapiController(as.server, openapi)
+	openapi := NewOpenapiController(as.server)
+	app.MountOpenapiController(as.server, openapi)
 
-	project := NewGoaProjectController(as.server)
-	app.MountGoaProjectController(as.server, project)
+	project := NewProjectController(as.server)
+	app.MountProjectController(as.server, project)
 
-	ns := NewGoaNamespaceController(as.server)
-	app.MountGoaNamespaceController(as.server, ns)
+	ns := NewNamespaceController(as.server)
+	app.MountNamespaceController(as.server, ns)
 
-	mongo := NewGoaMongoController(as.server)
-	app.MountGoaMongoController(as.server, mongo)
+	mongo := NewMongoController(as.server)
+	app.MountMongoController(as.server, mongo)
 
-	chart := NewGoaChartController(as.server)
-	app.MountGoaChartController(as.server, chart)
+	chart := NewChartController(as.server)
+	app.MountChartController(as.server, chart)
 
 	return &as
 }

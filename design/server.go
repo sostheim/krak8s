@@ -33,14 +33,14 @@ var _ = API("krak8s", func() {
 // consumer but provide diversity in how that data is accessed to enable various
 // OpenAPI / Swagger tools to fetch and render the API specification easily.
 
-var _ = Resource("goa_swagger", func() {
+var _ = Resource("swagger", func() {
 	Description("Download the Swagger 2.0 (OpenAPI) Specification for this API")
 	Files("/swagger", "swagger/swagger.json")
 	Files("/swagger.json", "swagger/swagger.json")
 	Files("/swagger.yaml", "swagger/swagger.yaml")
 })
 
-var _ = Resource("goa_openapi", func() {
+var _ = Resource("openapi", func() {
 	Description("Download the OpenAPI (Swagger 2.0) Specification for this API")
 	Files("/openapi", "swagger/swagger.json")
 	Files("/openapi.json", "swagger/swagger.json")

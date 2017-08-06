@@ -7,7 +7,8 @@ TAG       ?= latest
 godep=GOPATH=$(shell godep path):${GOPATH}
 
 TIMESTAMP    := $(shell date +"%s")
-GOAGEN_FILES := $(shell find . -maxdepth 1 -name "goa_*.go")
+# GOAGEN_FILES := $(shell find . -maxdepth 1 -name "goa_*.go")
+GOAGEN_FILES := openapi.go swagger.go project.go namespace.go mongo.go chart.go 
 
 design: # Execute goagen to rebuild API, save existing impl files
 	@for f in $(GOAGEN_FILES); do \
