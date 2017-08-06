@@ -2,7 +2,7 @@
 The terms REST and RESTful spark in the mind varying definitions for everyone who reads them. The following definitions are provided to avoid confusion.  These definitions may, or may not, comport with the canonical definition of REST, let alone even begin to argue what that concept is.  The purpose served here is to remove any uncertainty for users of this particular API. 
 
 # Resource Operations
-The only goal is to achieve consistent use within the protocol definition here only. To aid in this consistency, especially with regard to related projects, this API supports the resource operation definitions described in the [Kubernetes API Specification](https://kubernetes.io/docs/api-reference/v1.7/#resource-operations).  
+The only goal is to achieve consistent use within the protocol definition here. To aid in this consistency, especially with regard to related projects, this API supports the resource operation definitions described in the [Kubernetes API Specification](https://kubernetes.io/docs/api-reference/v1.7/#resource-operations).  
 
 This simple approach uses a functional mapping between the standard Create, Read, Update, and Delete (CRUD) operations and HTTP methods.  The functional mapping of resource operations to HTTP verbs is defined as follows:
 * Create - POST
