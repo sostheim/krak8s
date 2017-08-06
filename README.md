@@ -7,7 +7,7 @@
 
 A REST based API for managing [Kraken](https://github.com/samsung-cnct/k2) and [Kubernetes](https://kubernetes.io/) actions.
 
-Go direclty to the [API Documentation and Specification](https://github.com/samsung-cnct/krak8s/blob/master/API%20Definitions.md) section.
+Go directly to the [API Documentation and Specification](https://github.com/samsung-cnct/krak8s/blob/master/API%20Definitions.md) section.
 
 ### Connectivity
 A deployment of krak8s requires network connectivity to the Kubernetes API server. The Kubernetes API server can be accessed via `kubectl proxy` for development, but this is not recommended for production deployments. For normal operation, the standard access via [`kubeconfig`](https://kubernetes.io/docs/concepts/cluster-administration/authenticate-across-clusters-kubeconfig/) or the Kubernetes API Server endpoint is supported.
@@ -40,7 +40,7 @@ Without going into an explanation of all of the parameters, many of which should
 ### Environment Variables
 krak8s is configurable through command line configuration flags, and through a subset of environment variables. Any configuration value set on the command line takes precedence over the same value from the environment.
 
-The format of the environment variable for flag for flag is composed of the prefix `KRAK8S_` and the remaining text of the flag in all uppercase with all hyphens replaced by underscores.  Fore example, `--example-flag` would map to `KRAK8S_EXAMPLE_FLAG`. 
+The format of the environment variable for a flag is composed of the prefix `KRAK8S_` and the remaining text of the flag in all uppercase with all hyphens replaced by underscores.  Fore example, `--example-flag` would map to `KRAK8S_EXAMPLE_FLAG`. 
 
 Not every flag can be set via an environment variable.  This is due to the fact that the set of flags is an aggregate of those that belong to krak8s and 3rd party Go packages.  The set of flags that do have corresponding environment variable support are listed below:
 * --health-check
@@ -48,7 +48,7 @@ Not every flag can be set via an environment variable.  This is due to the fact 
 * --proxy
 
 ### Details
-The health check service is the HTTP endpoint will probalby be `/healthz` in the not to distant future...  
+The health check service HTTP endpoint will probalby be `/healthz` in the not to distant future...  
 
 ## Deploying krak8s Example
 The following is an example of using a Kubernetes Deployment to run krak8s. 
