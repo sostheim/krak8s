@@ -1,30 +1,197 @@
 consumes:
 - application/json
+- application/xml
+- application/gob
+- application/x-gob
 definitions:
-  MongoPostBody:
+  CreateGoaNamespacePayload:
+    example:
+      name: Omnis et.
+    properties:
+      name:
+        example: Omnis et.
+        type: string
+    required:
+    - name
+    title: CreateGoaNamespacePayload
+    type: object
+  CreateGoaProjectPayload:
+    example:
+      identity: Dolore impedit iste beatae odit.
+    properties:
+      identity:
+        example: Dolore impedit iste beatae odit.
+        type: string
+    required:
+    - identity
+    title: CreateGoaProjectPayload
+    type: object
+  Mongo:
+    description: MongoDB ReplicaSet instance representation type (default view)
     example:
       application: Nam ut incidunt.
-      namespace: Quos nobis placeat iusto itaque.
-      user: Aliquam nemo veniam alias.
+      created_at: 2007-12-31T06:53:54-08:00
+      version: Placeat iusto itaque tempora.
+    properties:
+      application:
+        description: Application registry identifier
+        example: Nam ut incidunt.
+        type: string
+      created_at:
+        description: Date of creation
+        example: 2007-12-31T06:53:54-08:00
+        format: date-time
+        type: string
+      version:
+        description: Application version
+        example: Placeat iusto itaque tempora.
+        type: string
+    required:
+    - application
+    - version
+    - created_at
+    title: 'Mediatype identifier: application/mongo+json; view=default'
+    type: object
+  MongoPostBody:
+    example:
+      application: Dolores in hic qui sed et voluptates.
+      version: Perspiciatis iusto inventore tempora.
     properties:
       application:
         default: quay.io/samsung_cnct/mongodb-replicaset
         description: Appplication Registry Identifier
-        example: Nam ut incidunt.
+        example: Dolores in hic qui sed et voluptates.
         type: string
-      namespace:
-        description: Associated amespace identitfier
-        example: Quos nobis placeat iusto itaque.
-        type: string
-      user:
-        description: Associated user identity
-        example: Aliquam nemo veniam alias.
+      version:
+        default: v1.2.0
+        description: Appplication Version
+        example: Perspiciatis iusto inventore tempora.
         type: string
     required:
     - application
-    - user
-    - namespace
+    - version
     title: MongoPostBody
+    type: object
+  Namespace:
+    description: Users and tennants of the system are represented as the type Project
+      (default view)
+    example:
+      created_at: 1972-08-24T08:36:03-07:00
+      href: /projects/newco/ns/newco-prod
+      name: newco-prod
+    properties:
+      created_at:
+        description: Date of creation
+        example: 1972-08-24T08:36:03-07:00
+        format: date-time
+        type: string
+      href:
+        description: API href of the namespace
+        example: /projects/newco/ns/newco-prod
+        type: string
+      name:
+        description: namespace name
+        example: newco-prod
+        minLength: 2
+        type: string
+    required:
+    - name
+    - href
+    - created_at
+    title: 'Mediatype identifier: application/namespace+json; view=default'
+    type: object
+  NamespaceCollection:
+    description: NamespaceCollection is the media type for an array of Namespace (default
+      view)
+    example:
+    - created_at: 1972-08-24T08:36:03-07:00
+      href: /projects/newco/ns/newco-prod
+      name: newco-prod
+    - created_at: 1972-08-24T08:36:03-07:00
+      href: /projects/newco/ns/newco-prod
+      name: newco-prod
+    - created_at: 1972-08-24T08:36:03-07:00
+      href: /projects/newco/ns/newco-prod
+      name: newco-prod
+    items:
+      $ref: '#/definitions/Namespace'
+    title: 'Mediatype identifier: application/namespace+json; type=collection; view=default'
+    type: array
+  Project:
+    description: Users and tennants of the system are represented as the type Project
+      (default view)
+    example:
+      created_at: 2004-01-23T19:13:45-08:00
+      href: /projects/newco
+      id: newco
+    properties:
+      created_at:
+        description: Date of creation
+        example: 2004-01-23T19:13:45-08:00
+        format: date-time
+        type: string
+      href:
+        description: API href of project
+        example: /projects/newco
+        type: string
+      id:
+        description: identity of project
+        example: newco
+        minLength: 2
+        type: string
+    required:
+    - id
+    - href
+    - created_at
+    title: 'Mediatype identifier: application/project+json; view=default'
+    type: object
+  ProjectCollection:
+    description: ProjectCollection is the media type for an array of Project (default
+      view)
+    example:
+    - created_at: 2004-01-23T19:13:45-08:00
+      href: /projects/newco
+      id: newco
+    items:
+      $ref: '#/definitions/Project'
+    title: 'Mediatype identifier: application/project+json; type=collection; view=default'
+    type: array
+  error:
+    description: Error response media type (default view)
+    example:
+      code: invalid_value
+      detail: Value of ID must be an integer
+      id: 3F1FKVRR
+      meta:
+        timestamp: 1.458609e+09
+      status: "400"
+    properties:
+      code:
+        description: an application-specific error code, expressed as a string value.
+        example: invalid_value
+        type: string
+      detail:
+        description: a human-readable explanation specific to this occurrence of the
+          problem.
+        example: Value of ID must be an integer
+        type: string
+      id:
+        description: a unique identifier for this particular occurrence of the problem.
+        example: 3F1FKVRR
+        type: string
+      meta:
+        additionalProperties: true
+        description: a meta object containing non-standard meta-information about
+          the error.
+        example:
+          timestamp: 1.458609e+09
+        type: object
+      status:
+        description: the HTTP status code applicable to this problem, expressed as
+          a string value.
+        example: "400"
+        type: string
+    title: 'Mediatype identifier: application/vnd.goa.error; view=default'
     type: object
 host: localhost:8080
 info:
@@ -101,49 +268,309 @@ paths:
       schemes:
       - http
       summary: Download swagger/swagger.yaml
-  /v1/mongo/:
+  /v1/projects:
+    get:
+      description: Retrieve all projects.
+      operationId: goa_project#list
+      produces:
+      - application/project+json; type=collection
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ProjectCollection'
+      schemes:
+      - http
+      summary: list goa_project
+      tags:
+      - goa_project
     post:
-      description: Create a MongoDB for a user in a namespace
-      operationId: goa_mongo#create
+      description: Create a new user/project
+      operationId: goa_project#create
       parameters:
       - in: body
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/MongoPostBody'
+          $ref: '#/definitions/CreateGoaProjectPayload'
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "201":
+          description: The requested resource has been created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: create goa_project
+      tags:
+      - goa_project
+  /v1/projects/{project}:
+    delete:
+      operationId: goa_project#delete
+      parameters:
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: delete goa_project
+      tags:
+      - goa_project
+    get:
+      description: Retrieve project with given id.
+      operationId: goa_project#get
+      parameters:
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/vnd.goa.error
+      - application/project+json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/Project'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "404":
+          description: Not Found
       schemes:
       - http
-      summary: create goa_mongo
+      summary: get goa_project
       tags:
-      - goa_mongo
-  /v1/mongo/{user}/{ns}:
+      - goa_project
+  /v1/projects/{project}/ns:
     get:
-      description: Get the status of the specified user/namespace(ns) MongoDB Deloyment
-      operationId: goa_mongo#read
+      description: Retrieve the collection of all namespaces in the project.
+      operationId: goa_namespace#list
+      parameters:
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/namespace+json; type=collection
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/NamespaceCollection'
+      schemes:
+      - http
+      summary: list goa_namespace
+      tags:
+      - goa_namespace
+    post:
+      description: Create a namespace in the specified project
+      operationId: goa_namespace#create
+      parameters:
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/CreateGoaNamespacePayload'
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "201":
+          description: The requested resource has been created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: create goa_namespace
+      tags:
+      - goa_namespace
+  /v1/projects/{project}/ns/{ns}:
+    delete:
+      description: Delete the specified namespace (ns)
+      operationId: goa_namespace#delete
       parameters:
       - description: namespace identifier
         in: path
         name: ns
         required: true
         type: string
-      - description: user identity
+      - description: project name
         in: path
-        name: user
+        name: project
         required: true
         type: string
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: delete goa_namespace
+      tags:
+      - goa_namespace
+    get:
+      description: Get the details of the specified namespace (ns) in the project
+      operationId: goa_namespace#get
+      parameters:
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/namespace+json
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/Namespace'
       schemes:
       - http
-      summary: read goa_mongo
+      summary: get goa_namespace
+      tags:
+      - goa_namespace
+  /v1/projects/{project}/ns/{ns}/mongo:
+    delete:
+      description: Delete the MongoDB Deloyment)
+      operationId: goa_mongo#delete
+      parameters:
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: delete goa_mongo
+      tags:
+      - goa_mongo
+    get:
+      description: Get the status of the MongoDB Deloyment
+      operationId: goa_mongo#get
+      parameters:
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/mongo+json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Mongo'
+      schemes:
+      - http
+      summary: get goa_mongo
+      tags:
+      - goa_mongo
+    post:
+      description: Create a MongoDB
+      operationId: goa_mongo#create
+      parameters:
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/MongoPostBody'
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "202":
+          description: The request has been accepted for processing
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: create goa_mongo
       tags:
       - goa_mongo
 produces:
 - application/json
+- application/xml
+- application/gob
+- application/x-gob
+responses:
+  NoContent:
+    description: No Content
+  NotFound:
+    description: Not Found
+  OK:
+    description: OK
+    schema:
+      $ref: '#/definitions/Project'
 schemes:
 - http
 swagger: "2.0"

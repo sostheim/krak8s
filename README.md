@@ -19,12 +19,12 @@ As noted [above](#overview), krak8s can run as a static binary, a container imag
 $ ./krak8s --help
 Usage of ./krak8s:
       --alsologtostderr                  log to standard error as well as files
-      --health-check                     enable health checking for API servcie (default false)
+      --health-check                     enable health checking for API service (default false)
       --kubeconfig string                absolute path to the kubeconfig file
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
       --logtostderr                      log to standard error instead of files
-      --proxy string                     kubctl proxy server running at the given url
+      --proxy string                     kubectl proxy server running at the given url
       --service-name string              API Service name
       --stderrthreshold severity         logs at or above this threshold go to stderr (default 2)
   -v, --v Level                          log level for V logs
@@ -32,7 +32,7 @@ Usage of ./krak8s:
       --vmodule moduleSpec               comma-separated list of pattern=N settings for file-filtered logging
 ```
 ### Configuration Flags
-Without going in to an explanation of all of the parameters, many of which should have sufficient explanation in the help provided, of particular interest to controlling the operation of krak8s are the following:<br />
+Without going into an explanation of all of the parameters, many of which should have sufficient explanation in the help provided, of particular interest to controlling the operation of krak8s are the following:<br />
 <b>--health-check</b> - Defaults to true, but may be disabled by passing a value of false. Allows external service monitors to check the health of `krak8s` itself.<br />
 <b>--kubeconfig</b> - Use the referenced kubeconfig for credentialed access to the cluster.<br />
 <b>--proxy</b> - Use the `kubectl proxy` URL for access to the cluster. See for example [using kubectl proxy](https://kubernetes.io/docs/concepts/cluster-administration/access-cluster/#using-kubectl-proxy).<br />
@@ -40,7 +40,7 @@ Without going in to an explanation of all of the parameters, many of which shoul
 ### Environment Variables
 krak8s is configurable through command line configuration flags, and through a subset of environment variables. Any configuration value set on the command line takes precedence over the same value from the environment.
 
-The format of the environment variable for flag for flag is composed of the prefix `KRAK8S_` and the reamining text of the flag in all uppper case with all hyphens replaced by underscores.  Fore example, `--example-flag` would map to `KRAK8S_EXAMPLE_FLAG`. 
+The format of the environment variable for flag for flag is composed of the prefix `KRAK8S_` and the remaining text of the flag in all uppercase with all hyphens replaced by underscores.  Fore example, `--example-flag` would map to `KRAK8S_EXAMPLE_FLAG`. 
 
 Not every flag can be set via an environment variable.  This is due to the fact that the set of flags is an aggregate of those that belong to krak8s and 3rd party Go packages.  The set of flags that do have corresponding environment variable support are listed below:
 * --health-check

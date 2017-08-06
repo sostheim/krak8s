@@ -66,6 +66,12 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	openapi := NewGoaOpenapiController(as.server)
 	app.MountGoaOpenapiController(as.server, openapi)
 
+	project := NewGoaProjectController(as.server)
+	app.MountGoaProjectController(as.server, project)
+
+	ns := NewGoaNamespaceController(as.server)
+	app.MountGoaNamespaceController(as.server, ns)
+
 	mongo := NewGoaMongoController(as.server)
 	app.MountGoaMongoController(as.server, mongo)
 

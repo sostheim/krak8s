@@ -18,10 +18,8 @@ import (
 type mongoPostBody struct {
 	// Appplication Registry Identifier
 	Application *string `form:"application,omitempty" json:"application,omitempty" xml:"application,omitempty"`
-	// Associated amespace identitfier
-	Namespace *string `form:"namespace,omitempty" json:"namespace,omitempty" xml:"namespace,omitempty"`
-	// Associated user identity
-	User *string `form:"user,omitempty" json:"user,omitempty" xml:"user,omitempty"`
+	// Appplication Version
+	Version *string `form:"version,omitempty" json:"version,omitempty" xml:"version,omitempty"`
 }
 
 // Finalize sets the default values for mongoPostBody type instance.
@@ -30,6 +28,10 @@ func (ut *mongoPostBody) Finalize() {
 	if ut.Application == nil {
 		ut.Application = &defaultApplication
 	}
+	var defaultVersion = "v1.2.0"
+	if ut.Version == nil {
+		ut.Version = &defaultVersion
+	}
 }
 
 // Validate validates the mongoPostBody type instance.
@@ -37,11 +39,8 @@ func (ut *mongoPostBody) Validate() (err error) {
 	if ut.Application == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
 	}
-	if ut.User == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "user"))
-	}
-	if ut.Namespace == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace"))
+	if ut.Version == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
 	}
 	return
 }
@@ -52,11 +51,8 @@ func (ut *mongoPostBody) Publicize() *MongoPostBody {
 	if ut.Application != nil {
 		pub.Application = *ut.Application
 	}
-	if ut.Namespace != nil {
-		pub.Namespace = *ut.Namespace
-	}
-	if ut.User != nil {
-		pub.User = *ut.User
+	if ut.Version != nil {
+		pub.Version = *ut.Version
 	}
 	return &pub
 }
@@ -65,10 +61,8 @@ func (ut *mongoPostBody) Publicize() *MongoPostBody {
 type MongoPostBody struct {
 	// Appplication Registry Identifier
 	Application string `form:"application" json:"application" xml:"application"`
-	// Associated amespace identitfier
-	Namespace string `form:"namespace" json:"namespace" xml:"namespace"`
-	// Associated user identity
-	User string `form:"user" json:"user" xml:"user"`
+	// Appplication Version
+	Version string `form:"version" json:"version" xml:"version"`
 }
 
 // Validate validates the MongoPostBody type instance.
@@ -76,11 +70,8 @@ func (ut *MongoPostBody) Validate() (err error) {
 	if ut.Application == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
 	}
-	if ut.User == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "user"))
-	}
-	if ut.Namespace == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace"))
+	if ut.Version == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
 	}
 	return
 }

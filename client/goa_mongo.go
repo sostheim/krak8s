@@ -19,14 +19,16 @@ import (
 )
 
 // CreateGoaMongoPath computes a request path to the create action of goa_mongo.
-func CreateGoaMongoPath() string {
+func CreateGoaMongoPath(project string, ns string) string {
+	param0 := project
+	param1 := ns
 
-	return fmt.Sprintf("/v1/mongo/")
+	return fmt.Sprintf("/v1/projects/%s/ns/%s/mongo", param0, param1)
 }
 
-// Create a MongoDB for a user in a namespace
-func (c *Client) CreateGoaMongo(ctx context.Context, path string, payload *MongoPostBody) (*http.Response, error) {
-	req, err := c.NewCreateGoaMongoRequest(ctx, path, payload)
+// Create a MongoDB
+func (c *Client) CreateGoaMongo(ctx context.Context, path string, payload *MongoPostBody, contentType string) (*http.Response, error) {
+	req, err := c.NewCreateGoaMongoRequest(ctx, path, payload, contentType)
 	if err != nil {
 		return nil, err
 	}
@@ -34,9 +36,12 @@ func (c *Client) CreateGoaMongo(ctx context.Context, path string, payload *Mongo
 }
 
 // NewCreateGoaMongoRequest create the request corresponding to the create action endpoint of the goa_mongo resource.
-func (c *Client) NewCreateGoaMongoRequest(ctx context.Context, path string, payload *MongoPostBody) (*http.Request, error) {
+func (c *Client) NewCreateGoaMongoRequest(ctx context.Context, path string, payload *MongoPostBody, contentType string) (*http.Request, error) {
 	var body bytes.Buffer
-	err := c.Encoder.Encode(payload, &body, "*/*")
+	if contentType == "" {
+		contentType = "*/*" // Use default encoder
+	}
+	err := c.Encoder.Encode(payload, &body, contentType)
 	if err != nil {
 		return nil, fmt.Errorf("failed to encode body: %s", err)
 	}
@@ -50,19 +55,23 @@ func (c *Client) NewCreateGoaMongoRequest(ctx context.Context, path string, payl
 		return nil, err
 	}
 	header := req.Header
-	header.Set("Content-Type", "application/json")
+	if contentType == "*/*" {
+		header.Set("Content-Type", "application/json")
+	} else {
+		header.Set("Content-Type", contentType)
+	}
 	return req, nil
 }
 
 // DeleteGoaMongoPath computes a request path to the delete action of goa_mongo.
-func DeleteGoaMongoPath(user string, ns string) string {
-	param0 := user
+func DeleteGoaMongoPath(project string, ns string) string {
+	param0 := project
 	param1 := ns
 
-	return fmt.Sprintf("/v1/mongo/%s/%s", param0, param1)
+	return fmt.Sprintf("/v1/projects/%s/ns/%s/mongo", param0, param1)
 }
 
-// Delete the user/namespace specified MongoDB Deloyment
+// Delete the MongoDB Deloyment)
 func (c *Client) DeleteGoaMongo(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewDeleteGoaMongoRequest(ctx, path)
 	if err != nil {
@@ -78,32 +87,32 @@ func (c *Client) NewDeleteGoaMongoRequest(ctx context.Context, path string) (*ht
 		scheme = "http"
 	}
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
-	req, err := http.NewRequest("GET", u.String(), nil)
+	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		return nil, err
 	}
 	return req, nil
 }
 
-// ReadGoaMongoPath computes a request path to the read action of goa_mongo.
-func ReadGoaMongoPath(user string, ns string) string {
-	param0 := user
+// GetGoaMongoPath computes a request path to the get action of goa_mongo.
+func GetGoaMongoPath(project string, ns string) string {
+	param0 := project
 	param1 := ns
 
-	return fmt.Sprintf("/v1/mongo/%s/%s", param0, param1)
+	return fmt.Sprintf("/v1/projects/%s/ns/%s/mongo", param0, param1)
 }
 
-// Get the status of the specified user/namespace(ns) MongoDB Deloyment
-func (c *Client) ReadGoaMongo(ctx context.Context, path string) (*http.Response, error) {
-	req, err := c.NewReadGoaMongoRequest(ctx, path)
+// Get the status of the MongoDB Deloyment
+func (c *Client) GetGoaMongo(ctx context.Context, path string) (*http.Response, error) {
+	req, err := c.NewGetGoaMongoRequest(ctx, path)
 	if err != nil {
 		return nil, err
 	}
 	return c.Client.Do(ctx, req)
 }
 
-// NewReadGoaMongoRequest create the request corresponding to the read action endpoint of the goa_mongo resource.
-func (c *Client) NewReadGoaMongoRequest(ctx context.Context, path string) (*http.Request, error) {
+// NewGetGoaMongoRequest create the request corresponding to the get action endpoint of the goa_mongo resource.
+func (c *Client) NewGetGoaMongoRequest(ctx context.Context, path string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"

@@ -24,11 +24,11 @@ import (
 	"net/url"
 )
 
-// CreateGoaMongoOK runs the method Create of the given controller with the given parameters and payload.
+// CreateGoaMongoAccepted runs the method Create of the given controller with the given parameters and payload.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func CreateGoaMongoOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.GoaMongoController, payload *app.MongoPostBody) http.ResponseWriter {
+func CreateGoaMongoAccepted(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.GoaMongoController, project string, ns string, payload *app.MongoPostBody) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -60,13 +60,15 @@ func CreateGoaMongoOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/mongo/"),
+		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/mongo", project, ns),
 	}
 	req, _err := http.NewRequest("POST", u.String(), nil)
 	if _err != nil {
 		panic("invalid test " + _err.Error()) // bug
 	}
 	prms := url.Values{}
+	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -84,19 +86,96 @@ func CreateGoaMongoOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	if __err != nil {
 		t.Fatalf("controller returned %+v, logs:\n%s", __err, logBuf.String())
 	}
-	if rw.Code != 200 {
-		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
+	if rw.Code != 202 {
+		t.Errorf("invalid response status code: got %+v, expected 202", rw.Code)
 	}
 
 	// Return results
 	return rw
 }
 
-// DeleteGoaMongoOK runs the method Delete of the given controller with the given parameters.
-// It returns the response writer so it's possible to inspect the response headers.
+// CreateGoaMongoBadRequest runs the method Create of the given controller with the given parameters and payload.
+// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteGoaMongoOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.GoaMongoController, user string, ns string) http.ResponseWriter {
+func CreateGoaMongoBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.GoaMongoController, project string, ns string, payload *app.MongoPostBody) (http.ResponseWriter, error) {
+	// Setup service
+	var (
+		logBuf bytes.Buffer
+		resp   interface{}
+
+		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
+	)
+	if service == nil {
+		service = goatest.Service(&logBuf, respSetter)
+	} else {
+		logger := log.New(&logBuf, "", log.Ltime)
+		service.WithLogger(goa.NewLogger(logger))
+		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
+		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
+		service.Encoder.Register(newEncoder, "*/*")
+	}
+
+	// Validate payload
+	err := payload.Validate()
+	if err != nil {
+		e, ok := err.(goa.ServiceError)
+		if !ok {
+			panic(err) // bug
+		}
+		return nil, e
+	}
+
+	// Setup request context
+	rw := httptest.NewRecorder()
+	u := &url.URL{
+		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/mongo", project, ns),
+	}
+	req, _err := http.NewRequest("POST", u.String(), nil)
+	if _err != nil {
+		panic("invalid test " + _err.Error()) // bug
+	}
+	prms := url.Values{}
+	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	goaCtx := goa.NewContext(goa.WithAction(ctx, "GoaMongoTest"), rw, req, prms)
+	createCtx, __err := app.NewCreateGoaMongoContext(goaCtx, req, service)
+	if __err != nil {
+		panic("invalid test data " + __err.Error()) // bug
+	}
+	createCtx.Payload = payload
+
+	// Perform action
+	__err = ctrl.Create(createCtx)
+
+	// Validate response
+	if __err != nil {
+		t.Fatalf("controller returned %+v, logs:\n%s", __err, logBuf.String())
+	}
+	if rw.Code != 400 {
+		t.Errorf("invalid response status code: got %+v, expected 400", rw.Code)
+	}
+	var mt error
+	if resp != nil {
+		var _ok bool
+		mt, _ok = resp.(error)
+		if !_ok {
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
+		}
+	}
+
+	// Return results
+	return rw, mt
+}
+
+// DeleteGoaMongoBadRequest runs the method Delete of the given controller with the given parameters.
+// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
+// If ctx is nil then context.Background() is used.
+// If service is nil then a default service is created.
+func DeleteGoaMongoBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.GoaMongoController, project string, ns string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -117,14 +196,14 @@ func DeleteGoaMongoOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/mongo/%v/%v", user, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/mongo", project, ns),
 	}
-	req, err := http.NewRequest("GET", u.String(), nil)
+	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["user"] = []string{fmt.Sprintf("%v", user)}
+	prms["project"] = []string{fmt.Sprintf("%v", project)}
 	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
 	if ctx == nil {
 		ctx = context.Background()
@@ -142,19 +221,27 @@ func DeleteGoaMongoOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	if _err != nil {
 		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
 	}
-	if rw.Code != 200 {
-		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
+	if rw.Code != 400 {
+		t.Errorf("invalid response status code: got %+v, expected 400", rw.Code)
+	}
+	var mt error
+	if resp != nil {
+		var ok bool
+		mt, ok = resp.(error)
+		if !ok {
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of error", resp, resp)
+		}
 	}
 
 	// Return results
-	return rw
+	return rw, mt
 }
 
-// ReadGoaMongoOK runs the method Read of the given controller with the given parameters.
+// DeleteGoaMongoNoContent runs the method Delete of the given controller with the given parameters.
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func ReadGoaMongoOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.GoaMongoController, user string, ns string) http.ResponseWriter {
+func DeleteGoaMongoNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.GoaMongoController, project string, ns string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -175,26 +262,142 @@ func ReadGoaMongoOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/mongo/%v/%v", user, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/mongo", project, ns),
+	}
+	req, err := http.NewRequest("DELETE", u.String(), nil)
+	if err != nil {
+		panic("invalid test " + err.Error()) // bug
+	}
+	prms := url.Values{}
+	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	goaCtx := goa.NewContext(goa.WithAction(ctx, "GoaMongoTest"), rw, req, prms)
+	deleteCtx, _err := app.NewDeleteGoaMongoContext(goaCtx, req, service)
+	if _err != nil {
+		panic("invalid test data " + _err.Error()) // bug
+	}
+
+	// Perform action
+	_err = ctrl.Delete(deleteCtx)
+
+	// Validate response
+	if _err != nil {
+		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
+	}
+	if rw.Code != 204 {
+		t.Errorf("invalid response status code: got %+v, expected 204", rw.Code)
+	}
+
+	// Return results
+	return rw
+}
+
+// DeleteGoaMongoNotFound runs the method Delete of the given controller with the given parameters.
+// It returns the response writer so it's possible to inspect the response headers.
+// If ctx is nil then context.Background() is used.
+// If service is nil then a default service is created.
+func DeleteGoaMongoNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.GoaMongoController, project string, ns string) http.ResponseWriter {
+	// Setup service
+	var (
+		logBuf bytes.Buffer
+		resp   interface{}
+
+		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
+	)
+	if service == nil {
+		service = goatest.Service(&logBuf, respSetter)
+	} else {
+		logger := log.New(&logBuf, "", log.Ltime)
+		service.WithLogger(goa.NewLogger(logger))
+		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
+		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
+		service.Encoder.Register(newEncoder, "*/*")
+	}
+
+	// Setup request context
+	rw := httptest.NewRecorder()
+	u := &url.URL{
+		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/mongo", project, ns),
+	}
+	req, err := http.NewRequest("DELETE", u.String(), nil)
+	if err != nil {
+		panic("invalid test " + err.Error()) // bug
+	}
+	prms := url.Values{}
+	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	goaCtx := goa.NewContext(goa.WithAction(ctx, "GoaMongoTest"), rw, req, prms)
+	deleteCtx, _err := app.NewDeleteGoaMongoContext(goaCtx, req, service)
+	if _err != nil {
+		panic("invalid test data " + _err.Error()) // bug
+	}
+
+	// Perform action
+	_err = ctrl.Delete(deleteCtx)
+
+	// Validate response
+	if _err != nil {
+		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
+	}
+	if rw.Code != 404 {
+		t.Errorf("invalid response status code: got %+v, expected 404", rw.Code)
+	}
+
+	// Return results
+	return rw
+}
+
+// GetGoaMongoOK runs the method Get of the given controller with the given parameters.
+// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
+// If ctx is nil then context.Background() is used.
+// If service is nil then a default service is created.
+func GetGoaMongoOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.GoaMongoController, project string, ns string) (http.ResponseWriter, *app.Mongo) {
+	// Setup service
+	var (
+		logBuf bytes.Buffer
+		resp   interface{}
+
+		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
+	)
+	if service == nil {
+		service = goatest.Service(&logBuf, respSetter)
+	} else {
+		logger := log.New(&logBuf, "", log.Ltime)
+		service.WithLogger(goa.NewLogger(logger))
+		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
+		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
+		service.Encoder.Register(newEncoder, "*/*")
+	}
+
+	// Setup request context
+	rw := httptest.NewRecorder()
+	u := &url.URL{
+		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/mongo", project, ns),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["user"] = []string{fmt.Sprintf("%v", user)}
+	prms["project"] = []string{fmt.Sprintf("%v", project)}
 	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
 	goaCtx := goa.NewContext(goa.WithAction(ctx, "GoaMongoTest"), rw, req, prms)
-	readCtx, _err := app.NewReadGoaMongoContext(goaCtx, req, service)
+	getCtx, _err := app.NewGetGoaMongoContext(goaCtx, req, service)
 	if _err != nil {
 		panic("invalid test data " + _err.Error()) // bug
 	}
 
 	// Perform action
-	_err = ctrl.Read(readCtx)
+	_err = ctrl.Get(getCtx)
 
 	// Validate response
 	if _err != nil {
@@ -203,7 +406,19 @@ func ReadGoaMongoOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 	if rw.Code != 200 {
 		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
 	}
+	var mt *app.Mongo
+	if resp != nil {
+		var ok bool
+		mt, ok = resp.(*app.Mongo)
+		if !ok {
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.Mongo", resp, resp)
+		}
+		_err = mt.Validate()
+		if _err != nil {
+			t.Errorf("invalid response media type: %s", _err)
+		}
+	}
 
 	// Return results
-	return rw
+	return rw, mt
 }

@@ -20,7 +20,11 @@ import (
 func initService(service *goa.Service) {
 	// Setup encoders and decoders
 	service.Encoder.Register(goa.NewJSONEncoder, "application/json")
+	service.Encoder.Register(goa.NewGobEncoder, "application/gob", "application/x-gob")
+	service.Encoder.Register(goa.NewXMLEncoder, "application/xml")
 	service.Decoder.Register(goa.NewJSONDecoder, "application/json")
+	service.Decoder.Register(goa.NewGobDecoder, "application/gob", "application/x-gob")
+	service.Decoder.Register(goa.NewXMLDecoder, "application/xml")
 
 	// Setup default encoder and decoder
 	service.Encoder.Register(goa.NewJSONEncoder, "*/*")
@@ -32,7 +36,7 @@ type GoaMongoController interface {
 	goa.Muxer
 	Create(*CreateGoaMongoContext) error
 	Delete(*DeleteGoaMongoContext) error
-	Read(*ReadGoaMongoContext) error
+	Get(*GetGoaMongoContext) error
 }
 
 // MountGoaMongoController "mounts" a GoaMongo resource controller on the given service.
@@ -58,8 +62,8 @@ func MountGoaMongoController(service *goa.Service, ctrl GoaMongoController) {
 		}
 		return ctrl.Create(rctx)
 	}
-	service.Mux.Handle("POST", "/v1/mongo/", ctrl.MuxHandler("create", h, unmarshalCreateGoaMongoPayload))
-	service.LogInfo("mount", "ctrl", "GoaMongo", "action", "Create", "route", "POST /v1/mongo/")
+	service.Mux.Handle("POST", "/v1/projects/:project/ns/:ns/mongo", ctrl.MuxHandler("create", h, unmarshalCreateGoaMongoPayload))
+	service.LogInfo("mount", "ctrl", "GoaMongo", "action", "Create", "route", "POST /v1/projects/:project/ns/:ns/mongo")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -73,8 +77,8 @@ func MountGoaMongoController(service *goa.Service, ctrl GoaMongoController) {
 		}
 		return ctrl.Delete(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/mongo/:user/:ns", ctrl.MuxHandler("delete", h, nil))
-	service.LogInfo("mount", "ctrl", "GoaMongo", "action", "Delete", "route", "GET /v1/mongo/:user/:ns")
+	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns/mongo", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaMongo", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns/mongo")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -82,14 +86,14 @@ func MountGoaMongoController(service *goa.Service, ctrl GoaMongoController) {
 			return err
 		}
 		// Build the context
-		rctx, err := NewReadGoaMongoContext(ctx, req, service)
+		rctx, err := NewGetGoaMongoContext(ctx, req, service)
 		if err != nil {
 			return err
 		}
-		return ctrl.Read(rctx)
+		return ctrl.Get(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/mongo/:user/:ns", ctrl.MuxHandler("read", h, nil))
-	service.LogInfo("mount", "ctrl", "GoaMongo", "action", "Read", "route", "GET /v1/mongo/:user/:ns")
+	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/mongo", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaMongo", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns/mongo")
 }
 
 // unmarshalCreateGoaMongoPayload unmarshals the request body into the context request data Payload field.
@@ -99,6 +103,102 @@ func unmarshalCreateGoaMongoPayload(ctx context.Context, service *goa.Service, r
 		return err
 	}
 	payload.Finalize()
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
+// GoaNamespaceController is the controller interface for the GoaNamespace actions.
+type GoaNamespaceController interface {
+	goa.Muxer
+	Create(*CreateGoaNamespaceContext) error
+	Delete(*DeleteGoaNamespaceContext) error
+	Get(*GetGoaNamespaceContext) error
+	List(*ListGoaNamespaceContext) error
+}
+
+// MountGoaNamespaceController "mounts" a GoaNamespace resource controller on the given service.
+func MountGoaNamespaceController(service *goa.Service, ctrl GoaNamespaceController) {
+	initService(service)
+	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewCreateGoaNamespaceContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*CreateGoaNamespacePayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Create(rctx)
+	}
+	service.Mux.Handle("POST", "/v1/projects/:project/ns", ctrl.MuxHandler("create", h, unmarshalCreateGoaNamespacePayload))
+	service.LogInfo("mount", "ctrl", "GoaNamespace", "action", "Create", "route", "POST /v1/projects/:project/ns")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeleteGoaNamespaceContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Delete(rctx)
+	}
+	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaNamespace", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewGetGoaNamespaceContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Get(rctx)
+	}
+	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaNamespace", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewListGoaNamespaceContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.List(rctx)
+	}
+	service.Mux.Handle("GET", "/v1/projects/:project/ns", ctrl.MuxHandler("list", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaNamespace", "action", "List", "route", "GET /v1/projects/:project/ns")
+}
+
+// unmarshalCreateGoaNamespacePayload unmarshals the request body into the context request data Payload field.
+func unmarshalCreateGoaNamespacePayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &createGoaNamespacePayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
 	if err := payload.Validate(); err != nil {
 		// Initialize payload with private data structure so it can be logged
 		goa.ContextRequest(ctx).Payload = payload
@@ -130,6 +230,102 @@ func MountGoaOpenapiController(service *goa.Service, ctrl GoaOpenapiController) 
 	h = ctrl.FileHandler("/openapi.yaml", "swagger/swagger.yaml")
 	service.Mux.Handle("GET", "/openapi.yaml", ctrl.MuxHandler("serve", h, nil))
 	service.LogInfo("mount", "ctrl", "GoaOpenapi", "files", "swagger/swagger.yaml", "route", "GET /openapi.yaml")
+}
+
+// GoaProjectController is the controller interface for the GoaProject actions.
+type GoaProjectController interface {
+	goa.Muxer
+	Create(*CreateGoaProjectContext) error
+	Delete(*DeleteGoaProjectContext) error
+	Get(*GetGoaProjectContext) error
+	List(*ListGoaProjectContext) error
+}
+
+// MountGoaProjectController "mounts" a GoaProject resource controller on the given service.
+func MountGoaProjectController(service *goa.Service, ctrl GoaProjectController) {
+	initService(service)
+	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewCreateGoaProjectContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*CreateGoaProjectPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
+		return ctrl.Create(rctx)
+	}
+	service.Mux.Handle("POST", "/v1/projects", ctrl.MuxHandler("create", h, unmarshalCreateGoaProjectPayload))
+	service.LogInfo("mount", "ctrl", "GoaProject", "action", "Create", "route", "POST /v1/projects")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewDeleteGoaProjectContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Delete(rctx)
+	}
+	service.Mux.Handle("DELETE", "/v1/projects/:project", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaProject", "action", "Delete", "route", "DELETE /v1/projects/:project")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewGetGoaProjectContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Get(rctx)
+	}
+	service.Mux.Handle("GET", "/v1/projects/:project", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaProject", "action", "Get", "route", "GET /v1/projects/:project")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewListGoaProjectContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.List(rctx)
+	}
+	service.Mux.Handle("GET", "/v1/projects", ctrl.MuxHandler("list", h, nil))
+	service.LogInfo("mount", "ctrl", "GoaProject", "action", "List", "route", "GET /v1/projects")
+}
+
+// unmarshalCreateGoaProjectPayload unmarshals the request body into the context request data Payload field.
+func unmarshalCreateGoaProjectPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &createGoaProjectPayload{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
 }
 
 // GoaSwaggerController is the controller interface for the GoaSwagger actions.

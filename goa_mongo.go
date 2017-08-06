@@ -35,12 +35,13 @@ func (c *GoaMongoController) Delete(ctx *app.DeleteGoaMongoContext) error {
 	return nil
 }
 
-// Read runs the read action.
-func (c *GoaMongoController) Read(ctx *app.ReadGoaMongoContext) error {
-	// GoaMongoController_Read: start_implement
+// Get runs the get action.
+func (c *GoaMongoController) Get(ctx *app.GetGoaMongoContext) error {
+	// GoaMongoController_Get: start_implement
 
 	// Put your logic here
 
-	// GoaMongoController_Read: end_implement
-	return nil
+	// GoaMongoController_Get: end_implement
+	res := &app.Mongo{}
+	return ctx.OK(res)
 }
