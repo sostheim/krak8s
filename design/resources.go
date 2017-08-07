@@ -192,7 +192,7 @@ var _ = Resource("cluster", func() {
 
 	Action("get", func() {
 		Routing(GET(""))
-		Description("Get the status of the cluster resoruces")
+		Description("Get the status of the cluster resources")
 		Response(OK, Cluster)
 	})
 
