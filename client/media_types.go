@@ -17,16 +17,16 @@ import (
 	"unicode/utf8"
 )
 
-// Helm chart representation type (default view)
+// Application representation type (default view)
 //
-// Identifier: application/chart+json; view=default
-type Chart struct {
-	// Chart name
+// Identifier: application/app+json; view=default
+type App struct {
+	// Application name
 	Name   string `form:"name" json:"name" xml:"name"`
 	Status *struct {
 		// Last deployment time
 		DeployedAt time.Time `form:"deployed_at" json:"deployed_at" xml:"deployed_at"`
-		// Additional chart notes (if provided)
+		// Application specific notification / statuses / notes (if any)
 		Notes *string `form:"notes,omitempty" json:"notes,omitempty" xml:"notes,omitempty"`
 		// Deployment state
 		State string `form:"state" json:"state" xml:"state"`
@@ -35,8 +35,8 @@ type Chart struct {
 	Version string `form:"version" json:"version" xml:"version"`
 }
 
-// Validate validates the Chart media type instance.
-func (mt *Chart) Validate() (err error) {
+// Validate validates the App media type instance.
+func (mt *App) Validate() (err error) {
 	if mt.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
@@ -58,20 +58,20 @@ func (mt *Chart) Validate() (err error) {
 	return
 }
 
-// DecodeChart decodes the Chart instance encoded in resp body.
-func (c *Client) DecodeChart(resp *http.Response) (*Chart, error) {
-	var decoded Chart
+// DecodeApp decodes the App instance encoded in resp body.
+func (c *Client) DecodeApp(resp *http.Response) (*App, error) {
+	var decoded App
 	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
 	return &decoded, err
 }
 
-// ChartCollection is the media type for an array of Chart (default view)
+// AppCollection is the media type for an array of App (default view)
 //
-// Identifier: application/chart+json; type=collection; view=default
-type ChartCollection []*Chart
+// Identifier: application/app+json; type=collection; view=default
+type AppCollection []*App
 
-// Validate validates the ChartCollection media type instance.
-func (mt ChartCollection) Validate() (err error) {
+// Validate validates the AppCollection media type instance.
+func (mt AppCollection) Validate() (err error) {
 	for _, e := range mt {
 		if e != nil {
 			if err2 := e.Validate(); err2 != nil {
@@ -82,9 +82,9 @@ func (mt ChartCollection) Validate() (err error) {
 	return
 }
 
-// DecodeChartCollection decodes the ChartCollection instance encoded in resp body.
-func (c *Client) DecodeChartCollection(resp *http.Response) (ChartCollection, error) {
-	var decoded ChartCollection
+// DecodeAppCollection decodes the AppCollection instance encoded in resp body.
+func (c *Client) DecodeAppCollection(resp *http.Response) (AppCollection, error) {
+	var decoded AppCollection
 	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
 	return decoded, err
 }

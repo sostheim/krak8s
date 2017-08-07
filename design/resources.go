@@ -106,68 +106,37 @@ var _ = Resource("namespace", func() {
 	})
 })
 
-var _ = Resource("mongo", func() {
-	Description("Manage {create, delete}, and get namespaces's MongoDB deployment")
+var _ = Resource("application", func() {
+	Description("Manage {create, delete}, and get namespaces's Application(s)")
 
 	Parent("namespace")
-	BasePath("mongo")
+	BasePath("app")
 
 	CanonicalActionName("get")
 
 	Action("create", func() {
 		Routing(POST(""))
-		Description("Create a MongoDB")
-		Payload(MongoPostBody)
-		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/ns/[a-z,A-Z,0-9]+/mongo")
-		Response(BadRequest, ErrorMedia)
-	})
-
-	Action("get", func() {
-		Routing(GET(""))
-		Description("Get the status of the MongoDB Deloyment")
-		Response(OK, Mongo)
-	})
-
-	Action("delete", func() {
-		Routing(DELETE(""))
-		Description("Delete the MongoDB Deloyment")
-		Response(NoContent)
-		Response(NotFound)
-		Response(BadRequest, ErrorMedia)
-	})
-})
-
-var _ = Resource("chart", func() {
-	Description("Manage {create, delete}, and get namespaces's Helm Chart deployment(s)")
-
-	Parent("namespace")
-	BasePath("chart")
-
-	CanonicalActionName("get")
-
-	Action("create", func() {
-		Routing(POST(""))
-		Description("Create a Helm Chart deployment")
-		Payload(ChartPostBody)
-		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/ns/[a-z,A-Z,0-9]+/charts[a-z,A-Z,0-9]+")
+		Description("Create an application deployment")
+		Payload(ApplicationPostBody)
+		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/ns/[a-z,A-Z,0-9]+/app/[a-z,A-Z,0-9]+")
 		Response(BadRequest, ErrorMedia)
 	})
 
 	Action("list", func() {
 		Routing(GET(""))
-		Description("Retrieve the collection of all Helm Charts in the namespace.")
-		Response(OK, CollectionOf(Chart))
+		Description("Retrieve the collection of all applications in the namespace.")
+		Response(OK, CollectionOf(Application))
 	})
 
 	Action("get", func() {
 		Routing(GET("/:chart"))
-		Description("Get the status of the specified Helm Chart deployment")
-		Response(OK, Chart)
+		Description("Get the status of the specified application")
+		Response(OK, Application)
 	})
 
 	Action("delete", func() {
 		Routing(DELETE("/:chart"))
-		Description("Delete the specified Helm Chart deloyment")
+		Description("Delete the specified application")
 		Response(NoContent)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)

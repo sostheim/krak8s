@@ -14,20 +14,20 @@ import (
 	"github.com/goadesign/goa"
 )
 
-// chartPostBody user type.
-type chartPostBody struct {
-	// Chart name
+// applicationPostBody user type.
+type applicationPostBody struct {
+	// Application name
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
-	// Chart's registry
+	// Application's registry
 	Registry *string `form:"registry,omitempty" json:"registry,omitempty" xml:"registry,omitempty"`
-	// Chart config --set argument string
+	// Application config --set argument string
 	Set *string `form:"set,omitempty" json:"set,omitempty" xml:"set,omitempty"`
-	// Chart version string
+	// Application version string
 	Version *string `form:"version,omitempty" json:"version,omitempty" xml:"version,omitempty"`
 }
 
-// Validate validates the chartPostBody type instance.
-func (ut *chartPostBody) Validate() (err error) {
+// Validate validates the applicationPostBody type instance.
+func (ut *applicationPostBody) Validate() (err error) {
 	if ut.Name == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
@@ -37,9 +37,9 @@ func (ut *chartPostBody) Validate() (err error) {
 	return
 }
 
-// Publicize creates ChartPostBody from chartPostBody
-func (ut *chartPostBody) Publicize() *ChartPostBody {
-	var pub ChartPostBody
+// Publicize creates ApplicationPostBody from applicationPostBody
+func (ut *applicationPostBody) Publicize() *ApplicationPostBody {
+	var pub ApplicationPostBody
 	if ut.Name != nil {
 		pub.Name = *ut.Name
 	}
@@ -55,20 +55,20 @@ func (ut *chartPostBody) Publicize() *ChartPostBody {
 	return &pub
 }
 
-// ChartPostBody user type.
-type ChartPostBody struct {
-	// Chart name
+// ApplicationPostBody user type.
+type ApplicationPostBody struct {
+	// Application name
 	Name string `form:"name" json:"name" xml:"name"`
-	// Chart's registry
+	// Application's registry
 	Registry *string `form:"registry,omitempty" json:"registry,omitempty" xml:"registry,omitempty"`
-	// Chart config --set argument string
+	// Application config --set argument string
 	Set *string `form:"set,omitempty" json:"set,omitempty" xml:"set,omitempty"`
-	// Chart version string
+	// Application version string
 	Version string `form:"version" json:"version" xml:"version"`
 }
 
-// Validate validates the ChartPostBody type instance.
-func (ut *ChartPostBody) Validate() (err error) {
+// Validate validates the ApplicationPostBody type instance.
+func (ut *ApplicationPostBody) Validate() (err error) {
 	if ut.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
@@ -98,8 +98,8 @@ func (ut *cluterPostBody) Validate() (err error) {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "nodePoolSize"))
 	}
 	if ut.NodePoolSize != nil {
-		if *ut.NodePoolSize < 1 {
-			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, *ut.NodePoolSize, 1, true))
+		if *ut.NodePoolSize < 3 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, *ut.NodePoolSize, 3, true))
 		}
 	}
 	if ut.NodePoolSize != nil {
@@ -127,8 +127,8 @@ type CluterPostBody struct {
 
 // Validate validates the CluterPostBody type instance.
 func (ut *CluterPostBody) Validate() (err error) {
-	if ut.NodePoolSize < 1 {
-		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, ut.NodePoolSize, 1, true))
+	if ut.NodePoolSize < 3 {
+		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, ut.NodePoolSize, 3, true))
 	}
 	if ut.NodePoolSize > 11 {
 		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, ut.NodePoolSize, 11, false))

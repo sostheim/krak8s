@@ -95,28 +95,28 @@ var Mongo = MediaType("application/mongo+json", func() {
 	})
 })
 
-// ChartPostBody is the HTTP POST Request body type.
-var ChartPostBody = Type("ChartPostBody", func() {
+// ApplicationPostBody is the HTTP POST Request body type.
+var ApplicationPostBody = Type("ApplicationPostBody", func() {
 	Attribute("name", String, func() {
-		Description("Chart name")
+		Description("Application name")
 	})
 	Attribute("version", String, func() {
-		Description("Chart version string")
+		Description("Application version string")
 	})
 	Attribute("set", String, func() {
-		Description("Chart config --set argument string")
+		Description("Application config --set argument string")
 	})
 	Attribute("registry", String, func() {
-		Description("Chart's registry")
+		Description("Application's registry")
 	})
 	Required("name", "version")
 })
 
-// Chart is the Helm Chart resource's MediaType.
-var Chart = MediaType("application/chart+json", func() {
-	Description("Helm chart representation type")
+// Application is the application resource's MediaType.
+var Application = MediaType("application/app+json", func() {
+	Description("Application representation type")
 	Attributes(func() {
-		Attribute("name", String, "Chart name")
+		Attribute("name", String, "Application name")
 		Attribute("version", String, "Application version")
 		Attribute("config", String, "Configuration value settings string")
 		Attribute("registry", String, "Application registry identifier")
@@ -126,7 +126,7 @@ var Chart = MediaType("application/chart+json", func() {
 				Description("Deployment state")
 				Enum("UNKNOWN", "DEPLOYED", "DELETED", "SUPERSEDED", "FAILED", "DELETING")
 			})
-			Attribute("notes", String, "Additional chart notes (if provided)")
+			Attribute("notes", String, "Application specific notification / statuses / notes (if any)")
 			Required("deployed_at", "state")
 		})
 		Required("name", "version", "status")
@@ -143,7 +143,7 @@ var Chart = MediaType("application/chart+json", func() {
 var ClusterPostBody = Type("CluterPostBody", func() {
 	Attribute("nodePoolSize", Integer, func() {
 		Description("The number of real nodes in the pool")
-		Minimum(1)
+		Minimum(3)
 		Maximum(11)
 		Default(3)
 	})

@@ -16,25 +16,25 @@ import (
 	"net/http"
 )
 
-// CreateChartContext provides the chart create action context.
-type CreateChartContext struct {
+// CreateApplicationContext provides the application create action context.
+type CreateApplicationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
 	Ns      string
 	Project string
-	Payload *ChartPostBody
+	Payload *ApplicationPostBody
 }
 
-// NewCreateChartContext parses the incoming request URL and body, performs validations and creates the
-// context used by the chart controller create action.
-func NewCreateChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateChartContext, error) {
+// NewCreateApplicationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the application controller create action.
+func NewCreateApplicationContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateApplicationContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := CreateChartContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := CreateApplicationContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
 		rawNs := paramNs[0]
@@ -49,19 +49,19 @@ func NewCreateChartContext(ctx context.Context, r *http.Request, service *goa.Se
 }
 
 // Accepted sends a HTTP response with status code 202.
-func (ctx *CreateChartContext) Accepted() error {
+func (ctx *CreateApplicationContext) Accepted() error {
 	ctx.ResponseData.WriteHeader(202)
 	return nil
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *CreateChartContext) BadRequest(r error) error {
+func (ctx *CreateApplicationContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
-// DeleteChartContext provides the chart delete action context.
-type DeleteChartContext struct {
+// DeleteApplicationContext provides the application delete action context.
+type DeleteApplicationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -70,15 +70,15 @@ type DeleteChartContext struct {
 	Project string
 }
 
-// NewDeleteChartContext parses the incoming request URL and body, performs validations and creates the
-// context used by the chart controller delete action.
-func NewDeleteChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteChartContext, error) {
+// NewDeleteApplicationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the application controller delete action.
+func NewDeleteApplicationContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteApplicationContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := DeleteChartContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := DeleteApplicationContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramChart := req.Params["chart"]
 	if len(paramChart) > 0 {
 		rawChart := paramChart[0]
@@ -98,25 +98,25 @@ func NewDeleteChartContext(ctx context.Context, r *http.Request, service *goa.Se
 }
 
 // NoContent sends a HTTP response with status code 204.
-func (ctx *DeleteChartContext) NoContent() error {
+func (ctx *DeleteApplicationContext) NoContent() error {
 	ctx.ResponseData.WriteHeader(204)
 	return nil
 }
 
 // BadRequest sends a HTTP response with status code 400.
-func (ctx *DeleteChartContext) BadRequest(r error) error {
+func (ctx *DeleteApplicationContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
 // NotFound sends a HTTP response with status code 404.
-func (ctx *DeleteChartContext) NotFound() error {
+func (ctx *DeleteApplicationContext) NotFound() error {
 	ctx.ResponseData.WriteHeader(404)
 	return nil
 }
 
-// GetChartContext provides the chart get action context.
-type GetChartContext struct {
+// GetApplicationContext provides the application get action context.
+type GetApplicationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -125,15 +125,15 @@ type GetChartContext struct {
 	Project string
 }
 
-// NewGetChartContext parses the incoming request URL and body, performs validations and creates the
-// context used by the chart controller get action.
-func NewGetChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetChartContext, error) {
+// NewGetApplicationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the application controller get action.
+func NewGetApplicationContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetApplicationContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := GetChartContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := GetApplicationContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramChart := req.Params["chart"]
 	if len(paramChart) > 0 {
 		rawChart := paramChart[0]
@@ -153,13 +153,13 @@ func NewGetChartContext(ctx context.Context, r *http.Request, service *goa.Servi
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *GetChartContext) OK(r *Chart) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/chart+json")
+func (ctx *GetApplicationContext) OK(r *App) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/app+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
-// ListChartContext provides the chart list action context.
-type ListChartContext struct {
+// ListApplicationContext provides the application list action context.
+type ListApplicationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
@@ -167,15 +167,15 @@ type ListChartContext struct {
 	Project string
 }
 
-// NewListChartContext parses the incoming request URL and body, performs validations and creates the
-// context used by the chart controller list action.
-func NewListChartContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListChartContext, error) {
+// NewListApplicationContext parses the incoming request URL and body, performs validations and creates the
+// context used by the application controller list action.
+func NewListApplicationContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListApplicationContext, error) {
 	var err error
 	resp := goa.ContextResponse(ctx)
 	resp.Service = service
 	req := goa.ContextRequest(ctx)
 	req.Request = r
-	rctx := ListChartContext{Context: ctx, ResponseData: resp, RequestData: req}
+	rctx := ListApplicationContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
 		rawNs := paramNs[0]
@@ -190,10 +190,10 @@ func NewListChartContext(ctx context.Context, r *http.Request, service *goa.Serv
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *ListChartContext) OK(r ChartCollection) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/chart+json; type=collection")
+func (ctx *ListApplicationContext) OK(r AppCollection) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/app+json; type=collection")
 	if r == nil {
-		r = ChartCollection{}
+		r = AppCollection{}
 	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
@@ -325,136 +325,6 @@ func NewGetClusterContext(ctx context.Context, r *http.Request, service *goa.Ser
 // OK sends a HTTP response with status code 200.
 func (ctx *GetClusterContext) OK(r *Cluster) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/cluster+json")
-	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
-}
-
-// CreateMongoContext provides the mongo create action context.
-type CreateMongoContext struct {
-	context.Context
-	*goa.ResponseData
-	*goa.RequestData
-	Ns      string
-	Project string
-	Payload *MongoPostBody
-}
-
-// NewCreateMongoContext parses the incoming request URL and body, performs validations and creates the
-// context used by the mongo controller create action.
-func NewCreateMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateMongoContext, error) {
-	var err error
-	resp := goa.ContextResponse(ctx)
-	resp.Service = service
-	req := goa.ContextRequest(ctx)
-	req.Request = r
-	rctx := CreateMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
-	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
-	}
-	return &rctx, err
-}
-
-// Accepted sends a HTTP response with status code 202.
-func (ctx *CreateMongoContext) Accepted() error {
-	ctx.ResponseData.WriteHeader(202)
-	return nil
-}
-
-// BadRequest sends a HTTP response with status code 400.
-func (ctx *CreateMongoContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
-	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
-}
-
-// DeleteMongoContext provides the mongo delete action context.
-type DeleteMongoContext struct {
-	context.Context
-	*goa.ResponseData
-	*goa.RequestData
-	Ns      string
-	Project string
-}
-
-// NewDeleteMongoContext parses the incoming request URL and body, performs validations and creates the
-// context used by the mongo controller delete action.
-func NewDeleteMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteMongoContext, error) {
-	var err error
-	resp := goa.ContextResponse(ctx)
-	resp.Service = service
-	req := goa.ContextRequest(ctx)
-	req.Request = r
-	rctx := DeleteMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
-	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
-	}
-	return &rctx, err
-}
-
-// NoContent sends a HTTP response with status code 204.
-func (ctx *DeleteMongoContext) NoContent() error {
-	ctx.ResponseData.WriteHeader(204)
-	return nil
-}
-
-// BadRequest sends a HTTP response with status code 400.
-func (ctx *DeleteMongoContext) BadRequest(r error) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
-	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
-}
-
-// NotFound sends a HTTP response with status code 404.
-func (ctx *DeleteMongoContext) NotFound() error {
-	ctx.ResponseData.WriteHeader(404)
-	return nil
-}
-
-// GetMongoContext provides the mongo get action context.
-type GetMongoContext struct {
-	context.Context
-	*goa.ResponseData
-	*goa.RequestData
-	Ns      string
-	Project string
-}
-
-// NewGetMongoContext parses the incoming request URL and body, performs validations and creates the
-// context used by the mongo controller get action.
-func NewGetMongoContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetMongoContext, error) {
-	var err error
-	resp := goa.ContextResponse(ctx)
-	resp.Service = service
-	req := goa.ContextRequest(ctx)
-	req.Request = r
-	rctx := GetMongoContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
-	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
-	}
-	return &rctx, err
-}
-
-// OK sends a HTTP response with status code 200.
-func (ctx *GetMongoContext) OK(r *Mongo) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/mongo+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 

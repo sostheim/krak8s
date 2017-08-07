@@ -68,11 +68,8 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	ns := NewNamespaceController(as.server)
 	app.MountNamespaceController(as.server, ns)
 
-	mongo := NewMongoController(as.server)
-	app.MountMongoController(as.server, mongo)
-
-	chart := NewChartController(as.server)
-	app.MountChartController(as.server, chart)
+	application := NewApplicationController(as.server)
+	app.MountApplicationController(as.server, application)
 
 	cluster := NewClusterController(as.server)
 	app.MountClusterController(as.server, cluster)

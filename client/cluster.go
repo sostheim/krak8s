@@ -102,7 +102,7 @@ func GetClusterPath(project string, ns string) string {
 	return fmt.Sprintf("/v1/projects/%s/ns/%s/cluster", param0, param1)
 }
 
-// Get the status of the cluster resoruces
+// Get the status of the cluster resources
 func (c *Client) GetCluster(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewGetClusterRequest(ctx, path)
 	if err != nil {

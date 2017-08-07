@@ -31,17 +31,17 @@ func initService(service *goa.Service) {
 	service.Decoder.Register(goa.NewJSONDecoder, "*/*")
 }
 
-// ChartController is the controller interface for the Chart actions.
-type ChartController interface {
+// ApplicationController is the controller interface for the Application actions.
+type ApplicationController interface {
 	goa.Muxer
-	Create(*CreateChartContext) error
-	Delete(*DeleteChartContext) error
-	Get(*GetChartContext) error
-	List(*ListChartContext) error
+	Create(*CreateApplicationContext) error
+	Delete(*DeleteApplicationContext) error
+	Get(*GetApplicationContext) error
+	List(*ListApplicationContext) error
 }
 
-// MountChartController "mounts" a Chart resource controller on the given service.
-func MountChartController(service *goa.Service, ctrl ChartController) {
+// MountApplicationController "mounts" a Application resource controller on the given service.
+func MountApplicationController(service *goa.Service, ctrl ApplicationController) {
 	initService(service)
 	var h goa.Handler
 
@@ -51,20 +51,20 @@ func MountChartController(service *goa.Service, ctrl ChartController) {
 			return err
 		}
 		// Build the context
-		rctx, err := NewCreateChartContext(ctx, req, service)
+		rctx, err := NewCreateApplicationContext(ctx, req, service)
 		if err != nil {
 			return err
 		}
 		// Build the payload
 		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*ChartPostBody)
+			rctx.Payload = rawPayload.(*ApplicationPostBody)
 		} else {
 			return goa.MissingPayloadError()
 		}
 		return ctrl.Create(rctx)
 	}
-	service.Mux.Handle("POST", "/v1/projects/:project/ns/:ns/chart", ctrl.MuxHandler("create", h, unmarshalCreateChartPayload))
-	service.LogInfo("mount", "ctrl", "Chart", "action", "Create", "route", "POST /v1/projects/:project/ns/:ns/chart")
+	service.Mux.Handle("POST", "/v1/projects/:project/ns/:ns/app", ctrl.MuxHandler("create", h, unmarshalCreateApplicationPayload))
+	service.LogInfo("mount", "ctrl", "Application", "action", "Create", "route", "POST /v1/projects/:project/ns/:ns/app")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -72,14 +72,14 @@ func MountChartController(service *goa.Service, ctrl ChartController) {
 			return err
 		}
 		// Build the context
-		rctx, err := NewDeleteChartContext(ctx, req, service)
+		rctx, err := NewDeleteApplicationContext(ctx, req, service)
 		if err != nil {
 			return err
 		}
 		return ctrl.Delete(rctx)
 	}
-	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns/chart/:chart", ctrl.MuxHandler("delete", h, nil))
-	service.LogInfo("mount", "ctrl", "Chart", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns/chart/:chart")
+	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns/app/:chart", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Application", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns/app/:chart")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -87,14 +87,14 @@ func MountChartController(service *goa.Service, ctrl ChartController) {
 			return err
 		}
 		// Build the context
-		rctx, err := NewGetChartContext(ctx, req, service)
+		rctx, err := NewGetApplicationContext(ctx, req, service)
 		if err != nil {
 			return err
 		}
 		return ctrl.Get(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/chart/:chart", ctrl.MuxHandler("get", h, nil))
-	service.LogInfo("mount", "ctrl", "Chart", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns/chart/:chart")
+	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/app/:chart", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "Application", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns/app/:chart")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -102,19 +102,19 @@ func MountChartController(service *goa.Service, ctrl ChartController) {
 			return err
 		}
 		// Build the context
-		rctx, err := NewListChartContext(ctx, req, service)
+		rctx, err := NewListApplicationContext(ctx, req, service)
 		if err != nil {
 			return err
 		}
 		return ctrl.List(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/chart", ctrl.MuxHandler("list", h, nil))
-	service.LogInfo("mount", "ctrl", "Chart", "action", "List", "route", "GET /v1/projects/:project/ns/:ns/chart")
+	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/app", ctrl.MuxHandler("list", h, nil))
+	service.LogInfo("mount", "ctrl", "Application", "action", "List", "route", "GET /v1/projects/:project/ns/:ns/app")
 }
 
-// unmarshalCreateChartPayload unmarshals the request body into the context request data Payload field.
-func unmarshalCreateChartPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &chartPostBody{}
+// unmarshalCreateApplicationPayload unmarshals the request body into the context request data Payload field.
+func unmarshalCreateApplicationPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &applicationPostBody{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}
@@ -195,87 +195,6 @@ func MountClusterController(service *goa.Service, ctrl ClusterController) {
 // unmarshalCreateClusterPayload unmarshals the request body into the context request data Payload field.
 func unmarshalCreateClusterPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
 	payload := &cluterPostBody{}
-	if err := service.DecodeRequest(req, payload); err != nil {
-		return err
-	}
-	payload.Finalize()
-	if err := payload.Validate(); err != nil {
-		// Initialize payload with private data structure so it can be logged
-		goa.ContextRequest(ctx).Payload = payload
-		return err
-	}
-	goa.ContextRequest(ctx).Payload = payload.Publicize()
-	return nil
-}
-
-// MongoController is the controller interface for the Mongo actions.
-type MongoController interface {
-	goa.Muxer
-	Create(*CreateMongoContext) error
-	Delete(*DeleteMongoContext) error
-	Get(*GetMongoContext) error
-}
-
-// MountMongoController "mounts" a Mongo resource controller on the given service.
-func MountMongoController(service *goa.Service, ctrl MongoController) {
-	initService(service)
-	var h goa.Handler
-
-	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		// Check if there was an error loading the request
-		if err := goa.ContextError(ctx); err != nil {
-			return err
-		}
-		// Build the context
-		rctx, err := NewCreateMongoContext(ctx, req, service)
-		if err != nil {
-			return err
-		}
-		// Build the payload
-		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*MongoPostBody)
-		} else {
-			return goa.MissingPayloadError()
-		}
-		return ctrl.Create(rctx)
-	}
-	service.Mux.Handle("POST", "/v1/projects/:project/ns/:ns/mongo", ctrl.MuxHandler("create", h, unmarshalCreateMongoPayload))
-	service.LogInfo("mount", "ctrl", "Mongo", "action", "Create", "route", "POST /v1/projects/:project/ns/:ns/mongo")
-
-	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		// Check if there was an error loading the request
-		if err := goa.ContextError(ctx); err != nil {
-			return err
-		}
-		// Build the context
-		rctx, err := NewDeleteMongoContext(ctx, req, service)
-		if err != nil {
-			return err
-		}
-		return ctrl.Delete(rctx)
-	}
-	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns/mongo", ctrl.MuxHandler("delete", h, nil))
-	service.LogInfo("mount", "ctrl", "Mongo", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns/mongo")
-
-	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		// Check if there was an error loading the request
-		if err := goa.ContextError(ctx); err != nil {
-			return err
-		}
-		// Build the context
-		rctx, err := NewGetMongoContext(ctx, req, service)
-		if err != nil {
-			return err
-		}
-		return ctrl.Get(rctx)
-	}
-	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/mongo", ctrl.MuxHandler("get", h, nil))
-	service.LogInfo("mount", "ctrl", "Mongo", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns/mongo")
-}
-
-// unmarshalCreateMongoPayload unmarshals the request body into the context request data Payload field.
-func unmarshalCreateMongoPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &mongoPostBody{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}

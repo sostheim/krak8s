@@ -4,8 +4,8 @@ consumes:
 - application/gob
 - application/x-gob
 definitions:
-  Chart:
-    description: Helm chart representation type (default view)
+  App:
+    description: Application representation type (default view)
     example:
       name: Quos nobis placeat iusto itaque.
       status:
@@ -15,7 +15,7 @@ definitions:
       version: Dolores in hic qui sed et voluptates.
     properties:
       name:
-        description: Chart name
+        description: Application name
         example: Quos nobis placeat iusto itaque.
         type: string
       status:
@@ -30,7 +30,8 @@ definitions:
             format: date-time
             type: string
           notes:
-            description: Additional chart notes (if provided)
+            description: Application specific notification / statuses / notes (if
+              any)
             example: Impedit iste beatae odit et omnis.
             type: string
           state:
@@ -56,12 +57,17 @@ definitions:
     - name
     - version
     - status
-    title: 'Mediatype identifier: application/chart+json; view=default'
+    title: 'Mediatype identifier: application/app+json; view=default'
     type: object
-  ChartCollection:
-    description: ChartCollection is the media type for an array of Chart (default
-      view)
+  AppCollection:
+    description: AppCollection is the media type for an array of App (default view)
     example:
+    - name: Quos nobis placeat iusto itaque.
+      status:
+        deployed_at: 2012-02-17T21:30:54-08:00
+        notes: Impedit iste beatae odit et omnis.
+        state: UNKNOWN
+      version: Dolores in hic qui sed et voluptates.
     - name: Quos nobis placeat iusto itaque.
       status:
         deployed_at: 2012-02-17T21:30:54-08:00
@@ -75,10 +81,10 @@ definitions:
         state: UNKNOWN
       version: Dolores in hic qui sed et voluptates.
     items:
-      $ref: '#/definitions/Chart'
-    title: 'Mediatype identifier: application/chart+json; type=collection; view=default'
+      $ref: '#/definitions/App'
+    title: 'Mediatype identifier: application/app+json; type=collection; view=default'
     type: array
-  ChartPostBody:
+  ApplicationPostBody:
     example:
       name: Iste voluptas debitis voluptatem illum.
       registry: Corrupti omnis atque maxime autem.
@@ -86,25 +92,25 @@ definitions:
       version: Aut minima inventore et nam.
     properties:
       name:
-        description: Chart name
+        description: Application name
         example: Iste voluptas debitis voluptatem illum.
         type: string
       registry:
-        description: Chart's registry
+        description: Application's registry
         example: Corrupti omnis atque maxime autem.
         type: string
       set:
-        description: Chart config --set argument string
+        description: Application config --set argument string
         example: Ea corporis eaque id saepe aut provident.
         type: string
       version:
-        description: Chart version string
+        description: Application version string
         example: Aut minima inventore et nam.
         type: string
     required:
     - name
     - version
-    title: ChartPostBody
+    title: ApplicationPostBody
     type: object
   Cluster:
     description: Cluster resource representation type (default view)
@@ -142,14 +148,14 @@ definitions:
     type: object
   CluterPostBody:
     example:
-      nodePoolSize: 8
+      nodePoolSize: 10
     properties:
       nodePoolSize:
         default: 3
         description: The number of real nodes in the pool
-        example: 8
+        example: 10
         maximum: 11
-        minimum: 1
+        minimum: 3
         type: integer
     required:
     - nodePoolSize
@@ -176,52 +182,6 @@ definitions:
     required:
     - identity
     title: CreateProjectPayload
-    type: object
-  Mongo:
-    description: MongoDB ReplicaSet instance representation type (default view)
-    example:
-      application: Molestiae eos non et.
-      created_at: 1982-09-27T18:11:09-07:00
-      version: Cumque repellat et libero.
-    properties:
-      application:
-        description: Application registry identifier
-        example: Molestiae eos non et.
-        type: string
-      created_at:
-        description: Date of creation
-        example: 1982-09-27T18:11:09-07:00
-        format: date-time
-        type: string
-      version:
-        description: Application version
-        example: Cumque repellat et libero.
-        type: string
-    required:
-    - application
-    - version
-    - created_at
-    title: 'Mediatype identifier: application/mongo+json; view=default'
-    type: object
-  MongoPostBody:
-    example:
-      application: Soluta assumenda.
-      version: Sint et.
-    properties:
-      application:
-        default: quay.io/samsung_cnct/mongodb-replicaset
-        description: Appplication Registry Identifier
-        example: Soluta assumenda.
-        type: string
-      version:
-        default: v1.2.0
-        description: Appplication Version
-        example: Sint et.
-        type: string
-    required:
-    - application
-    - version
-    title: MongoPostBody
     type: object
   Namespace:
     description: Users and tennants of the system are represented as the type Project
@@ -297,9 +257,6 @@ definitions:
     description: ProjectCollection is the media type for an array of Project (default
       view)
     example:
-    - created_at: 1999-10-03T11:58:38-07:00
-      href: /projects/newco
-      id: newco
     - created_at: 1999-10-03T11:58:38-07:00
       href: /projects/newco
       id: newco
@@ -621,10 +578,10 @@ paths:
       summary: get namespace
       tags:
       - namespace
-  /v1/projects/{project}/ns/{ns}/chart:
+  /v1/projects/{project}/ns/{ns}/app:
     get:
-      description: Retrieve the collection of all Helm Charts in the namespace.
-      operationId: chart#list
+      description: Retrieve the collection of all applications in the namespace.
+      operationId: application#list
       parameters:
       - description: namespace identifier
         in: path
@@ -637,20 +594,20 @@ paths:
         required: true
         type: string
       produces:
-      - application/chart+json; type=collection
+      - application/app+json; type=collection
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/ChartCollection'
+            $ref: '#/definitions/AppCollection'
       schemes:
       - http
-      summary: list chart
+      summary: list application
       tags:
-      - chart
+      - application
     post:
-      description: Create a Helm Chart deployment
-      operationId: chart#create
+      description: Create an application deployment
+      operationId: application#create
       parameters:
       - description: namespace identifier
         in: path
@@ -666,7 +623,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/ChartPostBody'
+          $ref: '#/definitions/ApplicationPostBody'
       produces:
       - application/vnd.goa.error
       responses:
@@ -678,13 +635,13 @@ paths:
             $ref: '#/definitions/error'
       schemes:
       - http
-      summary: create chart
+      summary: create application
       tags:
-      - chart
-  /v1/projects/{project}/ns/{ns}/chart/{chart}:
+      - application
+  /v1/projects/{project}/ns/{ns}/app/{chart}:
     delete:
-      description: Delete the specified Helm Chart deloyment
-      operationId: chart#delete
+      description: Delete the specified application
+      operationId: application#delete
       parameters:
       - in: path
         name: chart
@@ -713,12 +670,12 @@ paths:
           description: Not Found
       schemes:
       - http
-      summary: delete chart
+      summary: delete application
       tags:
-      - chart
+      - application
     get:
-      description: Get the status of the specified Helm Chart deployment
-      operationId: chart#get
+      description: Get the status of the specified application
+      operationId: application#get
       parameters:
       - in: path
         name: chart
@@ -735,17 +692,17 @@ paths:
         required: true
         type: string
       produces:
-      - application/chart+json
+      - application/app+json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/Chart'
+            $ref: '#/definitions/App'
       schemes:
       - http
-      summary: get chart
+      summary: get application
       tags:
-      - chart
+      - application
   /v1/projects/{project}/ns/{ns}/cluster:
     delete:
       description: Delete the cluster resource
@@ -778,7 +735,7 @@ paths:
       tags:
       - cluster
     get:
-      description: Get the status of the cluster resoruces
+      description: Get the status of the cluster resources
       operationId: cluster#get
       parameters:
       - description: namespace identifier
@@ -836,96 +793,6 @@ paths:
       summary: create cluster
       tags:
       - cluster
-  /v1/projects/{project}/ns/{ns}/mongo:
-    delete:
-      description: Delete the MongoDB Deloyment
-      operationId: mongo#delete
-      parameters:
-      - description: namespace identifier
-        in: path
-        name: ns
-        required: true
-        type: string
-      - description: project name
-        in: path
-        name: project
-        required: true
-        type: string
-      produces:
-      - application/vnd.goa.error
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/error'
-        "404":
-          description: Not Found
-      schemes:
-      - http
-      summary: delete mongo
-      tags:
-      - mongo
-    get:
-      description: Get the status of the MongoDB Deloyment
-      operationId: mongo#get
-      parameters:
-      - description: namespace identifier
-        in: path
-        name: ns
-        required: true
-        type: string
-      - description: project name
-        in: path
-        name: project
-        required: true
-        type: string
-      produces:
-      - application/mongo+json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Mongo'
-      schemes:
-      - http
-      summary: get mongo
-      tags:
-      - mongo
-    post:
-      description: Create a MongoDB
-      operationId: mongo#create
-      parameters:
-      - description: namespace identifier
-        in: path
-        name: ns
-        required: true
-        type: string
-      - description: project name
-        in: path
-        name: project
-        required: true
-        type: string
-      - in: body
-        name: payload
-        required: true
-        schema:
-          $ref: '#/definitions/MongoPostBody'
-      produces:
-      - application/vnd.goa.error
-      responses:
-        "202":
-          description: The request has been accepted for processing
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/error'
-      schemes:
-      - http
-      summary: create mongo
-      tags:
-      - mongo
 produces:
 - application/json
 - application/xml
