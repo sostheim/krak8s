@@ -198,6 +198,136 @@ func (ctx *ListChartContext) OK(r ChartCollection) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
+// CreateClusterContext provides the cluster create action context.
+type CreateClusterContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Ns      string
+	Project string
+	Payload *CluterPostBody
+}
+
+// NewCreateClusterContext parses the incoming request URL and body, performs validations and creates the
+// context used by the cluster controller create action.
+func NewCreateClusterContext(ctx context.Context, r *http.Request, service *goa.Service) (*CreateClusterContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := CreateClusterContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramNs := req.Params["ns"]
+	if len(paramNs) > 0 {
+		rawNs := paramNs[0]
+		rctx.Ns = rawNs
+	}
+	paramProject := req.Params["project"]
+	if len(paramProject) > 0 {
+		rawProject := paramProject[0]
+		rctx.Project = rawProject
+	}
+	return &rctx, err
+}
+
+// Accepted sends a HTTP response with status code 202.
+func (ctx *CreateClusterContext) Accepted() error {
+	ctx.ResponseData.WriteHeader(202)
+	return nil
+}
+
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *CreateClusterContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// DeleteClusterContext provides the cluster delete action context.
+type DeleteClusterContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Ns      string
+	Project string
+}
+
+// NewDeleteClusterContext parses the incoming request URL and body, performs validations and creates the
+// context used by the cluster controller delete action.
+func NewDeleteClusterContext(ctx context.Context, r *http.Request, service *goa.Service) (*DeleteClusterContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := DeleteClusterContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramNs := req.Params["ns"]
+	if len(paramNs) > 0 {
+		rawNs := paramNs[0]
+		rctx.Ns = rawNs
+	}
+	paramProject := req.Params["project"]
+	if len(paramProject) > 0 {
+		rawProject := paramProject[0]
+		rctx.Project = rawProject
+	}
+	return &rctx, err
+}
+
+// NoContent sends a HTTP response with status code 204.
+func (ctx *DeleteClusterContext) NoContent() error {
+	ctx.ResponseData.WriteHeader(204)
+	return nil
+}
+
+// BadRequest sends a HTTP response with status code 400.
+func (ctx *DeleteClusterContext) BadRequest(r error) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
+	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *DeleteClusterContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
+// GetClusterContext provides the cluster get action context.
+type GetClusterContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+	Ns      string
+	Project string
+}
+
+// NewGetClusterContext parses the incoming request URL and body, performs validations and creates the
+// context used by the cluster controller get action.
+func NewGetClusterContext(ctx context.Context, r *http.Request, service *goa.Service) (*GetClusterContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := GetClusterContext{Context: ctx, ResponseData: resp, RequestData: req}
+	paramNs := req.Params["ns"]
+	if len(paramNs) > 0 {
+		rawNs := paramNs[0]
+		rctx.Ns = rawNs
+	}
+	paramProject := req.Params["project"]
+	if len(paramProject) > 0 {
+		rawProject := paramProject[0]
+		rctx.Project = rawProject
+	}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *GetClusterContext) OK(r *Cluster) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/cluster+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
 // CreateMongoContext provides the mongo create action context.
 type CreateMongoContext struct {
 	context.Context

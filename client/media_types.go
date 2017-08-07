@@ -89,6 +89,37 @@ func (c *Client) DecodeChartCollection(resp *http.Response) (ChartCollection, er
 	return decoded, err
 }
 
+// Cluster resource representation type (default view)
+//
+// Identifier: application/cluster+json; view=default
+type Cluster struct {
+	// Date of creation
+	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
+	// Requested node pool size
+	NodePoolSize int `form:"nodePoolSize" json:"nodePoolSize" xml:"nodePoolSize"`
+	// Lifecycle state
+	State string `form:"state" json:"state" xml:"state"`
+}
+
+// Validate validates the Cluster media type instance.
+func (mt *Cluster) Validate() (err error) {
+
+	if mt.State == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "state"))
+	}
+	if !(mt.State == "create_requested" || mt.State == "starting" || mt.State == "active" || mt.State == "delete_requested" || mt.State == "deleting" || mt.State == "deleted") {
+		err = goa.MergeErrors(err, goa.InvalidEnumValueError(`response.state`, mt.State, []interface{}{"create_requested", "starting", "active", "delete_requested", "deleting", "deleted"}))
+	}
+	return
+}
+
+// DecodeCluster decodes the Cluster instance encoded in resp body.
+func (c *Client) DecodeCluster(resp *http.Response) (*Cluster, error) {
+	var decoded Cluster
+	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
+	return &decoded, err
+}
+
 // MongoDB ReplicaSet instance representation type (default view)
 //
 // Identifier: application/mongo+json; view=default

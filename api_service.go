@@ -34,13 +34,9 @@ var (
 // API Server
 type apiServer struct {
 	// Command line / environment supplied configuration values
-	cfg *config
-
+	cfg       *config
 	clientset *kubernetes.Clientset
-
-	stopCh chan struct{}
-
-	server *goa.Service
+	server    *goa.Service
 }
 
 func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
@@ -49,7 +45,6 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	// create api server controller struct
 	as := apiServer{
 		clientset: clientset,
-		stopCh:    make(chan struct{}),
 		cfg:       cfg,
 		server:    goa.New("krak8s"),
 	}
@@ -60,6 +55,7 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	as.server.Use(middleware.ErrorHandler(as.server, true))
 	as.server.Use(middleware.Recover())
 
+	// Create and Mount the resource controllers
 	swagger := NewSwaggerController(as.server)
 	app.MountSwaggerController(as.server, swagger)
 
@@ -78,12 +74,14 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	chart := NewChartController(as.server)
 	app.MountChartController(as.server, chart)
 
+	cluster := NewClusterController(as.server)
+	app.MountClusterController(as.server, cluster)
+
 	return &as
 }
 
 func (as *apiServer) run() {
-	// run the controller and queue goroutines
-	// go as.apiServer.Run(as.stopCh)
-	// Allow time for the initial startup
-	time.Sleep(5 * time.Second)
+	if err := as.server.ListenAndServe(":8080"); err != nil {
+		as.server.LogError("startup", "err", err)
+	}
 }

@@ -71,7 +71,7 @@ func DeleteMongoPath(project string, ns string) string {
 	return fmt.Sprintf("/v1/projects/%s/ns/%s/mongo", param0, param1)
 }
 
-// Delete the MongoDB Deloyment)
+// Delete the MongoDB Deloyment
 func (c *Client) DeleteMongo(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewDeleteMongoRequest(ctx, path)
 	if err != nil {

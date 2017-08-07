@@ -80,38 +80,87 @@ definitions:
     type: array
   ChartPostBody:
     example:
-      name: Voluptatem illum aut corrupti.
-      registry: Atque maxime autem et ea corporis.
-      set: Id saepe aut provident occaecati.
-      version: Minima inventore et nam aut et soluta.
+      name: Iste voluptas debitis voluptatem illum.
+      registry: Corrupti omnis atque maxime autem.
+      set: Ea corporis eaque id saepe aut provident.
+      version: Aut minima inventore et nam.
     properties:
       name:
         description: Chart name
-        example: Voluptatem illum aut corrupti.
+        example: Iste voluptas debitis voluptatem illum.
         type: string
       registry:
         description: Chart's registry
-        example: Atque maxime autem et ea corporis.
+        example: Corrupti omnis atque maxime autem.
         type: string
       set:
         description: Chart config --set argument string
-        example: Id saepe aut provident occaecati.
+        example: Ea corporis eaque id saepe aut provident.
         type: string
       version:
         description: Chart version string
-        example: Minima inventore et nam aut et soluta.
+        example: Aut minima inventore et nam.
         type: string
     required:
     - name
     - version
     title: ChartPostBody
     type: object
+  Cluster:
+    description: Cluster resource representation type (default view)
+    example:
+      created_at: 1988-11-12T15:18:46-08:00
+      nodePoolSize: 1.7768362e+18
+      state: create_requested
+    properties:
+      created_at:
+        description: Date of creation
+        example: 1988-11-12T15:18:46-08:00
+        format: date-time
+        type: string
+      nodePoolSize:
+        description: Requested node pool size
+        example: 1.7768362e+18
+        format: int64
+        type: integer
+      state:
+        description: Lifecycle state
+        enum:
+        - create_requested
+        - starting
+        - active
+        - delete_requested
+        - deleting
+        - deleted
+        example: create_requested
+        type: string
+    required:
+    - nodePoolSize
+    - created_at
+    - state
+    title: 'Mediatype identifier: application/cluster+json; view=default'
+    type: object
+  CluterPostBody:
+    example:
+      nodePoolSize: 8
+    properties:
+      nodePoolSize:
+        default: 3
+        description: The number of real nodes in the pool
+        example: 8
+        maximum: 11
+        minimum: 1
+        type: integer
+    required:
+    - nodePoolSize
+    title: CluterPostBody
+    type: object
   CreateNamespacePayload:
     example:
-      name: Adipisci est iste voluptas.
+      name: Non adipisci.
     properties:
       name:
-        example: Adipisci est iste voluptas.
+        example: Non adipisci.
         type: string
     required:
     - name
@@ -119,10 +168,10 @@ definitions:
     type: object
   CreateProjectPayload:
     example:
-      identity: Est nostrum id perferendis enim laboriosam.
+      identity: Perferendis enim.
     properties:
       identity:
-        example: Est nostrum id perferendis enim laboriosam.
+        example: Perferendis enim.
         type: string
     required:
     - identity
@@ -131,22 +180,22 @@ definitions:
   Mongo:
     description: MongoDB ReplicaSet instance representation type (default view)
     example:
-      application: Iusto inventore.
-      created_at: 1990-12-11T22:09:50-08:00
-      version: Non et quam consequatur distinctio cumque.
+      application: Molestiae eos non et.
+      created_at: 1982-09-27T18:11:09-07:00
+      version: Cumque repellat et libero.
     properties:
       application:
         description: Application registry identifier
-        example: Iusto inventore.
+        example: Molestiae eos non et.
         type: string
       created_at:
         description: Date of creation
-        example: 1990-12-11T22:09:50-08:00
+        example: 1982-09-27T18:11:09-07:00
         format: date-time
         type: string
       version:
         description: Application version
-        example: Non et quam consequatur distinctio cumque.
+        example: Cumque repellat et libero.
         type: string
     required:
     - application
@@ -156,18 +205,18 @@ definitions:
     type: object
   MongoPostBody:
     example:
-      application: Iusto sint et quidem alias et corporis.
-      version: Explicabo enim dicta perferendis sunt nihil ratione.
+      application: Soluta assumenda.
+      version: Sint et.
     properties:
       application:
         default: quay.io/samsung_cnct/mongodb-replicaset
         description: Appplication Registry Identifier
-        example: Iusto sint et quidem alias et corporis.
+        example: Soluta assumenda.
         type: string
       version:
         default: v1.2.0
         description: Appplication Version
-        example: Explicabo enim dicta perferendis sunt nihil ratione.
+        example: Sint et.
         type: string
     required:
     - application
@@ -178,13 +227,13 @@ definitions:
     description: Users and tennants of the system are represented as the type Project
       (default view)
     example:
-      created_at: 1980-06-29T21:44:51-07:00
+      created_at: 1988-09-01T10:12:01-07:00
       href: /projects/newco/ns/newco-prod
       name: newco-prod
     properties:
       created_at:
         description: Date of creation
-        example: 1980-06-29T21:44:51-07:00
+        example: 1988-09-01T10:12:01-07:00
         format: date-time
         type: string
       href:
@@ -206,10 +255,10 @@ definitions:
     description: NamespaceCollection is the media type for an array of Namespace (default
       view)
     example:
-    - created_at: 1980-06-29T21:44:51-07:00
+    - created_at: 1988-09-01T10:12:01-07:00
       href: /projects/newco/ns/newco-prod
       name: newco-prod
-    - created_at: 1980-06-29T21:44:51-07:00
+    - created_at: 1988-09-01T10:12:01-07:00
       href: /projects/newco/ns/newco-prod
       name: newco-prod
     items:
@@ -220,13 +269,13 @@ definitions:
     description: Users and tennants of the system are represented as the type Project
       (default view)
     example:
-      created_at: 1990-08-27T22:36:31-07:00
+      created_at: 1999-10-03T11:58:38-07:00
       href: /projects/newco
       id: newco
     properties:
       created_at:
         description: Date of creation
-        example: 1990-08-27T22:36:31-07:00
+        example: 1999-10-03T11:58:38-07:00
         format: date-time
         type: string
       href:
@@ -248,7 +297,13 @@ definitions:
     description: ProjectCollection is the media type for an array of Project (default
       view)
     example:
-    - created_at: 1990-08-27T22:36:31-07:00
+    - created_at: 1999-10-03T11:58:38-07:00
+      href: /projects/newco
+      id: newco
+    - created_at: 1999-10-03T11:58:38-07:00
+      href: /projects/newco
+      id: newco
+    - created_at: 1999-10-03T11:58:38-07:00
       href: /projects/newco
       id: newco
     items:
@@ -691,9 +746,99 @@ paths:
       summary: get chart
       tags:
       - chart
+  /v1/projects/{project}/ns/{ns}/cluster:
+    delete:
+      description: Delete the cluster resource
+      operationId: cluster#delete
+      parameters:
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: delete cluster
+      tags:
+      - cluster
+    get:
+      description: Get the status of the cluster resoruces
+      operationId: cluster#get
+      parameters:
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      produces:
+      - application/cluster+json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Cluster'
+      schemes:
+      - http
+      summary: get cluster
+      tags:
+      - cluster
+    post:
+      description: Create the specified cluster resources
+      operationId: cluster#create
+      parameters:
+      - description: namespace identifier
+        in: path
+        name: ns
+        required: true
+        type: string
+      - description: project name
+        in: path
+        name: project
+        required: true
+        type: string
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/CluterPostBody'
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "202":
+          description: The request has been accepted for processing
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+      schemes:
+      - http
+      summary: create cluster
+      tags:
+      - cluster
   /v1/projects/{project}/ns/{ns}/mongo:
     delete:
-      description: Delete the MongoDB Deloyment)
+      description: Delete the MongoDB Deloyment
       operationId: mongo#delete
       parameters:
       - description: namespace identifier

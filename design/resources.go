@@ -130,7 +130,7 @@ var _ = Resource("mongo", func() {
 
 	Action("delete", func() {
 		Routing(DELETE(""))
-		Description("Delete the MongoDB Deloyment)")
+		Description("Delete the MongoDB Deloyment")
 		Response(NoContent)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
@@ -168,6 +168,37 @@ var _ = Resource("chart", func() {
 	Action("delete", func() {
 		Routing(DELETE("/:chart"))
 		Description("Delete the specified Helm Chart deloyment")
+		Response(NoContent)
+		Response(NotFound)
+		Response(BadRequest, ErrorMedia)
+	})
+})
+
+var _ = Resource("cluster", func() {
+	Description("Manage {create, delete}, and get cluster resources")
+
+	Parent("namespace")
+	BasePath("cluster")
+
+	CanonicalActionName("get")
+
+	Action("create", func() {
+		Routing(POST(""))
+		Description("Create the specified cluster resources")
+		Payload(ClusterPostBody)
+		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/ns/[a-z,A-Z,0-9]+/cluster")
+		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("get", func() {
+		Routing(GET(""))
+		Description("Get the status of the cluster resoruces")
+		Response(OK, Cluster)
+	})
+
+	Action("delete", func() {
+		Routing(DELETE(""))
+		Description("Delete the cluster resource")
 		Response(NoContent)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)

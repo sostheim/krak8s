@@ -78,6 +78,64 @@ func (ut *ChartPostBody) Validate() (err error) {
 	return
 }
 
+// cluterPostBody user type.
+type cluterPostBody struct {
+	// The number of real nodes in the pool
+	NodePoolSize *int `form:"nodePoolSize,omitempty" json:"nodePoolSize,omitempty" xml:"nodePoolSize,omitempty"`
+}
+
+// Finalize sets the default values for cluterPostBody type instance.
+func (ut *cluterPostBody) Finalize() {
+	var defaultNodePoolSize = 3
+	if ut.NodePoolSize == nil {
+		ut.NodePoolSize = &defaultNodePoolSize
+	}
+}
+
+// Validate validates the cluterPostBody type instance.
+func (ut *cluterPostBody) Validate() (err error) {
+	if ut.NodePoolSize == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "nodePoolSize"))
+	}
+	if ut.NodePoolSize != nil {
+		if *ut.NodePoolSize < 1 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, *ut.NodePoolSize, 1, true))
+		}
+	}
+	if ut.NodePoolSize != nil {
+		if *ut.NodePoolSize > 11 {
+			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, *ut.NodePoolSize, 11, false))
+		}
+	}
+	return
+}
+
+// Publicize creates CluterPostBody from cluterPostBody
+func (ut *cluterPostBody) Publicize() *CluterPostBody {
+	var pub CluterPostBody
+	if ut.NodePoolSize != nil {
+		pub.NodePoolSize = *ut.NodePoolSize
+	}
+	return &pub
+}
+
+// CluterPostBody user type.
+type CluterPostBody struct {
+	// The number of real nodes in the pool
+	NodePoolSize int `form:"nodePoolSize" json:"nodePoolSize" xml:"nodePoolSize"`
+}
+
+// Validate validates the CluterPostBody type instance.
+func (ut *CluterPostBody) Validate() (err error) {
+	if ut.NodePoolSize < 1 {
+		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, ut.NodePoolSize, 1, true))
+	}
+	if ut.NodePoolSize > 11 {
+		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, ut.NodePoolSize, 11, false))
+	}
+	return
+}
+
 // mongoPostBody user type.
 type mongoPostBody struct {
 	// Appplication Registry Identifier

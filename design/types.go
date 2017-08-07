@@ -138,3 +138,34 @@ var Chart = MediaType("application/chart+json", func() {
 		Attribute("status")
 	})
 })
+
+// ClusterPostBody is the HTTP Post request body type to create a cluster resource
+var ClusterPostBody = Type("CluterPostBody", func() {
+	Attribute("nodePoolSize", Integer, func() {
+		Description("The number of real nodes in the pool")
+		Minimum(1)
+		Maximum(11)
+		Default(3)
+	})
+	Required("nodePoolSize")
+})
+
+// Cluster is the cluster resource's MediaType.
+var Cluster = MediaType("application/cluster+json", func() {
+	Description("Cluster resource representation type")
+	Attributes(func() {
+		Attribute("nodePoolSize", Integer, "Requested node pool size")
+		Attribute("created_at", DateTime, "Date of creation")
+		Attribute("state", func() {
+			Description("Lifecycle state")
+			Enum("create_requested", "starting", "active", "delete_requested", "deleting", "deleted")
+		})
+		Required("nodePoolSize", "created_at", "state")
+	})
+
+	View("default", func() {
+		Attribute("nodePoolSize")
+		Attribute("created_at")
+		Attribute("state")
+	})
+})

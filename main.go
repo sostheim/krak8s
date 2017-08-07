@@ -123,12 +123,10 @@ func main() {
 		panic(err.Error())
 	}
 
-	// REST Service
+	// Create our REST Service's API Server
 	glog.V(3).Infof("main(): staring API service")
 	srv := newAPIServer(clientset, krak8sCfg)
 
-	// Start service
-	if err := srv.server.ListenAndServe(":8080"); err != nil {
-		srv.server.LogError("startup", "err", err)
-	}
+	// Start service server
+	srv.run()
 }

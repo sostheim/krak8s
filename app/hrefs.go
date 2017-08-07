@@ -23,6 +23,13 @@ func ChartHref(project, ns, chart interface{}) string {
 	return fmt.Sprintf("/v1/projects/%v/ns/%v/chart/%v", paramproject, paramns, paramchart)
 }
 
+// ClusterHref returns the resource href.
+func ClusterHref(project, ns interface{}) string {
+	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
+	paramns := strings.TrimLeftFunc(fmt.Sprintf("%v", ns), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", paramproject, paramns)
+}
+
 // MongoHref returns the resource href.
 func MongoHref(project, ns interface{}) string {
 	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
