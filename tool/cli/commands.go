@@ -41,7 +41,7 @@ type (
 
 	// DeleteApplicationCommand is the command line data structure for the delete action of application
 	DeleteApplicationCommand struct {
-		Chart string
+		App string
 		// namespace identifier
 		Ns string
 		// project name
@@ -51,7 +51,7 @@ type (
 
 	// GetApplicationCommand is the command line data structure for the get action of application
 	GetApplicationCommand struct {
-		Chart string
+		App string
 		// namespace identifier
 		Ns string
 		// project name
@@ -245,7 +245,7 @@ Payload example:
 	}
 	tmp5 := new(DeleteApplicationCommand)
 	sub = &cobra.Command{
-		Use:   `application ["/v1/projects/PROJECT/ns/NS/app/CHART"]`,
+		Use:   `application ["/v1/projects/PROJECT/ns/NS/app/APP"]`,
 		Short: `Manage {create, delete}, and get namespaces's Application(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp5.Run(c, args) },
 	}
@@ -286,7 +286,7 @@ Payload example:
 	}
 	tmp9 := new(GetApplicationCommand)
 	sub = &cobra.Command{
-		Use:   `application ["/v1/projects/PROJECT/ns/NS/app/CHART"]`,
+		Use:   `application ["/v1/projects/PROJECT/ns/NS/app/APP"]`,
 		Short: `Manage {create, delete}, and get namespaces's Application(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp9.Run(c, args) },
 	}
@@ -636,7 +636,7 @@ func (cmd *DeleteApplicationCommand) Run(c *client.Client, args []string) error 
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns), url.QueryEscape(cmd.Chart))
+		path = fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns), url.QueryEscape(cmd.App))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -652,8 +652,8 @@ func (cmd *DeleteApplicationCommand) Run(c *client.Client, args []string) error 
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *DeleteApplicationCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var chart string
-	cc.Flags().StringVar(&cmd.Chart, "chart", chart, ``)
+	var app string
+	cc.Flags().StringVar(&cmd.App, "app", app, ``)
 	var ns string
 	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
 	var project string
@@ -666,7 +666,7 @@ func (cmd *GetApplicationCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns), url.QueryEscape(cmd.Chart))
+		path = fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns), url.QueryEscape(cmd.App))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -682,8 +682,8 @@ func (cmd *GetApplicationCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *GetApplicationCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var chart string
-	cc.Flags().StringVar(&cmd.Chart, "chart", chart, ``)
+	var app string
+	cc.Flags().StringVar(&cmd.App, "app", app, ``)
 	var ns string
 	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
 	var project string

@@ -19,8 +19,8 @@ import (
 
 // Application representation type (default view)
 //
-// Identifier: application/app+json; view=default
-type App struct {
+// Identifier: application/application+json; view=default
+type Application struct {
 	// Application name
 	Name   string `form:"name" json:"name" xml:"name"`
 	Status *struct {
@@ -35,8 +35,8 @@ type App struct {
 	Version string `form:"version" json:"version" xml:"version"`
 }
 
-// Validate validates the App media type instance.
-func (mt *App) Validate() (err error) {
+// Validate validates the Application media type instance.
+func (mt *Application) Validate() (err error) {
 	if mt.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
@@ -58,20 +58,20 @@ func (mt *App) Validate() (err error) {
 	return
 }
 
-// DecodeApp decodes the App instance encoded in resp body.
-func (c *Client) DecodeApp(resp *http.Response) (*App, error) {
-	var decoded App
+// DecodeApplication decodes the Application instance encoded in resp body.
+func (c *Client) DecodeApplication(resp *http.Response) (*Application, error) {
+	var decoded Application
 	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
 	return &decoded, err
 }
 
-// AppCollection is the media type for an array of App (default view)
+// ApplicationCollection is the media type for an array of Application (default view)
 //
-// Identifier: application/app+json; type=collection; view=default
-type AppCollection []*App
+// Identifier: application/application+json; type=collection; view=default
+type ApplicationCollection []*Application
 
-// Validate validates the AppCollection media type instance.
-func (mt AppCollection) Validate() (err error) {
+// Validate validates the ApplicationCollection media type instance.
+func (mt ApplicationCollection) Validate() (err error) {
 	for _, e := range mt {
 		if e != nil {
 			if err2 := e.Validate(); err2 != nil {
@@ -82,9 +82,9 @@ func (mt AppCollection) Validate() (err error) {
 	return
 }
 
-// DecodeAppCollection decodes the AppCollection instance encoded in resp body.
-func (c *Client) DecodeAppCollection(resp *http.Response) (AppCollection, error) {
-	var decoded AppCollection
+// DecodeApplicationCollection decodes the ApplicationCollection instance encoded in resp body.
+func (c *Client) DecodeApplicationCollection(resp *http.Response) (ApplicationCollection, error) {
+	var decoded ApplicationCollection
 	err := c.Decoder.Decode(&decoded, resp.Body, resp.Header.Get("Content-Type"))
 	return decoded, err
 }

@@ -16,11 +16,11 @@ import (
 )
 
 // ApplicationHref returns the resource href.
-func ApplicationHref(project, ns, chart interface{}) string {
+func ApplicationHref(project, ns, app_ interface{}) string {
 	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
 	paramns := strings.TrimLeftFunc(fmt.Sprintf("%v", ns), func(r rune) bool { return r == '/' })
-	paramchart := strings.TrimLeftFunc(fmt.Sprintf("%v", chart), func(r rune) bool { return r == '/' })
-	return fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", paramproject, paramns, paramchart)
+	paramapp_ := strings.TrimLeftFunc(fmt.Sprintf("%v", app_), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", paramproject, paramns, paramapp_)
 }
 
 // ClusterHref returns the resource href.

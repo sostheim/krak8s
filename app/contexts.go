@@ -65,7 +65,7 @@ type DeleteApplicationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Chart   string
+	App     string
 	Ns      string
 	Project string
 }
@@ -79,10 +79,10 @@ func NewDeleteApplicationContext(ctx context.Context, r *http.Request, service *
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := DeleteApplicationContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramChart := req.Params["chart"]
-	if len(paramChart) > 0 {
-		rawChart := paramChart[0]
-		rctx.Chart = rawChart
+	paramApp := req.Params["app"]
+	if len(paramApp) > 0 {
+		rawApp := paramApp[0]
+		rctx.App = rawApp
 	}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
@@ -120,7 +120,7 @@ type GetApplicationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Chart   string
+	App     string
 	Ns      string
 	Project string
 }
@@ -134,10 +134,10 @@ func NewGetApplicationContext(ctx context.Context, r *http.Request, service *goa
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := GetApplicationContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramChart := req.Params["chart"]
-	if len(paramChart) > 0 {
-		rawChart := paramChart[0]
-		rctx.Chart = rawChart
+	paramApp := req.Params["app"]
+	if len(paramApp) > 0 {
+		rawApp := paramApp[0]
+		rctx.App = rawApp
 	}
 	paramNs := req.Params["ns"]
 	if len(paramNs) > 0 {
@@ -153,8 +153,8 @@ func NewGetApplicationContext(ctx context.Context, r *http.Request, service *goa
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *GetApplicationContext) OK(r *App) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/app+json")
+func (ctx *GetApplicationContext) OK(r *Application) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/application+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
@@ -190,10 +190,10 @@ func NewListApplicationContext(ctx context.Context, r *http.Request, service *go
 }
 
 // OK sends a HTTP response with status code 200.
-func (ctx *ListApplicationContext) OK(r AppCollection) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/app+json; type=collection")
+func (ctx *ListApplicationContext) OK(r ApplicationCollection) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/application+json; type=collection")
 	if r == nil {
-		r = AppCollection{}
+		r = ApplicationCollection{}
 	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }

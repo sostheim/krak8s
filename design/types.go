@@ -113,7 +113,7 @@ var ApplicationPostBody = Type("ApplicationPostBody", func() {
 })
 
 // Application is the application resource's MediaType.
-var Application = MediaType("application/app+json", func() {
+var Application = MediaType("application/application+json", func() {
 	Description("Application representation type")
 	Attributes(func() {
 		Attribute("name", String, "Application name")

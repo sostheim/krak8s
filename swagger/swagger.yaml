@@ -4,7 +4,7 @@ consumes:
 - application/gob
 - application/x-gob
 definitions:
-  App:
+  Application:
     description: Application representation type (default view)
     example:
       name: Quos nobis placeat iusto itaque.
@@ -57,10 +57,11 @@ definitions:
     - name
     - version
     - status
-    title: 'Mediatype identifier: application/app+json; view=default'
+    title: 'Mediatype identifier: application/application+json; view=default'
     type: object
-  AppCollection:
-    description: AppCollection is the media type for an array of App (default view)
+  ApplicationCollection:
+    description: ApplicationCollection is the media type for an array of Application
+      (default view)
     example:
     - name: Quos nobis placeat iusto itaque.
       status:
@@ -81,8 +82,8 @@ definitions:
         state: UNKNOWN
       version: Dolores in hic qui sed et voluptates.
     items:
-      $ref: '#/definitions/App'
-    title: 'Mediatype identifier: application/app+json; type=collection; view=default'
+      $ref: '#/definitions/Application'
+    title: 'Mediatype identifier: application/application+json; type=collection; view=default'
     type: array
   ApplicationPostBody:
     example:
@@ -594,12 +595,12 @@ paths:
         required: true
         type: string
       produces:
-      - application/app+json; type=collection
+      - application/application+json; type=collection
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/AppCollection'
+            $ref: '#/definitions/ApplicationCollection'
       schemes:
       - http
       summary: list application
@@ -638,13 +639,13 @@ paths:
       summary: create application
       tags:
       - application
-  /v1/projects/{project}/ns/{ns}/app/{chart}:
+  /v1/projects/{project}/ns/{ns}/app/{app}:
     delete:
       description: Delete the specified application
       operationId: application#delete
       parameters:
       - in: path
-        name: chart
+        name: app
         required: true
         type: string
       - description: namespace identifier
@@ -678,7 +679,7 @@ paths:
       operationId: application#get
       parameters:
       - in: path
-        name: chart
+        name: app
         required: true
         type: string
       - description: namespace identifier
@@ -692,12 +693,12 @@ paths:
         required: true
         type: string
       produces:
-      - application/app+json
+      - application/application+json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/App'
+            $ref: '#/definitions/Application'
       schemes:
       - http
       summary: get application

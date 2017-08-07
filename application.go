@@ -42,7 +42,7 @@ func (c *ApplicationController) Get(ctx *app.GetApplicationContext) error {
 	// Put your logic here
 
 	// ApplicationController_Get: end_implement
-	res := &app.App{}
+	res := &app.Application{}
 	return ctx.OK(res)
 }
 
@@ -53,6 +53,6 @@ func (c *ApplicationController) List(ctx *app.ListApplicationContext) error {
 	// Put your logic here
 
 	// ApplicationController_List: end_implement
-	res := app.AppCollection{}
+	res := app.ApplicationCollection{}
 	return ctx.OK(res)
 }

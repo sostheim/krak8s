@@ -64,10 +64,10 @@ func (c *Client) NewCreateApplicationRequest(ctx context.Context, path string, p
 }
 
 // DeleteApplicationPath computes a request path to the delete action of application.
-func DeleteApplicationPath(project string, ns string, chart string) string {
+func DeleteApplicationPath(project string, ns string, app string) string {
 	param0 := project
 	param1 := ns
-	param2 := chart
+	param2 := app
 
 	return fmt.Sprintf("/v1/projects/%s/ns/%s/app/%s", param0, param1, param2)
 }
@@ -96,10 +96,10 @@ func (c *Client) NewDeleteApplicationRequest(ctx context.Context, path string) (
 }
 
 // GetApplicationPath computes a request path to the get action of application.
-func GetApplicationPath(project string, ns string, chart string) string {
+func GetApplicationPath(project string, ns string, app string) string {
 	param0 := project
 	param1 := ns
-	param2 := chart
+	param2 := app
 
 	return fmt.Sprintf("/v1/projects/%s/ns/%s/app/%s", param0, param1, param2)
 }

@@ -78,8 +78,8 @@ func MountApplicationController(service *goa.Service, ctrl ApplicationController
 		}
 		return ctrl.Delete(rctx)
 	}
-	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns/app/:chart", ctrl.MuxHandler("delete", h, nil))
-	service.LogInfo("mount", "ctrl", "Application", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns/app/:chart")
+	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns/app/:app", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Application", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns/app/:app")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -93,8 +93,8 @@ func MountApplicationController(service *goa.Service, ctrl ApplicationController
 		}
 		return ctrl.Get(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/app/:chart", ctrl.MuxHandler("get", h, nil))
-	service.LogInfo("mount", "ctrl", "Application", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns/app/:chart")
+	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/app/:app", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "Application", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns/app/:app")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request

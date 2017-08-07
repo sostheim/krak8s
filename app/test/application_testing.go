@@ -175,7 +175,7 @@ func CreateApplicationBadRequest(t goatest.TInterface, ctx context.Context, serv
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteApplicationBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, chart string) (http.ResponseWriter, error) {
+func DeleteApplicationBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, app_ string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -196,7 +196,7 @@ func DeleteApplicationBadRequest(t goatest.TInterface, ctx context.Context, serv
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, chart),
+		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, app_),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
@@ -205,7 +205,7 @@ func DeleteApplicationBadRequest(t goatest.TInterface, ctx context.Context, serv
 	prms := url.Values{}
 	prms["project"] = []string{fmt.Sprintf("%v", project)}
 	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
-	prms["chart"] = []string{fmt.Sprintf("%v", chart)}
+	prms["app"] = []string{fmt.Sprintf("%v", app_)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -242,7 +242,7 @@ func DeleteApplicationBadRequest(t goatest.TInterface, ctx context.Context, serv
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteApplicationNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, chart string) http.ResponseWriter {
+func DeleteApplicationNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, app_ string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -263,7 +263,7 @@ func DeleteApplicationNoContent(t goatest.TInterface, ctx context.Context, servi
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, chart),
+		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, app_),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
@@ -272,7 +272,7 @@ func DeleteApplicationNoContent(t goatest.TInterface, ctx context.Context, servi
 	prms := url.Values{}
 	prms["project"] = []string{fmt.Sprintf("%v", project)}
 	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
-	prms["chart"] = []string{fmt.Sprintf("%v", chart)}
+	prms["app"] = []string{fmt.Sprintf("%v", app_)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -301,7 +301,7 @@ func DeleteApplicationNoContent(t goatest.TInterface, ctx context.Context, servi
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteApplicationNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, chart string) http.ResponseWriter {
+func DeleteApplicationNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, app_ string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -322,7 +322,7 @@ func DeleteApplicationNotFound(t goatest.TInterface, ctx context.Context, servic
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, chart),
+		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, app_),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
@@ -331,7 +331,7 @@ func DeleteApplicationNotFound(t goatest.TInterface, ctx context.Context, servic
 	prms := url.Values{}
 	prms["project"] = []string{fmt.Sprintf("%v", project)}
 	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
-	prms["chart"] = []string{fmt.Sprintf("%v", chart)}
+	prms["app"] = []string{fmt.Sprintf("%v", app_)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -360,7 +360,7 @@ func DeleteApplicationNotFound(t goatest.TInterface, ctx context.Context, servic
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func GetApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, chart string) (http.ResponseWriter, *app.App) {
+func GetApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, app_ string) (http.ResponseWriter, *app.Application) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -381,7 +381,7 @@ func GetApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, chart),
+		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, app_),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
@@ -390,7 +390,7 @@ func GetApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	prms := url.Values{}
 	prms["project"] = []string{fmt.Sprintf("%v", project)}
 	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
-	prms["chart"] = []string{fmt.Sprintf("%v", chart)}
+	prms["app"] = []string{fmt.Sprintf("%v", app_)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -410,12 +410,12 @@ func GetApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	if rw.Code != 200 {
 		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
 	}
-	var mt *app.App
+	var mt *app.Application
 	if resp != nil {
 		var ok bool
-		mt, ok = resp.(*app.App)
+		mt, ok = resp.(*app.Application)
 		if !ok {
-			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.App", resp, resp)
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.Application", resp, resp)
 		}
 		_err = mt.Validate()
 		if _err != nil {
@@ -431,7 +431,7 @@ func GetApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func ListApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string) (http.ResponseWriter, app.AppCollection) {
+func ListApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string) (http.ResponseWriter, app.ApplicationCollection) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -480,12 +480,12 @@ func ListApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.S
 	if rw.Code != 200 {
 		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
 	}
-	var mt app.AppCollection
+	var mt app.ApplicationCollection
 	if resp != nil {
 		var ok bool
-		mt, ok = resp.(app.AppCollection)
+		mt, ok = resp.(app.ApplicationCollection)
 		if !ok {
-			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.AppCollection", resp, resp)
+			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.ApplicationCollection", resp, resp)
 		}
 		_err = mt.Validate()
 		if _err != nil {

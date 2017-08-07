@@ -129,13 +129,13 @@ var _ = Resource("application", func() {
 	})
 
 	Action("get", func() {
-		Routing(GET("/:chart"))
+		Routing(GET("/:app"))
 		Description("Get the status of the specified application")
 		Response(OK, Application)
 	})
 
 	Action("delete", func() {
-		Routing(DELETE("/:chart"))
+		Routing(DELETE("/:app"))
 		Description("Delete the specified application")
 		Response(NoContent)
 		Response(NotFound)
