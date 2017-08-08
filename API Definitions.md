@@ -32,9 +32,9 @@ The following are the major categories of resources administered by the API.
     * Cluster - The namespace's Kraken orchestrated Kubernetes cluster resources 
 
 ## Order of Operations
-There is only one restriction on the ordering of operations for the API. The cluster resource *must* be created (POST) before an application can be created.  Any attempt to perform an operation on the application endpoint when no cluster endpoint is defined will return an error response code.  While not strictly necessary, it is preferable to read the status of the cluster endpoint and check that the cluster resources are in an "active" state, as shown here:
+There is only one restriction on the ordering of operations for the API. The `cluster` resource *must* be created (POST) before an `application` can be created.  Any attempt to perform an operation on the `application` endpoint when no `cluster endpoint` is defined will return an error response code.  While not strictly necessary, it is preferable to read the status of the `cluster` endpoint and check that the cluster resources are in an "active" state, as shown below before performing additional operations.
 ```
-Status: 200 (Od)
+Status: 200 (Ok)
 {
   "created_at": "1988-11-12T23:18:46Z",
   "nodePoolSize": 3,
@@ -42,3 +42,5 @@ Status: 200 (Od)
 }
 
 ```
+
+
