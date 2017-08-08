@@ -31,4 +31,5 @@ The following are the major categories of resources administered by the API.
     * Application - The namespace's installed applications
     * Cluster - The namespace's Kraken orchestrated Kubernetes cluster resources 
 
- 
+## Order of Operations
+There is only one restriction on the ordering of operations for the API. The cluster resource *must* be created (POST) before an application can be created.  Any attempt to perform an operation on the application endpoint when no cluster endpoint has been deinfed will return an error response code.
