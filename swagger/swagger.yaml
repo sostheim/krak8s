@@ -17,7 +17,7 @@ definitions:
       version: Dolores in hic qui sed et voluptates.
     properties:
       id:
-        description: generated resource unique id (8 character hexidecimal value)
+        description: generated resource unique id (8 character hexadecimal value)
         example: e1ea1660
         type: string
       name:
@@ -138,7 +138,7 @@ definitions:
         format: date-time
         type: string
       id:
-        description: generated resource unique id (8 character hexidecimal value)
+        description: generated resource unique id (8 character hexadecimal value)
         example: de2760b1
         type: string
       nodePoolSize:
@@ -223,7 +223,7 @@ definitions:
         format: date-time
         type: string
       id:
-        description: generated resource unique id (8 character hexidecimal value)
+        description: generated resource unique id (8 character hexadecimal value)
         example: da9871c7
         type: string
       name:
@@ -283,7 +283,7 @@ definitions:
         format: date-time
         type: string
       id:
-        description: generated resource unique id (8 character hexidecimal value)
+        description: generated resource unique id (8 character hexadecimal value)
         example: 30299bea
         type: string
       name:
@@ -420,11 +420,14 @@ definitions:
         type: string
     title: 'Mediatype identifier: application/vnd.goa.error; view=default'
     type: object
+externalDocs:
+  description: API Defintions
+  url: https://github.com/samsung-cnct/krak8s/blob/master/API%20Definitions.md
 host: localhost:8080
 info:
   description: API Service for Kubernetes, Kraken, and Helm Commands
   license:
-    name: Apache-2.0
+    name: Apache 2.0
     url: https://github.com/samsung-cnct/krak8s/blob/master/LICENSE
   title: krak8s API Server
   version: v1
@@ -495,6 +498,20 @@ paths:
       schemes:
       - http
       summary: Download swagger/swagger.yaml
+  /v1/healthz:
+    get:
+      description: The health check service endpoint
+      operationId: health#health
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+      schemes:
+      - http
+      summary: health health
+      tags:
+      - health
   /v1/projects:
     get:
       description: Retrieve all projects.
@@ -736,6 +753,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Cluster'
+        "404":
+          description: Not Found
       schemes:
       - http
       summary: get cluster

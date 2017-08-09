@@ -208,6 +208,33 @@ func unmarshalCreateClusterPayload(ctx context.Context, service *goa.Service, re
 	return nil
 }
 
+// HealthController is the controller interface for the Health actions.
+type HealthController interface {
+	goa.Muxer
+	Health(*HealthHealthContext) error
+}
+
+// MountHealthController "mounts" a Health resource controller on the given service.
+func MountHealthController(service *goa.Service, ctrl HealthController) {
+	initService(service)
+	var h goa.Handler
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewHealthHealthContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.Health(rctx)
+	}
+	service.Mux.Handle("GET", "/v1/healthz", ctrl.MuxHandler("health", h, nil))
+	service.LogInfo("mount", "ctrl", "Health", "action", "Health", "route", "GET /v1/healthz")
+}
+
 // NamespaceController is the controller interface for the Namespace actions.
 type NamespaceController interface {
 	goa.Muxer

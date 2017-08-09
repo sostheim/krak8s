@@ -76,6 +76,11 @@ type (
 		PrettyPrint bool
 	}
 
+	// HealthHealthCommand is the command line data structure for the health action of health
+	HealthHealthCommand struct {
+		PrettyPrint bool
+	}
+
 	// CreateNamespaceCommand is the command line data structure for the create action of namespace
 	CreateNamespaceCommand struct {
 		Payload     string
@@ -293,26 +298,40 @@ Payload example:
 	command.AddCommand(sub)
 	app.AddCommand(command)
 	command = &cobra.Command{
-		Use:   "list",
-		Short: `list action`,
+		Use:   "health",
+		Short: `The health check service endpoint`,
 	}
-	tmp13 := new(ListApplicationCommand)
+	tmp13 := new(HealthHealthCommand)
 	sub = &cobra.Command{
-		Use:   `application ["/v1/projects/PROJECTID/applications"]`,
-		Short: `Manage {create, delete}, and get namespaces's Application(s)`,
+		Use:   `health ["/v1/healthz"]`,
+		Short: ``,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp13.Run(c, args) },
 	}
 	tmp13.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp13.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp14 := new(ListProjectCommand)
+	app.AddCommand(command)
+	command = &cobra.Command{
+		Use:   "list",
+		Short: `list action`,
+	}
+	tmp14 := new(ListApplicationCommand)
 	sub = &cobra.Command{
-		Use:   `project ["/v1/projects"]`,
-		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
+		Use:   `application ["/v1/projects/PROJECTID/applications"]`,
+		Short: `Manage {create, delete}, and get namespaces's Application(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp14.Run(c, args) },
 	}
 	tmp14.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp14.PrettyPrint, "pp", false, "Pretty print response body")
+	command.AddCommand(sub)
+	tmp15 := new(ListProjectCommand)
+	sub = &cobra.Command{
+		Use:   `project ["/v1/projects"]`,
+		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
+		RunE:  func(cmd *cobra.Command, args []string) error { return tmp15.Run(c, args) },
+	}
+	tmp15.RegisterFlags(sub, c)
+	sub.PersistentFlags().BoolVar(&tmp15.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 
@@ -757,6 +776,30 @@ func (cmd *GetClusterCommand) Run(c *client.Client, args []string) error {
 func (cmd *GetClusterCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var projectid string
 	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
+}
+
+// Run makes the HTTP request corresponding to the HealthHealthCommand command.
+func (cmd *HealthHealthCommand) Run(c *client.Client, args []string) error {
+	var path string
+	if len(args) > 0 {
+		path = args[0]
+	} else {
+		path = "/v1/healthz"
+	}
+	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
+	ctx := goa.WithLogger(context.Background(), logger)
+	resp, err := c.HealthHealth(ctx, path)
+	if err != nil {
+		goa.LogError(ctx, "failed", "err", err)
+		return err
+	}
+
+	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
+	return nil
+}
+
+// RegisterFlags registers the command flags with the command line.
+func (cmd *HealthHealthCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 }
 
 // Run makes the HTTP request corresponding to the CreateNamespaceCommand command.

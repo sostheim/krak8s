@@ -19,7 +19,7 @@ The krak8s service can run as a static binary, a container image under a contain
 $ ./krak8s --help
 Usage of ./krak8s:
       --alsologtostderr                  log to standard error as well as files
-      --health-check                     enable health checking for API service (default false)
+      --health-check                     enable health checking for API service (default true)
       --kubeconfig string                absolute path to the kubeconfig file
       --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
       --log_dir string                   If non-empty, write log files in this directory
@@ -33,7 +33,7 @@ Usage of ./krak8s:
 ```
 ### Configuration Flags
 Without going into an explanation of all of the parameters, many of which should have sufficient explanation in the help provided, of particular interest to controlling the operation of krak8s are the following:<br />
-<b>--health-check</b> - Allows external service monitors to check the health of `krak8s` itself.<br />
+<b>--health-check</b> - Allows external service monitors to check the health of the `krak8s` service.<br />
 <b>--kubeconfig</b> - Use the referenced kubeconfig for credentialed access to the cluster.<br />
 <b>--proxy</b> - Use the `kubectl proxy` URL for access to the cluster. See for example [using kubectl proxy](https://kubernetes.io/docs/concepts/cluster-administration/access-cluster/#using-kubectl-proxy).<br />
 
@@ -48,7 +48,7 @@ Not every flag can be set via an environment variable.  This is due to the fact 
 * --proxy
 
 ### Details
-The health check service HTTP endpoint will probalby be `/healthz` in the not to distant future...  
+The health check service HTTP endpoint is available at: `/healthz`.  
 
 ## Deploying krak8s Example
 The following is an example of using a Kubernetes Deployment to run krak8s. 

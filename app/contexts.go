@@ -287,6 +287,39 @@ func (ctx *GetClusterContext) OK(r *Cluster) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
+// NotFound sends a HTTP response with status code 404.
+func (ctx *GetClusterContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
+// HealthHealthContext provides the health health action context.
+type HealthHealthContext struct {
+	context.Context
+	*goa.ResponseData
+	*goa.RequestData
+}
+
+// NewHealthHealthContext parses the incoming request URL and body, performs validations and creates the
+// context used by the health controller health action.
+func NewHealthHealthContext(ctx context.Context, r *http.Request, service *goa.Service) (*HealthHealthContext, error) {
+	var err error
+	resp := goa.ContextResponse(ctx)
+	resp.Service = service
+	req := goa.ContextRequest(ctx)
+	req.Request = r
+	rctx := HealthHealthContext{Context: ctx, ResponseData: resp, RequestData: req}
+	return &rctx, err
+}
+
+// OK sends a HTTP response with status code 200.
+func (ctx *HealthHealthContext) OK(resp []byte) error {
+	ctx.ResponseData.Header().Set("Content-Type", "text/plain")
+	ctx.ResponseData.WriteHeader(200)
+	_, err := ctx.ResponseData.Write(resp)
+	return err
+}
+
 // CreateNamespaceContext provides the namespace create action context.
 type CreateNamespaceContext struct {
 	context.Context

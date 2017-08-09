@@ -10,8 +10,12 @@ var _ = API("krak8s", func() {
 	Title("krak8s API Server")
 	Description("API Service for Kubernetes, Kraken, and Helm Commands")
 	License(func() {
-		Name("Apache-2.0")
+		Name("Apache 2.0")
 		URL("https://github.com/samsung-cnct/krak8s/blob/master/LICENSE")
+	})
+	Docs(func() {
+		Description("API Defintions")
+		URL("https://github.com/samsung-cnct/krak8s/blob/master/API%20Definitions.md")
 	})
 	Host("localhost:8080")
 	Scheme("http")

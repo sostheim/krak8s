@@ -157,6 +157,7 @@ var _ = Resource("cluster", func() {
 		Routing(GET(""))
 		Description("Get the status of the cluster resources")
 		Response(OK, Cluster)
+		Response(NotFound)
 	})
 
 	Action("delete", func() {
@@ -165,5 +166,17 @@ var _ = Resource("cluster", func() {
 		Response(NoContent)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
+	})
+})
+
+var _ = Resource("health", func() {
+	BasePath("/healthz")
+
+	Action("health", func() {
+		Routing(
+			GET(""),
+		)
+		Description("The health check service endpoint")
+		Response(OK, "text/plain")
 	})
 })

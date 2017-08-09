@@ -21,7 +21,7 @@ import (
 //
 // Identifier: application/application+json; view=default
 type Application struct {
-	// generated resource unique id (8 character hexidecimal value)
+	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
 	// Application name
 	Name   string `form:"name" json:"name" xml:"name"`
@@ -105,7 +105,7 @@ func (c *Client) DecodeApplicationCollection(resp *http.Response) (ApplicationCo
 type Cluster struct {
 	// Date of creation
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
-	// generated resource unique id (8 character hexidecimal value)
+	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
 	// Requested node pool size
 	NodePoolSize int `form:"nodePoolSize" json:"nodePoolSize" xml:"nodePoolSize"`
@@ -146,7 +146,7 @@ func (c *Client) DecodeCluster(resp *http.Response) (*Cluster, error) {
 type Namespace struct {
 	// Date of creation
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
-	// generated resource unique id (8 character hexidecimal value)
+	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
 	// system wide unique namespace name
 	Name string `form:"name" json:"name" xml:"name"`
@@ -191,7 +191,7 @@ type Project struct {
 	} `form:"applications,omitempty" json:"applications,omitempty" xml:"applications,omitempty"`
 	// Date of creation
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
-	// generated resource unique id (8 character hexidecimal value)
+	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
 	// name of project
 	Name       string `form:"name" json:"name" xml:"name"`

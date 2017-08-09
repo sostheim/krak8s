@@ -74,6 +74,9 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	cluster := NewClusterController(as.server)
 	app.MountClusterController(as.server, cluster)
 
+	health := NewHealthController(as.server)
+	app.MountHealthController(as.server, health)
+
 	return &as
 }
 

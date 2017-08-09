@@ -11,7 +11,7 @@ import (
 var Project = MediaType("application/project+json", func() {
 	Description("Users and tennants of the system are represented as the type Project")
 	Attributes(func() {
-		Attribute("id", String, "generated resource unique id (8 character hexidecimal value)", func() {
+		Attribute("id", String, "generated resource unique id (8 character hexadecimal value)", func() {
 			Example("30299bea")
 		})
 		Attribute("type", String, "constant: object type", func() {
@@ -64,7 +64,7 @@ var Project = MediaType("application/project+json", func() {
 var Namespace = MediaType("application/namespace+json", func() {
 	Description("Users and tennants of the system are represented as the type Project")
 	Attributes(func() {
-		Attribute("id", String, "generated resource unique id (8 character hexidecimal value)", func() {
+		Attribute("id", String, "generated resource unique id (8 character hexadecimal value)", func() {
 			Example("da9871c7")
 		})
 		Attribute("type", String, "constant: object type", func() {
@@ -107,7 +107,7 @@ var ApplicationPostBody = Type("ApplicationPostBody", func() {
 var Application = MediaType("application/application+json", func() {
 	Description("Application representation type")
 	Attributes(func() {
-		Attribute("id", String, "generated resource unique id (8 character hexidecimal value)", func() {
+		Attribute("id", String, "generated resource unique id (8 character hexadecimal value)", func() {
 			Example("e1ea1660")
 		})
 		Attribute("type", String, "constant: object type", func() {
@@ -153,7 +153,7 @@ var ClusterPostBody = Type("CluterPostBody", func() {
 var Cluster = MediaType("application/cluster+json", func() {
 	Description("Cluster resource representation type")
 	Attributes(func() {
-		Attribute("id", String, "generated resource unique id (8 character hexidecimal value)", func() {
+		Attribute("id", String, "generated resource unique id (8 character hexadecimal value)", func() {
 			Example("de2760b1")
 		})
 		Attribute("type", String, "constant: object type", func() {
