@@ -23,8 +23,10 @@ type Application struct {
 	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
 	// Application name
-	Name   string `form:"name" json:"name" xml:"name"`
-	Status *struct {
+	Name string `form:"name" json:"name" xml:"name"`
+	// The related namespace's generated unique id, not the namespace's name
+	NamesapceID string `form:"namesapce_id" json:"namesapce_id" xml:"namesapce_id"`
+	Status      *struct {
 		// Last deployment time
 		DeployedAt time.Time `form:"deployed_at" json:"deployed_at" xml:"deployed_at"`
 		// Application specific notification / statuses / notes (if any)
@@ -54,6 +56,9 @@ func (mt *Application) Validate() (err error) {
 	}
 	if mt.Status == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "status"))
+	}
+	if mt.NamesapceID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namesapce_id"))
 	}
 	if mt.Status != nil {
 
@@ -92,6 +97,8 @@ type Cluster struct {
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
 	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
+	// The related namespace's generated unique id, not the namespace's name
+	NamesapceID string `form:"namesapce_id" json:"namesapce_id" xml:"namesapce_id"`
 	// Requested node pool size
 	NodePoolSize int `form:"nodePoolSize" json:"nodePoolSize" xml:"nodePoolSize"`
 	// Lifecycle state
@@ -111,6 +118,9 @@ func (mt *Cluster) Validate() (err error) {
 
 	if mt.State == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "state"))
+	}
+	if mt.NamesapceID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namesapce_id"))
 	}
 	if !(mt.State == "create_requested" || mt.State == "starting" || mt.State == "active" || mt.State == "delete_requested" || mt.State == "deleting" || mt.State == "deleted") {
 		err = goa.MergeErrors(err, goa.InvalidEnumValueError(`response.state`, mt.State, []interface{}{"create_requested", "starting", "active", "delete_requested", "deleting", "deleted"}))
@@ -154,12 +164,6 @@ func (mt *Namespace) Validate() (err error) {
 //
 // Identifier: application/project+json; view=default
 type Project struct {
-	Applications *struct {
-		// generated resource unique id
-		ID string `form:"id" json:"id" xml:"id"`
-		// applications collection url
-		URL string `form:"url" json:"url" xml:"url"`
-	} `form:"applications,omitempty" json:"applications,omitempty" xml:"applications,omitempty"`
 	// Date of creation
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
 	// generated resource unique id (8 character hexadecimal value)
@@ -172,12 +176,6 @@ type Project struct {
 		// namespaces collection url
 		URL string `form:"url" json:"url" xml:"url"`
 	} `form:"namespaces,omitempty" json:"namespaces,omitempty" xml:"namespaces,omitempty"`
-	Resources *struct {
-		// generated resource unique id
-		ID string `form:"id" json:"id" xml:"id"`
-		// resources object url
-		URL string `form:"url" json:"url" xml:"url"`
-	} `form:"resources,omitempty" json:"resources,omitempty" xml:"resources,omitempty"`
 	// constant: object type
 	Type string `form:"type" json:"type" xml:"type"`
 }
@@ -194,14 +192,6 @@ func (mt *Project) Validate() (err error) {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
 
-	if mt.Applications != nil {
-		if mt.Applications.ID == "" {
-			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.applications`, "id"))
-		}
-		if mt.Applications.URL == "" {
-			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.applications`, "url"))
-		}
-	}
 	if utf8.RuneCountInString(mt.Name) < 2 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 2, true))
 	}
@@ -211,14 +201,6 @@ func (mt *Project) Validate() (err error) {
 		}
 		if mt.Namespaces.URL == "" {
 			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.namespaces`, "url"))
-		}
-	}
-	if mt.Resources != nil {
-		if mt.Resources.ID == "" {
-			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.resources`, "id"))
-		}
-		if mt.Resources.URL == "" {
-			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.resources`, "url"))
 		}
 	}
 	return

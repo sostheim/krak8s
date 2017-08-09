@@ -17,6 +17,7 @@ var Project = MediaType("application/project+json", func() {
 		Attribute("type", String, "constant: object type", func() {
 			Example("project")
 		})
+
 		Attribute("name", String, "name of project", func() {
 			Example("newco")
 			MinLength(2)
@@ -31,6 +32,34 @@ var Project = MediaType("application/project+json", func() {
 			})
 			Required("id", "url")
 		})
+	})
+
+	View("default", func() {
+		Attribute("id")
+		Attribute("type")
+		Attribute("name")
+		Attribute("created_at")
+		Attribute("namespaces")
+	})
+})
+
+// Namespace is the namespace resource media type.
+var Namespace = MediaType("application/namespace+json", func() {
+	Description("Users and tennants of the system are represented as the type Project")
+	Attributes(func() {
+		Attribute("id", String, "generated resource unique id (8 character hexadecimal value)", func() {
+			Example("da9871c7")
+		})
+		Attribute("type", String, "constant: object type", func() {
+			Example("namespace")
+		})
+
+		Attribute("name", String, "system wide unique namespace name", func() {
+			Example("newco-prod")
+			MinLength(2)
+		})
+		Attribute("created_at", DateTime, "Date of creation")
+		Required("id", "type", "name", "created_at")
 
 		Attribute("resources", func() {
 			Attribute("id", String, "generated resource unique id")
@@ -47,35 +76,6 @@ var Project = MediaType("application/project+json", func() {
 			})
 			Required("id", "url")
 		})
-	})
-
-	View("default", func() {
-		Attribute("id")
-		Attribute("type")
-		Attribute("name")
-		Attribute("created_at")
-		Attribute("namespaces")
-		Attribute("resources")
-		Attribute("applications")
-	})
-})
-
-// Namespace is the namespace resource media type.
-var Namespace = MediaType("application/namespace+json", func() {
-	Description("Users and tennants of the system are represented as the type Project")
-	Attributes(func() {
-		Attribute("id", String, "generated resource unique id (8 character hexadecimal value)", func() {
-			Example("da9871c7")
-		})
-		Attribute("type", String, "constant: object type", func() {
-			Example("namespace")
-		})
-		Attribute("name", String, "system wide unique namespace name", func() {
-			Example("newco-prod")
-			MinLength(2)
-		})
-		Attribute("created_at", DateTime, "Date of creation")
-		Required("id", "type", "name", "created_at")
 	})
 
 	View("default", func() {
@@ -100,7 +100,11 @@ var ApplicationPostBody = Type("ApplicationPostBody", func() {
 	Attribute("registry", String, func() {
 		Description("Application's registry")
 	})
-	Required("name", "version")
+	Attribute("namespace_id", String, func() {
+		Description("The related namespace's generated unique id, not the namespace's name")
+		Example("da9871c7")
+	})
+	Required("name", "version", "namespace_id")
 })
 
 // Application is the application resource's MediaType.
@@ -126,7 +130,11 @@ var Application = MediaType("application/application+json", func() {
 			Attribute("notes", String, "Application specific notification / statuses / notes (if any)")
 			Required("deployed_at", "state")
 		})
-		Required("id", "type", "name", "version", "status")
+		Attribute("namesapce_id", String, func() {
+			Description("The related namespace's generated unique id, not the namespace's name")
+			Example("da9871c7")
+		})
+		Required("id", "type", "name", "version", "status", "namesapce_id")
 	})
 
 	View("default", func() {
@@ -135,6 +143,7 @@ var Application = MediaType("application/application+json", func() {
 		Attribute("name")
 		Attribute("version")
 		Attribute("status")
+		Attribute("namesapce_id")
 	})
 })
 
@@ -146,7 +155,11 @@ var ClusterPostBody = Type("CluterPostBody", func() {
 		Maximum(11)
 		Default(3)
 	})
-	Required("nodePoolSize")
+	Attribute("namespace_id", String, func() {
+		Description("The related namespace's generated unique id, not the namespace's name")
+		Example("da9871c7")
+	})
+	Required("nodePoolSize", "namespace_id")
 })
 
 // Cluster is the cluster resource's MediaType.
@@ -165,7 +178,11 @@ var Cluster = MediaType("application/cluster+json", func() {
 			Description("Lifecycle state")
 			Enum("create_requested", "starting", "active", "delete_requested", "deleting", "deleted")
 		})
-		Required("id", "type", "nodePoolSize", "created_at", "state")
+		Attribute("namesapce_id", String, func() {
+			Description("The related namespace's generated unique id, not the namespace's name")
+			Example("da9871c7")
+		})
+		Required("id", "type", "nodePoolSize", "created_at", "state", "namesapce_id")
 	})
 
 	View("default", func() {
@@ -174,5 +191,6 @@ var Cluster = MediaType("application/cluster+json", func() {
 		Attribute("nodePoolSize")
 		Attribute("created_at")
 		Attribute("state")
+		Attribute("namesapce_id")
 	})
 })

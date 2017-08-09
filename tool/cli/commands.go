@@ -156,10 +156,11 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 Payload example:
 
 {
-   "name": "Enim laboriosam non adipisci est.",
-   "registry": "Voluptas debitis.",
-   "set": "Illum aut corrupti.",
-   "version": "Atque maxime autem et ea corporis."
+   "name": "Perferendis enim.",
+   "namespace_id": "da9871c7",
+   "registry": "Non adipisci.",
+   "set": "Iste voluptas debitis voluptatem illum.",
+   "version": "Corrupti omnis atque maxime autem."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
@@ -175,7 +176,8 @@ Payload example:
 Payload example:
 
 {
-   "nodePoolSize": 9
+   "namespace_id": "da9871c7",
+   "nodePoolSize": 7
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -191,7 +193,7 @@ Payload example:
 Payload example:
 
 {
-   "name": "Saepe aut."
+   "name": "Corporis eaque id saepe."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}

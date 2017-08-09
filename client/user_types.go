@@ -18,6 +18,8 @@ import (
 type applicationPostBody struct {
 	// Application name
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// The related namespace's generated unique id, not the namespace's name
+	NamespaceID *string `form:"namespace_id,omitempty" json:"namespace_id,omitempty" xml:"namespace_id,omitempty"`
 	// Application's registry
 	Registry *string `form:"registry,omitempty" json:"registry,omitempty" xml:"registry,omitempty"`
 	// Application config --set argument string
@@ -34,6 +36,9 @@ func (ut *applicationPostBody) Validate() (err error) {
 	if ut.Version == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
 	}
+	if ut.NamespaceID == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace_id"))
+	}
 	return
 }
 
@@ -42,6 +47,9 @@ func (ut *applicationPostBody) Publicize() *ApplicationPostBody {
 	var pub ApplicationPostBody
 	if ut.Name != nil {
 		pub.Name = *ut.Name
+	}
+	if ut.NamespaceID != nil {
+		pub.NamespaceID = *ut.NamespaceID
 	}
 	if ut.Registry != nil {
 		pub.Registry = ut.Registry
@@ -59,6 +67,8 @@ func (ut *applicationPostBody) Publicize() *ApplicationPostBody {
 type ApplicationPostBody struct {
 	// Application name
 	Name string `form:"name" json:"name" xml:"name"`
+	// The related namespace's generated unique id, not the namespace's name
+	NamespaceID string `form:"namespace_id" json:"namespace_id" xml:"namespace_id"`
 	// Application's registry
 	Registry *string `form:"registry,omitempty" json:"registry,omitempty" xml:"registry,omitempty"`
 	// Application config --set argument string
@@ -75,11 +85,16 @@ func (ut *ApplicationPostBody) Validate() (err error) {
 	if ut.Version == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
 	}
+	if ut.NamespaceID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace_id"))
+	}
 	return
 }
 
 // cluterPostBody user type.
 type cluterPostBody struct {
+	// The related namespace's generated unique id, not the namespace's name
+	NamespaceID *string `form:"namespace_id,omitempty" json:"namespace_id,omitempty" xml:"namespace_id,omitempty"`
 	// The number of worker nodes in the projects resource pool
 	NodePoolSize *int `form:"nodePoolSize,omitempty" json:"nodePoolSize,omitempty" xml:"nodePoolSize,omitempty"`
 }
@@ -97,6 +112,9 @@ func (ut *cluterPostBody) Validate() (err error) {
 	if ut.NodePoolSize == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "nodePoolSize"))
 	}
+	if ut.NamespaceID == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace_id"))
+	}
 	if ut.NodePoolSize != nil {
 		if *ut.NodePoolSize < 3 {
 			err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, *ut.NodePoolSize, 3, true))
@@ -113,6 +131,9 @@ func (ut *cluterPostBody) Validate() (err error) {
 // Publicize creates CluterPostBody from cluterPostBody
 func (ut *cluterPostBody) Publicize() *CluterPostBody {
 	var pub CluterPostBody
+	if ut.NamespaceID != nil {
+		pub.NamespaceID = *ut.NamespaceID
+	}
 	if ut.NodePoolSize != nil {
 		pub.NodePoolSize = *ut.NodePoolSize
 	}
@@ -121,12 +142,18 @@ func (ut *cluterPostBody) Publicize() *CluterPostBody {
 
 // CluterPostBody user type.
 type CluterPostBody struct {
+	// The related namespace's generated unique id, not the namespace's name
+	NamespaceID string `form:"namespace_id" json:"namespace_id" xml:"namespace_id"`
 	// The number of worker nodes in the projects resource pool
 	NodePoolSize int `form:"nodePoolSize" json:"nodePoolSize" xml:"nodePoolSize"`
 }
 
 // Validate validates the CluterPostBody type instance.
 func (ut *CluterPostBody) Validate() (err error) {
+
+	if ut.NamespaceID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace_id"))
+	}
 	if ut.NodePoolSize < 3 {
 		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, ut.NodePoolSize, 3, true))
 	}

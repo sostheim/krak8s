@@ -9,6 +9,7 @@ definitions:
     example:
       id: e1ea1660
       name: Quos nobis placeat iusto itaque.
+      namesapce_id: da9871c7
       status:
         deployed_at: 2012-02-17T21:30:54-08:00
         notes: Impedit iste beatae odit et omnis.
@@ -23,6 +24,11 @@ definitions:
       name:
         description: Application name
         example: Quos nobis placeat iusto itaque.
+        type: string
+      namesapce_id:
+        description: The related namespace's generated unique id, not the namespace's
+          name
+        example: da9871c7
         type: string
       status:
         example:
@@ -69,6 +75,7 @@ definitions:
     - name
     - version
     - status
+    - namesapce_id
     title: 'Mediatype identifier: application/application+json; view=default'
     type: object
   ApplicationCollection:
@@ -77,14 +84,7 @@ definitions:
     example:
     - id: e1ea1660
       name: Quos nobis placeat iusto itaque.
-      status:
-        deployed_at: 2012-02-17T21:30:54-08:00
-        notes: Impedit iste beatae odit et omnis.
-        state: UNKNOWN
-      type: application
-      version: Dolores in hic qui sed et voluptates.
-    - id: e1ea1660
-      name: Quos nobis placeat iusto itaque.
+      namesapce_id: da9871c7
       status:
         deployed_at: 2012-02-17T21:30:54-08:00
         notes: Impedit iste beatae odit et omnis.
@@ -97,30 +97,37 @@ definitions:
     type: array
   ApplicationPostBody:
     example:
-      name: Enim laboriosam non adipisci est.
-      registry: Voluptas debitis.
-      set: Illum aut corrupti.
-      version: Atque maxime autem et ea corporis.
+      name: Perferendis enim.
+      namespace_id: da9871c7
+      registry: Non adipisci.
+      set: Iste voluptas debitis voluptatem illum.
+      version: Corrupti omnis atque maxime autem.
     properties:
       name:
         description: Application name
-        example: Enim laboriosam non adipisci est.
+        example: Perferendis enim.
+        type: string
+      namespace_id:
+        description: The related namespace's generated unique id, not the namespace's
+          name
+        example: da9871c7
         type: string
       registry:
         description: Application's registry
-        example: Voluptas debitis.
+        example: Non adipisci.
         type: string
       set:
         description: Application config --set argument string
-        example: Illum aut corrupti.
+        example: Iste voluptas debitis voluptatem illum.
         type: string
       version:
         description: Application version string
-        example: Atque maxime autem et ea corporis.
+        example: Corrupti omnis atque maxime autem.
         type: string
     required:
     - name
     - version
+    - namespace_id
     title: ApplicationPostBody
     type: object
   Cluster:
@@ -128,6 +135,7 @@ definitions:
     example:
       created_at: 1988-11-12T15:18:46-08:00
       id: de2760b1
+      namesapce_id: da9871c7
       nodePoolSize: 1.7768362e+18
       state: create_requested
       type: cluster
@@ -140,6 +148,11 @@ definitions:
       id:
         description: generated resource unique id (8 character hexadecimal value)
         example: de2760b1
+        type: string
+      namesapce_id:
+        description: The related namespace's generated unique id, not the namespace's
+          name
+        example: da9871c7
         type: string
       nodePoolSize:
         description: Requested node pool size
@@ -167,29 +180,37 @@ definitions:
     - nodePoolSize
     - created_at
     - state
+    - namesapce_id
     title: 'Mediatype identifier: application/cluster+json; view=default'
     type: object
   CluterPostBody:
     example:
-      nodePoolSize: 9
+      namespace_id: da9871c7
+      nodePoolSize: 7
     properties:
+      namespace_id:
+        description: The related namespace's generated unique id, not the namespace's
+          name
+        example: da9871c7
+        type: string
       nodePoolSize:
         default: 3
         description: The number of worker nodes in the projects resource pool
-        example: 9
+        example: 7
         maximum: 11
         minimum: 3
         type: integer
     required:
     - nodePoolSize
+    - namespace_id
     title: CluterPostBody
     type: object
   CreateNamespacePayload:
     example:
-      name: Saepe aut.
+      name: Corporis eaque id saepe.
     properties:
       name:
-        example: Saepe aut.
+        example: Corporis eaque id saepe.
         type: string
     required:
     - name
@@ -212,14 +233,14 @@ definitions:
     description: Users and tennants of the system are represented as the type Project
       (default view)
     example:
-      created_at: 1990-12-11T22:09:50-08:00
+      created_at: 1982-09-27T18:11:09-07:00
       id: da9871c7
       name: newco-prod
       type: namespace
     properties:
       created_at:
         description: Date of creation
-        example: 1990-12-11T22:09:50-08:00
+        example: 1982-09-27T18:11:09-07:00
         format: date-time
         type: string
       id:
@@ -246,40 +267,17 @@ definitions:
     description: Users and tennants of the system are represented as the type Project
       (default view)
     example:
-      applications:
-        id: Eos non et.
-        url: /v1/project/30299bea/applications
-      created_at: 1982-09-27T18:11:09-07:00
+      created_at: 1997-09-05T09:38:23-07:00
       id: 30299bea
       name: newco
       namespaces:
-        id: Distinctio cumque repellat.
+        id: Qui facere est.
         url: /v1/project/30299bea/namespaces
-      resources:
-        id: Libero qui facere est nostrum.
-        url: /v1/project/30299bea/resources
       type: project
     properties:
-      applications:
-        example:
-          id: Eos non et.
-          url: /v1/project/30299bea/applications
-        properties:
-          id:
-            description: generated resource unique id
-            example: Eos non et.
-            type: string
-          url:
-            description: applications collection url
-            example: /v1/project/30299bea/applications
-            type: string
-        required:
-        - id
-        - url
-        type: object
       created_at:
         description: Date of creation
-        example: 1982-09-27T18:11:09-07:00
+        example: 1997-09-05T09:38:23-07:00
         format: date-time
         type: string
       id:
@@ -293,33 +291,16 @@ definitions:
         type: string
       namespaces:
         example:
-          id: Distinctio cumque repellat.
+          id: Qui facere est.
           url: /v1/project/30299bea/namespaces
         properties:
           id:
             description: generated resource unique id
-            example: Distinctio cumque repellat.
+            example: Qui facere est.
             type: string
           url:
             description: namespaces collection url
             example: /v1/project/30299bea/namespaces
-            type: string
-        required:
-        - id
-        - url
-        type: object
-      resources:
-        example:
-          id: Libero qui facere est nostrum.
-          url: /v1/project/30299bea/resources
-        properties:
-          id:
-            description: generated resource unique id
-            example: Libero qui facere est nostrum.
-            type: string
-          url:
-            description: resources object url
-            example: /v1/project/30299bea/resources
             type: string
         required:
         - id
@@ -340,44 +321,19 @@ definitions:
     description: ProjectCollection is the media type for an array of Project (default
       view)
     example:
-    - applications:
-        id: Eos non et.
-        url: /v1/project/30299bea/applications
-      created_at: 1982-09-27T18:11:09-07:00
+    - created_at: 1997-09-05T09:38:23-07:00
       id: 30299bea
       name: newco
       namespaces:
-        id: Distinctio cumque repellat.
+        id: Qui facere est.
         url: /v1/project/30299bea/namespaces
-      resources:
-        id: Libero qui facere est nostrum.
-        url: /v1/project/30299bea/resources
       type: project
-    - applications:
-        id: Eos non et.
-        url: /v1/project/30299bea/applications
-      created_at: 1982-09-27T18:11:09-07:00
+    - created_at: 1997-09-05T09:38:23-07:00
       id: 30299bea
       name: newco
       namespaces:
-        id: Distinctio cumque repellat.
+        id: Qui facere est.
         url: /v1/project/30299bea/namespaces
-      resources:
-        id: Libero qui facere est nostrum.
-        url: /v1/project/30299bea/resources
-      type: project
-    - applications:
-        id: Eos non et.
-        url: /v1/project/30299bea/applications
-      created_at: 1982-09-27T18:11:09-07:00
-      id: 30299bea
-      name: newco
-      namespaces:
-        id: Distinctio cumque repellat.
-        url: /v1/project/30299bea/namespaces
-      resources:
-        id: Libero qui facere est nostrum.
-        url: /v1/project/30299bea/resources
       type: project
     items:
       $ref: '#/definitions/Project'
