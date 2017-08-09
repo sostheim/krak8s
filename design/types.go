@@ -157,7 +157,7 @@ var Cluster = MediaType("application/cluster+json", func() {
 			Example("de2760b1")
 		})
 		Attribute("type", String, "constant: object type", func() {
-			Example("application")
+			Example("cluster")
 		})
 		Attribute("nodePoolSize", Integer, "Requested node pool size")
 		Attribute("created_at", DateTime, "Date of creation")

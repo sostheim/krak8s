@@ -130,7 +130,7 @@ definitions:
       id: de2760b1
       nodePoolSize: 1.7768362e+18
       state: create_requested
-      type: application
+      type: cluster
     properties:
       created_at:
         description: Date of creation
@@ -159,7 +159,7 @@ definitions:
         type: string
       type:
         description: 'constant: object type'
-        example: application
+        example: cluster
         type: string
     required:
     - id

@@ -28,19 +28,24 @@ The following are the major categories of resources administered by the API.
 * Swagger - The Swagger 2.0 (OpenAPI) specification for this interface
 * Projects Collection - The primary unit of isolation for users, tennant, teams, etc... 
   * Namespaces Collection - The project's namespace(s), e.g. "proj-dev", "prog-test", "prog-prod" 
-    * Application - The namespace's installed applications
-    * Cluster - The namespace's Kraken orchestrated Kubernetes cluster resources 
+  * Application - The namespace's installed applications
+  * Cluster - The namespace's Kraken orchestrated Kubernetes cluster resources 
 
 ## Order of Operations
-There is only one restriction on the ordering of operations for the API. The `cluster` resource *must* be created (POST) before an `application` can be created.  Any attempt to perform an operation on the `application` endpoint when no `cluster` endpoint is defined will return an error response code.  While not strictly necessary, it is preferable to read the status of the `cluster` endpoint and check that the cluster resources are in an "active" state, as shown below before performing additional operations.
+There are two restriction on the ordering of operations for the API. 
+
+1. The `namespace` resource *must* be created (POST) before a `cluster` resource can be created.  Any attempt to perform an operation on the `cluster` endpoint when no `namespace` endpoint is defined will return an error response code.
+
+1. The `cluster` resource *must* be created (POST) before an `application` resource can be created.  Any attempt to perform an operation on the `application` endpoint when no `cluster` endpoint is defined will return an error response code.  While not strictly necessary, it is preferable to read the status of the `cluster` endpoint and check that the cluster resources are in an "active" state, as shown below before performing additional operations.  If the cluster resources are not ready when an application is deployed, then the create request will still be accepted however the application deployment may timeout (faile) and subsequently need to be resubmitted.
 ```
 Status: 200 (Ok)
 {
-  "created_at": "1988-11-12T23:18:46Z",
+  "type": "cluster",
+  "id": "de2760b1",
   "nodePoolSize": 3,
-  "state": "active"
+  "state": "create_requested"
+  "created_at": "1988-11-12T15:18:46-08:00",
 }
-
 ```
 
 
