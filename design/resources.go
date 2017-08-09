@@ -24,7 +24,7 @@ var _ = Resource("project", func() {
 	})
 
 	Action("get", func() {
-		Routing(GET("/:project"))
+		Routing(GET("/:projectid"))
 		Description("Retrieve project with given id.")
 		Params(func() {
 			Param("project", String, "project name")
@@ -37,17 +37,17 @@ var _ = Resource("project", func() {
 
 	Action("create", func() {
 		Routing(POST(""))
-		Description("Create a new user/project")
+		Description("Create a new project entry")
 		Payload(func() {
-			Member("identity")
-			Required("identity")
+			Member("name")
+			Required("name")
 		})
 		Response(Created, "/projects/[a-z,A-Z,0-9]+")
 		Response(BadRequest, ErrorMedia)
 	})
 
 	Action("delete", func() {
-		Routing(DELETE("/:project"))
+		Routing(DELETE("/:projectid"))
 		Params(func() {
 			Param("project", String, "project name")
 			Required("project")
@@ -62,7 +62,7 @@ var _ = Resource("namespace", func() {
 	Description("Manage {create, delete}, and get project's namespace(s)")
 
 	Parent("project")
-	BasePath("ns")
+	BasePath("namespaces")
 
 	CanonicalActionName("get")
 
@@ -73,32 +73,26 @@ var _ = Resource("namespace", func() {
 			Member("name")
 			Required("name")
 		})
-		Response(Created, "^/projects/[a-z,A-Z,0-9]+/ns/[a-z,A-Z,0-9]+")
+		Response(Created, "^/projects/[a-z,A-Z,0-9]+/namespaces/[a-z,A-Z,0-9]+")
 		Response(BadRequest, ErrorMedia)
 	})
 
-	Action("list", func() {
-		Routing(GET(""))
-		Description("Retrieve the collection of all namespaces in the project.")
-		Response(OK, CollectionOf(Namespace))
-	})
-
 	Action("get", func() {
-		Routing(GET("/:ns"))
-		Description("Get the details of the specified namespace (ns) in the project")
+		Routing(GET("/:namespaceid"))
+		Description("Get the details of the specified namespace in the project")
 		Params(func() {
-			Param("ns", String, "namespace identifier")
-			Required("ns")
+			Param("namespaceid", String, "namespace identifier")
+			Required("namespaceid")
 		})
 		Response(OK, Namespace)
 	})
 
 	Action("delete", func() {
-		Routing(DELETE("/:ns"))
-		Description("Delete the specified namespace (ns)")
+		Routing(DELETE("/:namespaceid"))
+		Description("Delete the specified namespace from the project")
 		Params(func() {
-			Param("ns", String, "namespace identifier")
-			Required("ns")
+			Param("namespaceid", String, "namespace identifier")
+			Required("namespaceid")
 		})
 		Response(NoContent)
 		Response(NotFound)
@@ -109,8 +103,8 @@ var _ = Resource("namespace", func() {
 var _ = Resource("application", func() {
 	Description("Manage {create, delete}, and get namespaces's Application(s)")
 
-	Parent("namespace")
-	BasePath("app")
+	Parent("project")
+	BasePath("applications")
 
 	CanonicalActionName("get")
 
@@ -118,7 +112,7 @@ var _ = Resource("application", func() {
 		Routing(POST(""))
 		Description("Create an application deployment")
 		Payload(ApplicationPostBody)
-		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/ns/[a-z,A-Z,0-9]+/app/[a-z,A-Z,0-9]+")
+		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/applications/[a-z,A-Z,0-9]+")
 		Response(BadRequest, ErrorMedia)
 	})
 
@@ -129,14 +123,14 @@ var _ = Resource("application", func() {
 	})
 
 	Action("get", func() {
-		Routing(GET("/:app"))
-		Description("Get the status of the specified application")
+		Routing(GET("/:appid"))
+		Description("Get the status of the specified application from the project")
 		Response(OK, Application)
 	})
 
 	Action("delete", func() {
-		Routing(DELETE("/:app"))
-		Description("Delete the specified application")
+		Routing(DELETE("/:appid"))
+		Description("Delete the specified application from the project")
 		Response(NoContent)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
@@ -146,16 +140,16 @@ var _ = Resource("application", func() {
 var _ = Resource("cluster", func() {
 	Description("Manage {create, delete}, and get cluster resources")
 
-	Parent("namespace")
+	Parent("project")
 	BasePath("cluster")
 
 	CanonicalActionName("get")
 
 	Action("create", func() {
 		Routing(POST(""))
-		Description("Create the specified cluster resources")
+		Description("Create the cluster resources")
 		Payload(ClusterPostBody)
-		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/ns/[a-z,A-Z,0-9]+/cluster")
+		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/cluster/[a-z,A-Z,0-9]+")
 		Response(BadRequest, ErrorMedia)
 	})
 

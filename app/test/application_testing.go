@@ -28,7 +28,7 @@ import (
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func CreateApplicationAccepted(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, payload *app.ApplicationPostBody) http.ResponseWriter {
+func CreateApplicationAccepted(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, projectid string, payload *app.ApplicationPostBody) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -60,15 +60,14 @@ func CreateApplicationAccepted(t goatest.TInterface, ctx context.Context, servic
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/applications", projectid),
 	}
 	req, _err := http.NewRequest("POST", u.String(), nil)
 	if _err != nil {
 		panic("invalid test " + _err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -98,7 +97,7 @@ func CreateApplicationAccepted(t goatest.TInterface, ctx context.Context, servic
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func CreateApplicationBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, payload *app.ApplicationPostBody) (http.ResponseWriter, error) {
+func CreateApplicationBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, projectid string, payload *app.ApplicationPostBody) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -129,15 +128,14 @@ func CreateApplicationBadRequest(t goatest.TInterface, ctx context.Context, serv
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/applications", projectid),
 	}
 	req, _err := http.NewRequest("POST", u.String(), nil)
 	if _err != nil {
 		panic("invalid test " + _err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -175,7 +173,7 @@ func CreateApplicationBadRequest(t goatest.TInterface, ctx context.Context, serv
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteApplicationBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, app_ string) (http.ResponseWriter, error) {
+func DeleteApplicationBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, projectid string, appid string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -196,16 +194,15 @@ func DeleteApplicationBadRequest(t goatest.TInterface, ctx context.Context, serv
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, app_),
+		Path: fmt.Sprintf("/v1/projects/%v/applications/%v", projectid, appid),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
-	prms["app"] = []string{fmt.Sprintf("%v", app_)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	prms["appid"] = []string{fmt.Sprintf("%v", appid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -242,7 +239,7 @@ func DeleteApplicationBadRequest(t goatest.TInterface, ctx context.Context, serv
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteApplicationNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, app_ string) http.ResponseWriter {
+func DeleteApplicationNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, projectid string, appid string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -263,16 +260,15 @@ func DeleteApplicationNoContent(t goatest.TInterface, ctx context.Context, servi
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, app_),
+		Path: fmt.Sprintf("/v1/projects/%v/applications/%v", projectid, appid),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
-	prms["app"] = []string{fmt.Sprintf("%v", app_)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	prms["appid"] = []string{fmt.Sprintf("%v", appid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -301,7 +297,7 @@ func DeleteApplicationNoContent(t goatest.TInterface, ctx context.Context, servi
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteApplicationNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, app_ string) http.ResponseWriter {
+func DeleteApplicationNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, projectid string, appid string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -322,16 +318,15 @@ func DeleteApplicationNotFound(t goatest.TInterface, ctx context.Context, servic
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, app_),
+		Path: fmt.Sprintf("/v1/projects/%v/applications/%v", projectid, appid),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
-	prms["app"] = []string{fmt.Sprintf("%v", app_)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	prms["appid"] = []string{fmt.Sprintf("%v", appid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -360,7 +355,7 @@ func DeleteApplicationNotFound(t goatest.TInterface, ctx context.Context, servic
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func GetApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string, app_ string) (http.ResponseWriter, *app.Application) {
+func GetApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, projectid string, appid string) (http.ResponseWriter, *app.Application) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -381,16 +376,15 @@ func GetApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", project, ns, app_),
+		Path: fmt.Sprintf("/v1/projects/%v/applications/%v", projectid, appid),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
-	prms["app"] = []string{fmt.Sprintf("%v", app_)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	prms["appid"] = []string{fmt.Sprintf("%v", appid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -431,7 +425,7 @@ func GetApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Se
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func ListApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, project string, ns string) (http.ResponseWriter, app.ApplicationCollection) {
+func ListApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ApplicationController, projectid string) (http.ResponseWriter, app.ApplicationCollection) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -452,15 +446,14 @@ func ListApplicationOK(t goatest.TInterface, ctx context.Context, service *goa.S
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/app", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/applications", projectid),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}

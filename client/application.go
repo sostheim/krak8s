@@ -19,11 +19,10 @@ import (
 )
 
 // CreateApplicationPath computes a request path to the create action of application.
-func CreateApplicationPath(project string, ns string) string {
-	param0 := project
-	param1 := ns
+func CreateApplicationPath(projectid string) string {
+	param0 := projectid
 
-	return fmt.Sprintf("/v1/projects/%s/ns/%s/app", param0, param1)
+	return fmt.Sprintf("/v1/projects/%s/applications", param0)
 }
 
 // Create an application deployment
@@ -64,15 +63,14 @@ func (c *Client) NewCreateApplicationRequest(ctx context.Context, path string, p
 }
 
 // DeleteApplicationPath computes a request path to the delete action of application.
-func DeleteApplicationPath(project string, ns string, app string) string {
-	param0 := project
-	param1 := ns
-	param2 := app
+func DeleteApplicationPath(projectid string, appid string) string {
+	param0 := projectid
+	param1 := appid
 
-	return fmt.Sprintf("/v1/projects/%s/ns/%s/app/%s", param0, param1, param2)
+	return fmt.Sprintf("/v1/projects/%s/applications/%s", param0, param1)
 }
 
-// Delete the specified application
+// Delete the specified application from the project
 func (c *Client) DeleteApplication(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewDeleteApplicationRequest(ctx, path)
 	if err != nil {
@@ -96,15 +94,14 @@ func (c *Client) NewDeleteApplicationRequest(ctx context.Context, path string) (
 }
 
 // GetApplicationPath computes a request path to the get action of application.
-func GetApplicationPath(project string, ns string, app string) string {
-	param0 := project
-	param1 := ns
-	param2 := app
+func GetApplicationPath(projectid string, appid string) string {
+	param0 := projectid
+	param1 := appid
 
-	return fmt.Sprintf("/v1/projects/%s/ns/%s/app/%s", param0, param1, param2)
+	return fmt.Sprintf("/v1/projects/%s/applications/%s", param0, param1)
 }
 
-// Get the status of the specified application
+// Get the status of the specified application from the project
 func (c *Client) GetApplication(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewGetApplicationRequest(ctx, path)
 	if err != nil {
@@ -128,11 +125,10 @@ func (c *Client) NewGetApplicationRequest(ctx context.Context, path string) (*ht
 }
 
 // ListApplicationPath computes a request path to the list action of application.
-func ListApplicationPath(project string, ns string) string {
-	param0 := project
-	param1 := ns
+func ListApplicationPath(projectid string) string {
+	param0 := projectid
 
-	return fmt.Sprintf("/v1/projects/%s/ns/%s/app", param0, param1)
+	return fmt.Sprintf("/v1/projects/%s/applications", param0)
 }
 
 // Retrieve the collection of all applications in the namespace.

@@ -32,39 +32,27 @@ type (
 	CreateApplicationCommand struct {
 		Payload     string
 		ContentType string
-		// namespace identifier
-		Ns string
-		// project name
-		Project     string
+		Projectid   string
 		PrettyPrint bool
 	}
 
 	// DeleteApplicationCommand is the command line data structure for the delete action of application
 	DeleteApplicationCommand struct {
-		App string
-		// namespace identifier
-		Ns string
-		// project name
-		Project     string
+		Appid       string
+		Projectid   string
 		PrettyPrint bool
 	}
 
 	// GetApplicationCommand is the command line data structure for the get action of application
 	GetApplicationCommand struct {
-		App string
-		// namespace identifier
-		Ns string
-		// project name
-		Project     string
+		Appid       string
+		Projectid   string
 		PrettyPrint bool
 	}
 
 	// ListApplicationCommand is the command line data structure for the list action of application
 	ListApplicationCommand struct {
-		// namespace identifier
-		Ns string
-		// project name
-		Project     string
+		Projectid   string
 		PrettyPrint bool
 	}
 
@@ -72,28 +60,19 @@ type (
 	CreateClusterCommand struct {
 		Payload     string
 		ContentType string
-		// namespace identifier
-		Ns string
-		// project name
-		Project     string
+		Projectid   string
 		PrettyPrint bool
 	}
 
 	// DeleteClusterCommand is the command line data structure for the delete action of cluster
 	DeleteClusterCommand struct {
-		// namespace identifier
-		Ns string
-		// project name
-		Project     string
+		Projectid   string
 		PrettyPrint bool
 	}
 
 	// GetClusterCommand is the command line data structure for the get action of cluster
 	GetClusterCommand struct {
-		// namespace identifier
-		Ns string
-		// project name
-		Project     string
+		Projectid   string
 		PrettyPrint bool
 	}
 
@@ -101,33 +80,23 @@ type (
 	CreateNamespaceCommand struct {
 		Payload     string
 		ContentType string
-		// project name
-		Project     string
+		Projectid   string
 		PrettyPrint bool
 	}
 
 	// DeleteNamespaceCommand is the command line data structure for the delete action of namespace
 	DeleteNamespaceCommand struct {
 		// namespace identifier
-		Ns string
-		// project name
-		Project     string
+		Namespaceid string
+		Projectid   string
 		PrettyPrint bool
 	}
 
 	// GetNamespaceCommand is the command line data structure for the get action of namespace
 	GetNamespaceCommand struct {
 		// namespace identifier
-		Ns string
-		// project name
-		Project     string
-		PrettyPrint bool
-	}
-
-	// ListNamespaceCommand is the command line data structure for the list action of namespace
-	ListNamespaceCommand struct {
-		// project name
-		Project     string
+		Namespaceid string
+		Projectid   string
 		PrettyPrint bool
 	}
 
@@ -140,6 +109,7 @@ type (
 
 	// DeleteProjectCommand is the command line data structure for the delete action of project
 	DeleteProjectCommand struct {
+		Projectid string
 		// project name
 		Project     string
 		PrettyPrint bool
@@ -147,6 +117,7 @@ type (
 
 	// GetProjectCommand is the command line data structure for the get action of project
 	GetProjectCommand struct {
+		Projectid string
 		// project name
 		Project     string
 		PrettyPrint bool
@@ -173,17 +144,17 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 	}
 	tmp1 := new(CreateApplicationCommand)
 	sub = &cobra.Command{
-		Use:   `application ["/v1/projects/PROJECT/ns/NS/app"]`,
+		Use:   `application ["/v1/projects/PROJECTID/applications"]`,
 		Short: `Manage {create, delete}, and get namespaces's Application(s)`,
 		Long: `Manage {create, delete}, and get namespaces's Application(s)
 
 Payload example:
 
 {
-   "name": "Iste voluptas debitis voluptatem illum.",
-   "registry": "Corrupti omnis atque maxime autem.",
-   "set": "Ea corporis eaque id saepe aut provident.",
-   "version": "Aut minima inventore et nam."
+   "name": "Enim laboriosam non adipisci est.",
+   "registry": "Voluptas debitis.",
+   "set": "Illum aut corrupti.",
+   "version": "Atque maxime autem et ea corporis."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
@@ -192,14 +163,14 @@ Payload example:
 	command.AddCommand(sub)
 	tmp2 := new(CreateClusterCommand)
 	sub = &cobra.Command{
-		Use:   `cluster ["/v1/projects/PROJECT/ns/NS/cluster"]`,
+		Use:   `cluster ["/v1/projects/PROJECTID/cluster"]`,
 		Short: `Manage {create, delete}, and get cluster resources`,
 		Long: `Manage {create, delete}, and get cluster resources
 
 Payload example:
 
 {
-   "nodePoolSize": 10
+   "nodePoolSize": 9
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -208,14 +179,14 @@ Payload example:
 	command.AddCommand(sub)
 	tmp3 := new(CreateNamespaceCommand)
 	sub = &cobra.Command{
-		Use:   `namespace ["/v1/projects/PROJECT/ns"]`,
+		Use:   `namespace ["/v1/projects/PROJECTID/namespaces"]`,
 		Short: `Manage {create, delete}, and get project's namespace(s)`,
 		Long: `Manage {create, delete}, and get project's namespace(s)
 
 Payload example:
 
 {
-   "name": "Non adipisci."
+   "name": "Saepe aut."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
@@ -231,7 +202,7 @@ Payload example:
 Payload example:
 
 {
-   "identity": "Perferendis enim."
+   "name": "newco"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp4.Run(c, args) },
 	}
@@ -245,7 +216,7 @@ Payload example:
 	}
 	tmp5 := new(DeleteApplicationCommand)
 	sub = &cobra.Command{
-		Use:   `application ["/v1/projects/PROJECT/ns/NS/app/APP"]`,
+		Use:   `application ["/v1/projects/PROJECTID/applications/APPID"]`,
 		Short: `Manage {create, delete}, and get namespaces's Application(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp5.Run(c, args) },
 	}
@@ -254,7 +225,7 @@ Payload example:
 	command.AddCommand(sub)
 	tmp6 := new(DeleteClusterCommand)
 	sub = &cobra.Command{
-		Use:   `cluster ["/v1/projects/PROJECT/ns/NS/cluster"]`,
+		Use:   `cluster ["/v1/projects/PROJECTID/cluster"]`,
 		Short: `Manage {create, delete}, and get cluster resources`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp6.Run(c, args) },
 	}
@@ -263,7 +234,7 @@ Payload example:
 	command.AddCommand(sub)
 	tmp7 := new(DeleteNamespaceCommand)
 	sub = &cobra.Command{
-		Use:   `namespace ["/v1/projects/PROJECT/ns/NS"]`,
+		Use:   `namespace ["/v1/projects/PROJECTID/namespaces/NAMESPACEID"]`,
 		Short: `Manage {create, delete}, and get project's namespace(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp7.Run(c, args) },
 	}
@@ -272,7 +243,7 @@ Payload example:
 	command.AddCommand(sub)
 	tmp8 := new(DeleteProjectCommand)
 	sub = &cobra.Command{
-		Use:   `project ["/v1/projects/PROJECT"]`,
+		Use:   `project ["/v1/projects/PROJECTID"]`,
 		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
 	}
@@ -286,7 +257,7 @@ Payload example:
 	}
 	tmp9 := new(GetApplicationCommand)
 	sub = &cobra.Command{
-		Use:   `application ["/v1/projects/PROJECT/ns/NS/app/APP"]`,
+		Use:   `application ["/v1/projects/PROJECTID/applications/APPID"]`,
 		Short: `Manage {create, delete}, and get namespaces's Application(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp9.Run(c, args) },
 	}
@@ -295,7 +266,7 @@ Payload example:
 	command.AddCommand(sub)
 	tmp10 := new(GetClusterCommand)
 	sub = &cobra.Command{
-		Use:   `cluster ["/v1/projects/PROJECT/ns/NS/cluster"]`,
+		Use:   `cluster ["/v1/projects/PROJECTID/cluster"]`,
 		Short: `Manage {create, delete}, and get cluster resources`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp10.Run(c, args) },
 	}
@@ -304,7 +275,7 @@ Payload example:
 	command.AddCommand(sub)
 	tmp11 := new(GetNamespaceCommand)
 	sub = &cobra.Command{
-		Use:   `namespace ["/v1/projects/PROJECT/ns/NS"]`,
+		Use:   `namespace ["/v1/projects/PROJECTID/namespaces/NAMESPACEID"]`,
 		Short: `Manage {create, delete}, and get project's namespace(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp11.Run(c, args) },
 	}
@@ -313,7 +284,7 @@ Payload example:
 	command.AddCommand(sub)
 	tmp12 := new(GetProjectCommand)
 	sub = &cobra.Command{
-		Use:   `project ["/v1/projects/PROJECT"]`,
+		Use:   `project ["/v1/projects/PROJECTID"]`,
 		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp12.Run(c, args) },
 	}
@@ -327,30 +298,21 @@ Payload example:
 	}
 	tmp13 := new(ListApplicationCommand)
 	sub = &cobra.Command{
-		Use:   `application ["/v1/projects/PROJECT/ns/NS/app"]`,
+		Use:   `application ["/v1/projects/PROJECTID/applications"]`,
 		Short: `Manage {create, delete}, and get namespaces's Application(s)`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp13.Run(c, args) },
 	}
 	tmp13.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp13.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
-	tmp14 := new(ListNamespaceCommand)
+	tmp14 := new(ListProjectCommand)
 	sub = &cobra.Command{
-		Use:   `namespace ["/v1/projects/PROJECT/ns"]`,
-		Short: `Manage {create, delete}, and get project's namespace(s)`,
+		Use:   `project ["/v1/projects"]`,
+		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp14.Run(c, args) },
 	}
 	tmp14.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp14.PrettyPrint, "pp", false, "Pretty print response body")
-	command.AddCommand(sub)
-	tmp15 := new(ListProjectCommand)
-	sub = &cobra.Command{
-		Use:   `project ["/v1/projects"]`,
-		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
-		RunE:  func(cmd *cobra.Command, args []string) error { return tmp15.Run(c, args) },
-	}
-	tmp15.RegisterFlags(sub, c)
-	sub.PersistentFlags().BoolVar(&tmp15.PrettyPrint, "pp", false, "Pretty print response body")
 	command.AddCommand(sub)
 	app.AddCommand(command)
 
@@ -599,7 +561,7 @@ func (cmd *CreateApplicationCommand) Run(c *client.Client, args []string) error 
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v/app", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns))
+		path = fmt.Sprintf("/v1/projects/%v/applications", url.QueryEscape(cmd.Projectid))
 	}
 	var payload client.ApplicationPostBody
 	if cmd.Payload != "" {
@@ -624,10 +586,8 @@ func (cmd *CreateApplicationCommand) Run(c *client.Client, args []string) error 
 func (cmd *CreateApplicationCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
 	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
-	var ns string
-	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }
 
 // Run makes the HTTP request corresponding to the DeleteApplicationCommand command.
@@ -636,7 +596,7 @@ func (cmd *DeleteApplicationCommand) Run(c *client.Client, args []string) error 
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns), url.QueryEscape(cmd.App))
+		path = fmt.Sprintf("/v1/projects/%v/applications/%v", url.QueryEscape(cmd.Projectid), url.QueryEscape(cmd.Appid))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -652,12 +612,10 @@ func (cmd *DeleteApplicationCommand) Run(c *client.Client, args []string) error 
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *DeleteApplicationCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var app string
-	cc.Flags().StringVar(&cmd.App, "app", app, ``)
-	var ns string
-	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
+	var appid string
+	cc.Flags().StringVar(&cmd.Appid, "appid", appid, ``)
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }
 
 // Run makes the HTTP request corresponding to the GetApplicationCommand command.
@@ -666,7 +624,7 @@ func (cmd *GetApplicationCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns), url.QueryEscape(cmd.App))
+		path = fmt.Sprintf("/v1/projects/%v/applications/%v", url.QueryEscape(cmd.Projectid), url.QueryEscape(cmd.Appid))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -682,12 +640,10 @@ func (cmd *GetApplicationCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *GetApplicationCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var app string
-	cc.Flags().StringVar(&cmd.App, "app", app, ``)
-	var ns string
-	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
+	var appid string
+	cc.Flags().StringVar(&cmd.Appid, "appid", appid, ``)
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }
 
 // Run makes the HTTP request corresponding to the ListApplicationCommand command.
@@ -696,7 +652,7 @@ func (cmd *ListApplicationCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v/app", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns))
+		path = fmt.Sprintf("/v1/projects/%v/applications", url.QueryEscape(cmd.Projectid))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -712,10 +668,8 @@ func (cmd *ListApplicationCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *ListApplicationCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var ns string
-	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }
 
 // Run makes the HTTP request corresponding to the CreateClusterCommand command.
@@ -724,7 +678,7 @@ func (cmd *CreateClusterCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns))
+		path = fmt.Sprintf("/v1/projects/%v/cluster", url.QueryEscape(cmd.Projectid))
 	}
 	var payload client.CluterPostBody
 	if cmd.Payload != "" {
@@ -749,10 +703,8 @@ func (cmd *CreateClusterCommand) Run(c *client.Client, args []string) error {
 func (cmd *CreateClusterCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
 	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
-	var ns string
-	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }
 
 // Run makes the HTTP request corresponding to the DeleteClusterCommand command.
@@ -761,7 +713,7 @@ func (cmd *DeleteClusterCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns))
+		path = fmt.Sprintf("/v1/projects/%v/cluster", url.QueryEscape(cmd.Projectid))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -777,10 +729,8 @@ func (cmd *DeleteClusterCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *DeleteClusterCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var ns string
-	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }
 
 // Run makes the HTTP request corresponding to the GetClusterCommand command.
@@ -789,7 +739,7 @@ func (cmd *GetClusterCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns))
+		path = fmt.Sprintf("/v1/projects/%v/cluster", url.QueryEscape(cmd.Projectid))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -805,10 +755,8 @@ func (cmd *GetClusterCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *GetClusterCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var ns string
-	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }
 
 // Run makes the HTTP request corresponding to the CreateNamespaceCommand command.
@@ -817,7 +765,7 @@ func (cmd *CreateNamespaceCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns", url.QueryEscape(cmd.Project))
+		path = fmt.Sprintf("/v1/projects/%v/namespaces", url.QueryEscape(cmd.Projectid))
 	}
 	var payload client.CreateNamespacePayload
 	if cmd.Payload != "" {
@@ -842,8 +790,8 @@ func (cmd *CreateNamespaceCommand) Run(c *client.Client, args []string) error {
 func (cmd *CreateNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
 	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }
 
 // Run makes the HTTP request corresponding to the DeleteNamespaceCommand command.
@@ -852,7 +800,7 @@ func (cmd *DeleteNamespaceCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns))
+		path = fmt.Sprintf("/v1/projects/%v/namespaces/%v", url.QueryEscape(cmd.Projectid), url.QueryEscape(cmd.Namespaceid))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -868,10 +816,10 @@ func (cmd *DeleteNamespaceCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *DeleteNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var ns string
-	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
+	var namespaceid string
+	cc.Flags().StringVar(&cmd.Namespaceid, "namespaceid", namespaceid, `namespace identifier`)
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }
 
 // Run makes the HTTP request corresponding to the GetNamespaceCommand command.
@@ -880,7 +828,7 @@ func (cmd *GetNamespaceCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns/%v", url.QueryEscape(cmd.Project), url.QueryEscape(cmd.Ns))
+		path = fmt.Sprintf("/v1/projects/%v/namespaces/%v", url.QueryEscape(cmd.Projectid), url.QueryEscape(cmd.Namespaceid))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -896,36 +844,10 @@ func (cmd *GetNamespaceCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *GetNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var ns string
-	cc.Flags().StringVar(&cmd.Ns, "ns", ns, `namespace identifier`)
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
-}
-
-// Run makes the HTTP request corresponding to the ListNamespaceCommand command.
-func (cmd *ListNamespaceCommand) Run(c *client.Client, args []string) error {
-	var path string
-	if len(args) > 0 {
-		path = args[0]
-	} else {
-		path = fmt.Sprintf("/v1/projects/%v/ns", url.QueryEscape(cmd.Project))
-	}
-	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
-	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.ListNamespace(ctx, path)
-	if err != nil {
-		goa.LogError(ctx, "failed", "err", err)
-		return err
-	}
-
-	goaclient.HandleResponse(c.Client, resp, cmd.PrettyPrint)
-	return nil
-}
-
-// RegisterFlags registers the command flags with the command line.
-func (cmd *ListNamespaceCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
-	var project string
-	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
+	var namespaceid string
+	cc.Flags().StringVar(&cmd.Namespaceid, "namespaceid", namespaceid, `namespace identifier`)
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }
 
 // Run makes the HTTP request corresponding to the CreateProjectCommand command.
@@ -967,11 +889,11 @@ func (cmd *DeleteProjectCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v", url.QueryEscape(cmd.Project))
+		path = fmt.Sprintf("/v1/projects/%v", url.QueryEscape(cmd.Projectid))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.DeleteProject(ctx, path)
+	resp, err := c.DeleteProject(ctx, path, cmd.Project)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -983,6 +905,8 @@ func (cmd *DeleteProjectCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *DeleteProjectCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }
@@ -993,11 +917,11 @@ func (cmd *GetProjectCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v", url.QueryEscape(cmd.Project))
+		path = fmt.Sprintf("/v1/projects/%v", url.QueryEscape(cmd.Projectid))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.GetProject(ctx, path)
+	resp, err := c.GetProject(ctx, path, cmd.Project)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -1009,6 +933,8 @@ func (cmd *GetProjectCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *GetProjectCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	var projectid string
+	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 	var project string
 	cc.Flags().StringVar(&cmd.Project, "project", project, `project name`)
 }

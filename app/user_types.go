@@ -80,7 +80,7 @@ func (ut *ApplicationPostBody) Validate() (err error) {
 
 // cluterPostBody user type.
 type cluterPostBody struct {
-	// The number of real nodes in the pool
+	// The number of worker nodes in the projects resource pool
 	NodePoolSize *int `form:"nodePoolSize,omitempty" json:"nodePoolSize,omitempty" xml:"nodePoolSize,omitempty"`
 }
 
@@ -121,7 +121,7 @@ func (ut *cluterPostBody) Publicize() *CluterPostBody {
 
 // CluterPostBody user type.
 type CluterPostBody struct {
-	// The number of real nodes in the pool
+	// The number of worker nodes in the projects resource pool
 	NodePoolSize int `form:"nodePoolSize" json:"nodePoolSize" xml:"nodePoolSize"`
 }
 
@@ -132,68 +132,6 @@ func (ut *CluterPostBody) Validate() (err error) {
 	}
 	if ut.NodePoolSize > 11 {
 		err = goa.MergeErrors(err, goa.InvalidRangeError(`response.nodePoolSize`, ut.NodePoolSize, 11, false))
-	}
-	return
-}
-
-// mongoPostBody user type.
-type mongoPostBody struct {
-	// Appplication Registry Identifier
-	Application *string `form:"application,omitempty" json:"application,omitempty" xml:"application,omitempty"`
-	// Appplication Version
-	Version *string `form:"version,omitempty" json:"version,omitempty" xml:"version,omitempty"`
-}
-
-// Finalize sets the default values for mongoPostBody type instance.
-func (ut *mongoPostBody) Finalize() {
-	var defaultApplication = "quay.io/samsung_cnct/mongodb-replicaset"
-	if ut.Application == nil {
-		ut.Application = &defaultApplication
-	}
-	var defaultVersion = "v1.2.0"
-	if ut.Version == nil {
-		ut.Version = &defaultVersion
-	}
-}
-
-// Validate validates the mongoPostBody type instance.
-func (ut *mongoPostBody) Validate() (err error) {
-	if ut.Application == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
-	}
-	if ut.Version == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
-	}
-	return
-}
-
-// Publicize creates MongoPostBody from mongoPostBody
-func (ut *mongoPostBody) Publicize() *MongoPostBody {
-	var pub MongoPostBody
-	if ut.Application != nil {
-		pub.Application = *ut.Application
-	}
-	if ut.Version != nil {
-		pub.Version = *ut.Version
-	}
-	return &pub
-}
-
-// MongoPostBody user type.
-type MongoPostBody struct {
-	// Appplication Registry Identifier
-	Application string `form:"application" json:"application" xml:"application"`
-	// Appplication Version
-	Version string `form:"version" json:"version" xml:"version"`
-}
-
-// Validate validates the MongoPostBody type instance.
-func (ut *MongoPostBody) Validate() (err error) {
-	if ut.Application == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
-	}
-	if ut.Version == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
 	}
 	return
 }

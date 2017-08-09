@@ -20,6 +20,8 @@ import (
 //
 // Identifier: application/application+json; view=default
 type Application struct {
+	// generated resource unique id (8 character hexidecimal value)
+	ID string `form:"id" json:"id" xml:"id"`
 	// Application name
 	Name   string `form:"name" json:"name" xml:"name"`
 	Status *struct {
@@ -30,12 +32,20 @@ type Application struct {
 		// Deployment state
 		State string `form:"state" json:"state" xml:"state"`
 	} `form:"status" json:"status" xml:"status"`
+	// constant: object type
+	Type string `form:"type" json:"type" xml:"type"`
 	// Application version
 	Version string `form:"version" json:"version" xml:"version"`
 }
 
 // Validate validates the Application media type instance.
 func (mt *Application) Validate() (err error) {
+	if mt.ID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "id"))
+	}
+	if mt.Type == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "type"))
+	}
 	if mt.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
@@ -80,14 +90,24 @@ func (mt ApplicationCollection) Validate() (err error) {
 type Cluster struct {
 	// Date of creation
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
+	// generated resource unique id (8 character hexidecimal value)
+	ID string `form:"id" json:"id" xml:"id"`
 	// Requested node pool size
 	NodePoolSize int `form:"nodePoolSize" json:"nodePoolSize" xml:"nodePoolSize"`
 	// Lifecycle state
 	State string `form:"state" json:"state" xml:"state"`
+	// constant: object type
+	Type string `form:"type" json:"type" xml:"type"`
 }
 
 // Validate validates the Cluster media type instance.
 func (mt *Cluster) Validate() (err error) {
+	if mt.ID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "id"))
+	}
+	if mt.Type == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "type"))
+	}
 
 	if mt.State == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "state"))
@@ -98,111 +118,34 @@ func (mt *Cluster) Validate() (err error) {
 	return
 }
 
-// MongoDB ReplicaSet instance representation type (default view)
-//
-// Identifier: application/mongo+json; view=default
-type Mongo struct {
-	// Application registry identifier
-	Application string `form:"application" json:"application" xml:"application"`
-	// Date of creation
-	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
-	// Application version
-	Version string `form:"version" json:"version" xml:"version"`
-}
-
-// Validate validates the Mongo media type instance.
-func (mt *Mongo) Validate() (err error) {
-	if mt.Application == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "application"))
-	}
-	if mt.Version == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
-	}
-
-	return
-}
-
 // Users and tennants of the system are represented as the type Project (default view)
 //
 // Identifier: application/namespace+json; view=default
 type Namespace struct {
 	// Date of creation
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
-	// API href of the namespace
-	Href string `form:"href" json:"href" xml:"href"`
-	// namespace name
+	// generated resource unique id (8 character hexidecimal value)
+	ID string `form:"id" json:"id" xml:"id"`
+	// system wide unique namespace name
 	Name string `form:"name" json:"name" xml:"name"`
+	// constant: object type
+	Type string `form:"type" json:"type" xml:"type"`
 }
 
 // Validate validates the Namespace media type instance.
 func (mt *Namespace) Validate() (err error) {
+	if mt.ID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "id"))
+	}
+	if mt.Type == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "type"))
+	}
 	if mt.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
-	}
-	if mt.Href == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "href"))
 	}
 
 	if utf8.RuneCountInString(mt.Name) < 2 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 2, true))
-	}
-	return
-}
-
-// Users and tennants of the system are represented as the type Project (link view)
-//
-// Identifier: application/namespace+json; view=link
-type NamespaceLink struct {
-	// API href of the namespace
-	Href string `form:"href" json:"href" xml:"href"`
-	// namespace name
-	Name string `form:"name" json:"name" xml:"name"`
-}
-
-// Validate validates the NamespaceLink media type instance.
-func (mt *NamespaceLink) Validate() (err error) {
-	if mt.Name == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
-	}
-	if mt.Href == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "href"))
-	}
-	if utf8.RuneCountInString(mt.Name) < 2 {
-		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 2, true))
-	}
-	return
-}
-
-// NamespaceCollection is the media type for an array of Namespace (default view)
-//
-// Identifier: application/namespace+json; type=collection; view=default
-type NamespaceCollection []*Namespace
-
-// Validate validates the NamespaceCollection media type instance.
-func (mt NamespaceCollection) Validate() (err error) {
-	for _, e := range mt {
-		if e != nil {
-			if err2 := e.Validate(); err2 != nil {
-				err = goa.MergeErrors(err, err2)
-			}
-		}
-	}
-	return
-}
-
-// NamespaceCollection is the media type for an array of Namespace (link view)
-//
-// Identifier: application/namespace+json; type=collection; view=link
-type NamespaceLinkCollection []*NamespaceLink
-
-// Validate validates the NamespaceLinkCollection media type instance.
-func (mt NamespaceLinkCollection) Validate() (err error) {
-	for _, e := range mt {
-		if e != nil {
-			if err2 := e.Validate(); err2 != nil {
-				err = goa.MergeErrors(err, err2)
-			}
-		}
 	}
 	return
 }
@@ -211,12 +154,32 @@ func (mt NamespaceLinkCollection) Validate() (err error) {
 //
 // Identifier: application/project+json; view=default
 type Project struct {
+	Applications *struct {
+		// generated resource unique id
+		ID string `form:"id" json:"id" xml:"id"`
+		// applications collection url
+		URL string `form:"url" json:"url" xml:"url"`
+	} `form:"applications,omitempty" json:"applications,omitempty" xml:"applications,omitempty"`
 	// Date of creation
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
-	// API href of project
-	Href string `form:"href" json:"href" xml:"href"`
-	// identity of project
+	// generated resource unique id (8 character hexidecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
+	// name of project
+	Name       string `form:"name" json:"name" xml:"name"`
+	Namespaces *struct {
+		// generated resource unique id
+		ID string `form:"id" json:"id" xml:"id"`
+		// namespaces collection url
+		URL string `form:"url" json:"url" xml:"url"`
+	} `form:"namespaces,omitempty" json:"namespaces,omitempty" xml:"namespaces,omitempty"`
+	Resources *struct {
+		// generated resource unique id
+		ID string `form:"id" json:"id" xml:"id"`
+		// resources object url
+		URL string `form:"url" json:"url" xml:"url"`
+	} `form:"resources,omitempty" json:"resources,omitempty" xml:"resources,omitempty"`
+	// constant: object type
+	Type string `form:"type" json:"type" xml:"type"`
 }
 
 // Validate validates the Project media type instance.
@@ -224,36 +187,39 @@ func (mt *Project) Validate() (err error) {
 	if mt.ID == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "id"))
 	}
-	if mt.Href == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "href"))
+	if mt.Type == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "type"))
+	}
+	if mt.Name == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
 
-	if utf8.RuneCountInString(mt.ID) < 2 {
-		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.id`, mt.ID, utf8.RuneCountInString(mt.ID), 2, true))
+	if mt.Applications != nil {
+		if mt.Applications.ID == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.applications`, "id"))
+		}
+		if mt.Applications.URL == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.applications`, "url"))
+		}
 	}
-	return
-}
-
-// Users and tennants of the system are represented as the type Project (link view)
-//
-// Identifier: application/project+json; view=link
-type ProjectLink struct {
-	// API href of project
-	Href string `form:"href" json:"href" xml:"href"`
-	// identity of project
-	ID string `form:"id" json:"id" xml:"id"`
-}
-
-// Validate validates the ProjectLink media type instance.
-func (mt *ProjectLink) Validate() (err error) {
-	if mt.ID == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "id"))
+	if utf8.RuneCountInString(mt.Name) < 2 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 2, true))
 	}
-	if mt.Href == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "href"))
+	if mt.Namespaces != nil {
+		if mt.Namespaces.ID == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.namespaces`, "id"))
+		}
+		if mt.Namespaces.URL == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.namespaces`, "url"))
+		}
 	}
-	if utf8.RuneCountInString(mt.ID) < 2 {
-		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.id`, mt.ID, utf8.RuneCountInString(mt.ID), 2, true))
+	if mt.Resources != nil {
+		if mt.Resources.ID == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.resources`, "id"))
+		}
+		if mt.Resources.URL == "" {
+			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.resources`, "url"))
+		}
 	}
 	return
 }
@@ -265,23 +231,6 @@ type ProjectCollection []*Project
 
 // Validate validates the ProjectCollection media type instance.
 func (mt ProjectCollection) Validate() (err error) {
-	for _, e := range mt {
-		if e != nil {
-			if err2 := e.Validate(); err2 != nil {
-				err = goa.MergeErrors(err, err2)
-			}
-		}
-	}
-	return
-}
-
-// ProjectCollection is the media type for an array of Project (link view)
-//
-// Identifier: application/project+json; type=collection; view=link
-type ProjectLinkCollection []*ProjectLink
-
-// Validate validates the ProjectLinkCollection media type instance.
-func (mt ProjectLinkCollection) Validate() (err error) {
 	for _, e := range mt {
 		if e != nil {
 			if err2 := e.Validate(); err2 != nil {

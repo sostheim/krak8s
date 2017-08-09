@@ -11,26 +11,52 @@ import (
 var Project = MediaType("application/project+json", func() {
 	Description("Users and tennants of the system are represented as the type Project")
 	Attributes(func() {
-		Attribute("id", String, "identity of project", func() {
+		Attribute("id", String, "generated resource unique id (8 character hexidecimal value)", func() {
+			Example("30299bea")
+		})
+		Attribute("type", String, "constant: object type", func() {
+			Example("project")
+		})
+		Attribute("name", String, "name of project", func() {
 			Example("newco")
 			MinLength(2)
 		})
-		Attribute("href", String, "API href of project", func() {
-			Example("/projects/newco")
-		})
 		Attribute("created_at", DateTime, "Date of creation")
-		Required("id", "href", "created_at")
+		Required("id", "type", "name", "created_at")
+
+		Attribute("namespaces", func() {
+			Attribute("id", String, "generated resource unique id")
+			Attribute("url", String, "namespaces collection url", func() {
+				Example("/v1/project/30299bea/namespaces")
+			})
+			Required("id", "url")
+		})
+
+		Attribute("resources", func() {
+			Attribute("id", String, "generated resource unique id")
+			Attribute("url", String, "resources object url", func() {
+				Example("/v1/project/30299bea/resources")
+			})
+			Required("id", "url")
+		})
+
+		Attribute("applications", func() {
+			Attribute("id", String, "generated resource unique id")
+			Attribute("url", String, "applications collection url", func() {
+				Example("/v1/project/30299bea/applications")
+			})
+			Required("id", "url")
+		})
 	})
 
 	View("default", func() {
 		Attribute("id")
-		Attribute("href")
+		Attribute("type")
+		Attribute("name")
 		Attribute("created_at")
-	})
-
-	View("link", func() {
-		Attribute("id")
-		Attribute("href")
+		Attribute("namespaces")
+		Attribute("resources")
+		Attribute("applications")
 	})
 })
 
@@ -38,59 +64,24 @@ var Project = MediaType("application/project+json", func() {
 var Namespace = MediaType("application/namespace+json", func() {
 	Description("Users and tennants of the system are represented as the type Project")
 	Attributes(func() {
-		Attribute("name", String, "namespace name", func() {
+		Attribute("id", String, "generated resource unique id (8 character hexidecimal value)", func() {
+			Example("da9871c7")
+		})
+		Attribute("type", String, "constant: object type", func() {
+			Example("namespace")
+		})
+		Attribute("name", String, "system wide unique namespace name", func() {
 			Example("newco-prod")
 			MinLength(2)
 		})
-		Attribute("href", String, "API href of the namespace", func() {
-			Example("/projects/newco/ns/newco-prod")
-		})
 		Attribute("created_at", DateTime, "Date of creation")
-		Required("name", "href", "created_at")
+		Required("id", "type", "name", "created_at")
 	})
 
 	View("default", func() {
+		Attribute("id")
+		Attribute("type")
 		Attribute("name")
-		Attribute("href")
-		Attribute("created_at")
-	})
-
-	View("link", func() {
-		Attribute("name")
-		Attribute("href")
-	})
-})
-
-// MongoPostBody is the HTTP request body type.
-var MongoPostBody = Type("MongoPostBody", func() {
-	Attribute("application", String, func() {
-		Description("Appplication Registry Identifier")
-		Default("quay.io/samsung_cnct/mongodb-replicaset")
-	})
-	Attribute("version", String, func() {
-		Description("Appplication Version")
-		Default("v1.2.0")
-	})
-	Required("application", "version")
-})
-
-// Mongo is the MongoDB resource's MediaType.
-var Mongo = MediaType("application/mongo+json", func() {
-	Description("MongoDB ReplicaSet instance representation type")
-	Attributes(func() {
-		Attribute("application", String, "Application registry identifier")
-		Attribute("version", String, "Application version")
-		Attribute("created_at", DateTime, "Date of creation")
-		Attribute("state", func() {
-			Description("Lifecycle state")
-			Enum("create_requested", "starting", "active", "delete_requested", "deleting", "deleted")
-		})
-		Required("application", "version", "state", "created_at")
-	})
-
-	View("default", func() {
-		Attribute("application")
-		Attribute("version")
 		Attribute("created_at")
 	})
 })
@@ -116,9 +107,15 @@ var ApplicationPostBody = Type("ApplicationPostBody", func() {
 var Application = MediaType("application/application+json", func() {
 	Description("Application representation type")
 	Attributes(func() {
+		Attribute("id", String, "generated resource unique id (8 character hexidecimal value)", func() {
+			Example("e1ea1660")
+		})
+		Attribute("type", String, "constant: object type", func() {
+			Example("application")
+		})
 		Attribute("name", String, "Application name")
 		Attribute("version", String, "Application version")
-		Attribute("config", String, "Configuration value settings string")
+		Attribute("config", String, "Configuration value settings (set) string")
 		Attribute("registry", String, "Application registry identifier")
 		Attribute("status", func() {
 			Attribute("deployed_at", DateTime, "Last deployment time")
@@ -129,10 +126,12 @@ var Application = MediaType("application/application+json", func() {
 			Attribute("notes", String, "Application specific notification / statuses / notes (if any)")
 			Required("deployed_at", "state")
 		})
-		Required("name", "version", "status")
+		Required("id", "type", "name", "version", "status")
 	})
 
 	View("default", func() {
+		Attribute("id")
+		Attribute("type")
 		Attribute("name")
 		Attribute("version")
 		Attribute("status")
@@ -142,7 +141,7 @@ var Application = MediaType("application/application+json", func() {
 // ClusterPostBody is the HTTP Post request body type to create a cluster resource
 var ClusterPostBody = Type("CluterPostBody", func() {
 	Attribute("nodePoolSize", Integer, func() {
-		Description("The number of real nodes in the pool")
+		Description("The number of worker nodes in the projects resource pool")
 		Minimum(3)
 		Maximum(11)
 		Default(3)
@@ -154,16 +153,24 @@ var ClusterPostBody = Type("CluterPostBody", func() {
 var Cluster = MediaType("application/cluster+json", func() {
 	Description("Cluster resource representation type")
 	Attributes(func() {
+		Attribute("id", String, "generated resource unique id (8 character hexidecimal value)", func() {
+			Example("de2760b1")
+		})
+		Attribute("type", String, "constant: object type", func() {
+			Example("application")
+		})
 		Attribute("nodePoolSize", Integer, "Requested node pool size")
 		Attribute("created_at", DateTime, "Date of creation")
 		Attribute("state", func() {
 			Description("Lifecycle state")
 			Enum("create_requested", "starting", "active", "delete_requested", "deleting", "deleted")
 		})
-		Required("nodePoolSize", "created_at", "state")
+		Required("id", "type", "nodePoolSize", "created_at", "state")
 	})
 
 	View("default", func() {
+		Attribute("id")
+		Attribute("type")
 		Attribute("nodePoolSize")
 		Attribute("created_at")
 		Attribute("state")

@@ -63,8 +63,8 @@ func MountApplicationController(service *goa.Service, ctrl ApplicationController
 		}
 		return ctrl.Create(rctx)
 	}
-	service.Mux.Handle("POST", "/v1/projects/:project/ns/:ns/app", ctrl.MuxHandler("create", h, unmarshalCreateApplicationPayload))
-	service.LogInfo("mount", "ctrl", "Application", "action", "Create", "route", "POST /v1/projects/:project/ns/:ns/app")
+	service.Mux.Handle("POST", "/v1/projects/:projectid/applications", ctrl.MuxHandler("create", h, unmarshalCreateApplicationPayload))
+	service.LogInfo("mount", "ctrl", "Application", "action", "Create", "route", "POST /v1/projects/:projectid/applications")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -78,8 +78,8 @@ func MountApplicationController(service *goa.Service, ctrl ApplicationController
 		}
 		return ctrl.Delete(rctx)
 	}
-	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns/app/:app", ctrl.MuxHandler("delete", h, nil))
-	service.LogInfo("mount", "ctrl", "Application", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns/app/:app")
+	service.Mux.Handle("DELETE", "/v1/projects/:projectid/applications/:appid", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Application", "action", "Delete", "route", "DELETE /v1/projects/:projectid/applications/:appid")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -93,8 +93,8 @@ func MountApplicationController(service *goa.Service, ctrl ApplicationController
 		}
 		return ctrl.Get(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/app/:app", ctrl.MuxHandler("get", h, nil))
-	service.LogInfo("mount", "ctrl", "Application", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns/app/:app")
+	service.Mux.Handle("GET", "/v1/projects/:projectid/applications/:appid", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "Application", "action", "Get", "route", "GET /v1/projects/:projectid/applications/:appid")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -108,8 +108,8 @@ func MountApplicationController(service *goa.Service, ctrl ApplicationController
 		}
 		return ctrl.List(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/app", ctrl.MuxHandler("list", h, nil))
-	service.LogInfo("mount", "ctrl", "Application", "action", "List", "route", "GET /v1/projects/:project/ns/:ns/app")
+	service.Mux.Handle("GET", "/v1/projects/:projectid/applications", ctrl.MuxHandler("list", h, nil))
+	service.LogInfo("mount", "ctrl", "Application", "action", "List", "route", "GET /v1/projects/:projectid/applications")
 }
 
 // unmarshalCreateApplicationPayload unmarshals the request body into the context request data Payload field.
@@ -158,8 +158,8 @@ func MountClusterController(service *goa.Service, ctrl ClusterController) {
 		}
 		return ctrl.Create(rctx)
 	}
-	service.Mux.Handle("POST", "/v1/projects/:project/ns/:ns/cluster", ctrl.MuxHandler("create", h, unmarshalCreateClusterPayload))
-	service.LogInfo("mount", "ctrl", "Cluster", "action", "Create", "route", "POST /v1/projects/:project/ns/:ns/cluster")
+	service.Mux.Handle("POST", "/v1/projects/:projectid/cluster", ctrl.MuxHandler("create", h, unmarshalCreateClusterPayload))
+	service.LogInfo("mount", "ctrl", "Cluster", "action", "Create", "route", "POST /v1/projects/:projectid/cluster")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -173,8 +173,8 @@ func MountClusterController(service *goa.Service, ctrl ClusterController) {
 		}
 		return ctrl.Delete(rctx)
 	}
-	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns/cluster", ctrl.MuxHandler("delete", h, nil))
-	service.LogInfo("mount", "ctrl", "Cluster", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns/cluster")
+	service.Mux.Handle("DELETE", "/v1/projects/:projectid/cluster", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Cluster", "action", "Delete", "route", "DELETE /v1/projects/:projectid/cluster")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -188,8 +188,8 @@ func MountClusterController(service *goa.Service, ctrl ClusterController) {
 		}
 		return ctrl.Get(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns/cluster", ctrl.MuxHandler("get", h, nil))
-	service.LogInfo("mount", "ctrl", "Cluster", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns/cluster")
+	service.Mux.Handle("GET", "/v1/projects/:projectid/cluster", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "Cluster", "action", "Get", "route", "GET /v1/projects/:projectid/cluster")
 }
 
 // unmarshalCreateClusterPayload unmarshals the request body into the context request data Payload field.
@@ -214,7 +214,6 @@ type NamespaceController interface {
 	Create(*CreateNamespaceContext) error
 	Delete(*DeleteNamespaceContext) error
 	Get(*GetNamespaceContext) error
-	List(*ListNamespaceContext) error
 }
 
 // MountNamespaceController "mounts" a Namespace resource controller on the given service.
@@ -240,8 +239,8 @@ func MountNamespaceController(service *goa.Service, ctrl NamespaceController) {
 		}
 		return ctrl.Create(rctx)
 	}
-	service.Mux.Handle("POST", "/v1/projects/:project/ns", ctrl.MuxHandler("create", h, unmarshalCreateNamespacePayload))
-	service.LogInfo("mount", "ctrl", "Namespace", "action", "Create", "route", "POST /v1/projects/:project/ns")
+	service.Mux.Handle("POST", "/v1/projects/:projectid/namespaces", ctrl.MuxHandler("create", h, unmarshalCreateNamespacePayload))
+	service.LogInfo("mount", "ctrl", "Namespace", "action", "Create", "route", "POST /v1/projects/:projectid/namespaces")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -255,8 +254,8 @@ func MountNamespaceController(service *goa.Service, ctrl NamespaceController) {
 		}
 		return ctrl.Delete(rctx)
 	}
-	service.Mux.Handle("DELETE", "/v1/projects/:project/ns/:ns", ctrl.MuxHandler("delete", h, nil))
-	service.LogInfo("mount", "ctrl", "Namespace", "action", "Delete", "route", "DELETE /v1/projects/:project/ns/:ns")
+	service.Mux.Handle("DELETE", "/v1/projects/:projectid/namespaces/:namespaceid", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Namespace", "action", "Delete", "route", "DELETE /v1/projects/:projectid/namespaces/:namespaceid")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -270,23 +269,8 @@ func MountNamespaceController(service *goa.Service, ctrl NamespaceController) {
 		}
 		return ctrl.Get(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:project/ns/:ns", ctrl.MuxHandler("get", h, nil))
-	service.LogInfo("mount", "ctrl", "Namespace", "action", "Get", "route", "GET /v1/projects/:project/ns/:ns")
-
-	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
-		// Check if there was an error loading the request
-		if err := goa.ContextError(ctx); err != nil {
-			return err
-		}
-		// Build the context
-		rctx, err := NewListNamespaceContext(ctx, req, service)
-		if err != nil {
-			return err
-		}
-		return ctrl.List(rctx)
-	}
-	service.Mux.Handle("GET", "/v1/projects/:project/ns", ctrl.MuxHandler("list", h, nil))
-	service.LogInfo("mount", "ctrl", "Namespace", "action", "List", "route", "GET /v1/projects/:project/ns")
+	service.Mux.Handle("GET", "/v1/projects/:projectid/namespaces/:namespaceid", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "Namespace", "action", "Get", "route", "GET /v1/projects/:projectid/namespaces/:namespaceid")
 }
 
 // unmarshalCreateNamespacePayload unmarshals the request body into the context request data Payload field.
@@ -375,8 +359,8 @@ func MountProjectController(service *goa.Service, ctrl ProjectController) {
 		}
 		return ctrl.Delete(rctx)
 	}
-	service.Mux.Handle("DELETE", "/v1/projects/:project", ctrl.MuxHandler("delete", h, nil))
-	service.LogInfo("mount", "ctrl", "Project", "action", "Delete", "route", "DELETE /v1/projects/:project")
+	service.Mux.Handle("DELETE", "/v1/projects/:projectid", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Project", "action", "Delete", "route", "DELETE /v1/projects/:projectid")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -390,8 +374,8 @@ func MountProjectController(service *goa.Service, ctrl ProjectController) {
 		}
 		return ctrl.Get(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:project", ctrl.MuxHandler("get", h, nil))
-	service.LogInfo("mount", "ctrl", "Project", "action", "Get", "route", "GET /v1/projects/:project")
+	service.Mux.Handle("GET", "/v1/projects/:projectid", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "Project", "action", "Get", "route", "GET /v1/projects/:projectid")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request

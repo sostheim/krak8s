@@ -28,7 +28,7 @@ import (
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func CreateClusterAccepted(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, project string, ns string, payload *app.CluterPostBody) http.ResponseWriter {
+func CreateClusterAccepted(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, projectid string, payload *app.CluterPostBody) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -60,15 +60,14 @@ func CreateClusterAccepted(t goatest.TInterface, ctx context.Context, service *g
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/cluster", projectid),
 	}
 	req, _err := http.NewRequest("POST", u.String(), nil)
 	if _err != nil {
 		panic("invalid test " + _err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -98,7 +97,7 @@ func CreateClusterAccepted(t goatest.TInterface, ctx context.Context, service *g
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func CreateClusterBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, project string, ns string, payload *app.CluterPostBody) (http.ResponseWriter, error) {
+func CreateClusterBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, projectid string, payload *app.CluterPostBody) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -129,15 +128,14 @@ func CreateClusterBadRequest(t goatest.TInterface, ctx context.Context, service 
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/cluster", projectid),
 	}
 	req, _err := http.NewRequest("POST", u.String(), nil)
 	if _err != nil {
 		panic("invalid test " + _err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -175,7 +173,7 @@ func CreateClusterBadRequest(t goatest.TInterface, ctx context.Context, service 
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteClusterBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, project string, ns string) (http.ResponseWriter, error) {
+func DeleteClusterBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, projectid string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -196,15 +194,14 @@ func DeleteClusterBadRequest(t goatest.TInterface, ctx context.Context, service 
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/cluster", projectid),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -241,7 +238,7 @@ func DeleteClusterBadRequest(t goatest.TInterface, ctx context.Context, service 
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteClusterNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, project string, ns string) http.ResponseWriter {
+func DeleteClusterNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, projectid string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -262,15 +259,14 @@ func DeleteClusterNoContent(t goatest.TInterface, ctx context.Context, service *
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/cluster", projectid),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -299,7 +295,7 @@ func DeleteClusterNoContent(t goatest.TInterface, ctx context.Context, service *
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteClusterNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, project string, ns string) http.ResponseWriter {
+func DeleteClusterNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, projectid string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -320,15 +316,14 @@ func DeleteClusterNotFound(t goatest.TInterface, ctx context.Context, service *g
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/cluster", projectid),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -357,7 +352,7 @@ func DeleteClusterNotFound(t goatest.TInterface, ctx context.Context, service *g
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func GetClusterOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, project string, ns string) (http.ResponseWriter, *app.Cluster) {
+func GetClusterOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ClusterController, projectid string) (http.ResponseWriter, *app.Cluster) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -378,15 +373,14 @@ func GetClusterOK(t goatest.TInterface, ctx context.Context, service *goa.Servic
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/cluster", projectid),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}

@@ -28,7 +28,7 @@ import (
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func CreateNamespaceBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, project string, payload *app.CreateNamespacePayload) (http.ResponseWriter, error) {
+func CreateNamespaceBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, projectid string, payload *app.CreateNamespacePayload) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -59,14 +59,14 @@ func CreateNamespaceBadRequest(t goatest.TInterface, ctx context.Context, servic
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns", project),
+		Path: fmt.Sprintf("/v1/projects/%v/namespaces", projectid),
 	}
 	req, _err := http.NewRequest("POST", u.String(), nil)
 	if _err != nil {
 		panic("invalid test " + _err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -104,7 +104,7 @@ func CreateNamespaceBadRequest(t goatest.TInterface, ctx context.Context, servic
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func CreateNamespaceCreated(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, project string, payload *app.CreateNamespacePayload) http.ResponseWriter {
+func CreateNamespaceCreated(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, projectid string, payload *app.CreateNamespacePayload) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -136,14 +136,14 @@ func CreateNamespaceCreated(t goatest.TInterface, ctx context.Context, service *
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns", project),
+		Path: fmt.Sprintf("/v1/projects/%v/namespaces", projectid),
 	}
 	req, _err := http.NewRequest("POST", u.String(), nil)
 	if _err != nil {
 		panic("invalid test " + _err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -173,7 +173,7 @@ func CreateNamespaceCreated(t goatest.TInterface, ctx context.Context, service *
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteNamespaceBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, project string, ns string) (http.ResponseWriter, error) {
+func DeleteNamespaceBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, projectid string, namespaceid string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -194,15 +194,15 @@ func DeleteNamespaceBadRequest(t goatest.TInterface, ctx context.Context, servic
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/namespaces/%v", projectid, namespaceid),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	prms["namespaceid"] = []string{fmt.Sprintf("%v", namespaceid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -239,7 +239,7 @@ func DeleteNamespaceBadRequest(t goatest.TInterface, ctx context.Context, servic
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteNamespaceNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, project string, ns string) http.ResponseWriter {
+func DeleteNamespaceNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, projectid string, namespaceid string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -260,15 +260,15 @@ func DeleteNamespaceNoContent(t goatest.TInterface, ctx context.Context, service
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/namespaces/%v", projectid, namespaceid),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	prms["namespaceid"] = []string{fmt.Sprintf("%v", namespaceid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -297,7 +297,7 @@ func DeleteNamespaceNoContent(t goatest.TInterface, ctx context.Context, service
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteNamespaceNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, project string, ns string) http.ResponseWriter {
+func DeleteNamespaceNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, projectid string, namespaceid string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -318,15 +318,15 @@ func DeleteNamespaceNotFound(t goatest.TInterface, ctx context.Context, service 
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/namespaces/%v", projectid, namespaceid),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	prms["namespaceid"] = []string{fmt.Sprintf("%v", namespaceid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -355,7 +355,7 @@ func DeleteNamespaceNotFound(t goatest.TInterface, ctx context.Context, service 
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func GetNamespaceOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, project string, ns string) (http.ResponseWriter, *app.Namespace) {
+func GetNamespaceOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, projectid string, namespaceid string) (http.ResponseWriter, *app.Namespace) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -376,15 +376,15 @@ func GetNamespaceOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 	// Setup request context
 	rw := httptest.NewRecorder()
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v", project, ns),
+		Path: fmt.Sprintf("/v1/projects/%v/namespaces/%v", projectid, namespaceid),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	prms["namespaceid"] = []string{fmt.Sprintf("%v", namespaceid)}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -410,214 +410,6 @@ func GetNamespaceOK(t goatest.TInterface, ctx context.Context, service *goa.Serv
 		mt, ok = resp.(*app.Namespace)
 		if !ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.Namespace", resp, resp)
-		}
-		_err = mt.Validate()
-		if _err != nil {
-			t.Errorf("invalid response media type: %s", _err)
-		}
-	}
-
-	// Return results
-	return rw, mt
-}
-
-// GetNamespaceOKLink runs the method Get of the given controller with the given parameters.
-// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
-// If ctx is nil then context.Background() is used.
-// If service is nil then a default service is created.
-func GetNamespaceOKLink(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, project string, ns string) (http.ResponseWriter, *app.NamespaceLink) {
-	// Setup service
-	var (
-		logBuf bytes.Buffer
-		resp   interface{}
-
-		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
-	)
-	if service == nil {
-		service = goatest.Service(&logBuf, respSetter)
-	} else {
-		logger := log.New(&logBuf, "", log.Ltime)
-		service.WithLogger(goa.NewLogger(logger))
-		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
-		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
-		service.Encoder.Register(newEncoder, "*/*")
-	}
-
-	// Setup request context
-	rw := httptest.NewRecorder()
-	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns/%v", project, ns),
-	}
-	req, err := http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		panic("invalid test " + err.Error()) // bug
-	}
-	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	prms["ns"] = []string{fmt.Sprintf("%v", ns)}
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	goaCtx := goa.NewContext(goa.WithAction(ctx, "NamespaceTest"), rw, req, prms)
-	getCtx, _err := app.NewGetNamespaceContext(goaCtx, req, service)
-	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
-	}
-
-	// Perform action
-	_err = ctrl.Get(getCtx)
-
-	// Validate response
-	if _err != nil {
-		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
-	}
-	if rw.Code != 200 {
-		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
-	}
-	var mt *app.NamespaceLink
-	if resp != nil {
-		var ok bool
-		mt, ok = resp.(*app.NamespaceLink)
-		if !ok {
-			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.NamespaceLink", resp, resp)
-		}
-		_err = mt.Validate()
-		if _err != nil {
-			t.Errorf("invalid response media type: %s", _err)
-		}
-	}
-
-	// Return results
-	return rw, mt
-}
-
-// ListNamespaceOK runs the method List of the given controller with the given parameters.
-// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
-// If ctx is nil then context.Background() is used.
-// If service is nil then a default service is created.
-func ListNamespaceOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, project string) (http.ResponseWriter, app.NamespaceCollection) {
-	// Setup service
-	var (
-		logBuf bytes.Buffer
-		resp   interface{}
-
-		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
-	)
-	if service == nil {
-		service = goatest.Service(&logBuf, respSetter)
-	} else {
-		logger := log.New(&logBuf, "", log.Ltime)
-		service.WithLogger(goa.NewLogger(logger))
-		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
-		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
-		service.Encoder.Register(newEncoder, "*/*")
-	}
-
-	// Setup request context
-	rw := httptest.NewRecorder()
-	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns", project),
-	}
-	req, err := http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		panic("invalid test " + err.Error()) // bug
-	}
-	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	goaCtx := goa.NewContext(goa.WithAction(ctx, "NamespaceTest"), rw, req, prms)
-	listCtx, _err := app.NewListNamespaceContext(goaCtx, req, service)
-	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
-	}
-
-	// Perform action
-	_err = ctrl.List(listCtx)
-
-	// Validate response
-	if _err != nil {
-		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
-	}
-	if rw.Code != 200 {
-		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
-	}
-	var mt app.NamespaceCollection
-	if resp != nil {
-		var ok bool
-		mt, ok = resp.(app.NamespaceCollection)
-		if !ok {
-			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.NamespaceCollection", resp, resp)
-		}
-		_err = mt.Validate()
-		if _err != nil {
-			t.Errorf("invalid response media type: %s", _err)
-		}
-	}
-
-	// Return results
-	return rw, mt
-}
-
-// ListNamespaceOKLink runs the method List of the given controller with the given parameters.
-// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
-// If ctx is nil then context.Background() is used.
-// If service is nil then a default service is created.
-func ListNamespaceOKLink(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.NamespaceController, project string) (http.ResponseWriter, app.NamespaceLinkCollection) {
-	// Setup service
-	var (
-		logBuf bytes.Buffer
-		resp   interface{}
-
-		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
-	)
-	if service == nil {
-		service = goatest.Service(&logBuf, respSetter)
-	} else {
-		logger := log.New(&logBuf, "", log.Ltime)
-		service.WithLogger(goa.NewLogger(logger))
-		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
-		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
-		service.Encoder.Register(newEncoder, "*/*")
-	}
-
-	// Setup request context
-	rw := httptest.NewRecorder()
-	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v/ns", project),
-	}
-	req, err := http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		panic("invalid test " + err.Error()) // bug
-	}
-	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	goaCtx := goa.NewContext(goa.WithAction(ctx, "NamespaceTest"), rw, req, prms)
-	listCtx, _err := app.NewListNamespaceContext(goaCtx, req, service)
-	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
-	}
-
-	// Perform action
-	_err = ctrl.List(listCtx)
-
-	// Validate response
-	if _err != nil {
-		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
-	}
-	if rw.Code != 200 {
-		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
-	}
-	var mt app.NamespaceLinkCollection
-	if resp != nil {
-		var ok bool
-		mt, ok = resp.(app.NamespaceLinkCollection)
-		if !ok {
-			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.NamespaceLinkCollection", resp, resp)
 		}
 		_err = mt.Validate()
 		if _err != nil {

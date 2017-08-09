@@ -16,29 +16,27 @@ import (
 )
 
 // ApplicationHref returns the resource href.
-func ApplicationHref(project, ns, app_ interface{}) string {
-	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
-	paramns := strings.TrimLeftFunc(fmt.Sprintf("%v", ns), func(r rune) bool { return r == '/' })
-	paramapp_ := strings.TrimLeftFunc(fmt.Sprintf("%v", app_), func(r rune) bool { return r == '/' })
-	return fmt.Sprintf("/v1/projects/%v/ns/%v/app/%v", paramproject, paramns, paramapp_)
+func ApplicationHref(projectid, appid interface{}) string {
+	paramprojectid := strings.TrimLeftFunc(fmt.Sprintf("%v", projectid), func(r rune) bool { return r == '/' })
+	paramappid := strings.TrimLeftFunc(fmt.Sprintf("%v", appid), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/v1/projects/%v/applications/%v", paramprojectid, paramappid)
 }
 
 // ClusterHref returns the resource href.
-func ClusterHref(project, ns interface{}) string {
-	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
-	paramns := strings.TrimLeftFunc(fmt.Sprintf("%v", ns), func(r rune) bool { return r == '/' })
-	return fmt.Sprintf("/v1/projects/%v/ns/%v/cluster", paramproject, paramns)
+func ClusterHref(projectid interface{}) string {
+	paramprojectid := strings.TrimLeftFunc(fmt.Sprintf("%v", projectid), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/v1/projects/%v/cluster", paramprojectid)
 }
 
 // NamespaceHref returns the resource href.
-func NamespaceHref(project, ns interface{}) string {
-	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
-	paramns := strings.TrimLeftFunc(fmt.Sprintf("%v", ns), func(r rune) bool { return r == '/' })
-	return fmt.Sprintf("/v1/projects/%v/ns/%v", paramproject, paramns)
+func NamespaceHref(projectid, namespaceid interface{}) string {
+	paramprojectid := strings.TrimLeftFunc(fmt.Sprintf("%v", projectid), func(r rune) bool { return r == '/' })
+	paramnamespaceid := strings.TrimLeftFunc(fmt.Sprintf("%v", namespaceid), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/v1/projects/%v/namespaces/%v", paramprojectid, paramnamespaceid)
 }
 
 // ProjectHref returns the resource href.
-func ProjectHref(project interface{}) string {
-	paramproject := strings.TrimLeftFunc(fmt.Sprintf("%v", project), func(r rune) bool { return r == '/' })
-	return fmt.Sprintf("/v1/projects/%v", paramproject)
+func ProjectHref(projectid interface{}) string {
+	paramprojectid := strings.TrimLeftFunc(fmt.Sprintf("%v", projectid), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/v1/projects/%v", paramprojectid)
 }

@@ -171,7 +171,7 @@ func CreateProjectCreated(t goatest.TInterface, ctx context.Context, service *go
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteProjectBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, project string) (http.ResponseWriter, error) {
+func DeleteProjectBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, projectid string, project string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -191,15 +191,25 @@ func DeleteProjectBadRequest(t goatest.TInterface, ctx context.Context, service 
 
 	// Setup request context
 	rw := httptest.NewRecorder()
+	query := url.Values{}
+	{
+		sliceVal := []string{project}
+		query["project"] = sliceVal
+	}
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v", project),
+		Path:     fmt.Sprintf("/v1/projects/%v", projectid),
+		RawQuery: query.Encode(),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	{
+		sliceVal := []string{project}
+		prms["project"] = sliceVal
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -236,7 +246,7 @@ func DeleteProjectBadRequest(t goatest.TInterface, ctx context.Context, service 
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteProjectNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, project string) http.ResponseWriter {
+func DeleteProjectNoContent(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, projectid string, project string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -256,15 +266,25 @@ func DeleteProjectNoContent(t goatest.TInterface, ctx context.Context, service *
 
 	// Setup request context
 	rw := httptest.NewRecorder()
+	query := url.Values{}
+	{
+		sliceVal := []string{project}
+		query["project"] = sliceVal
+	}
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v", project),
+		Path:     fmt.Sprintf("/v1/projects/%v", projectid),
+		RawQuery: query.Encode(),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	{
+		sliceVal := []string{project}
+		prms["project"] = sliceVal
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -293,7 +313,7 @@ func DeleteProjectNoContent(t goatest.TInterface, ctx context.Context, service *
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func DeleteProjectNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, project string) http.ResponseWriter {
+func DeleteProjectNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, projectid string, project string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -313,15 +333,25 @@ func DeleteProjectNotFound(t goatest.TInterface, ctx context.Context, service *g
 
 	// Setup request context
 	rw := httptest.NewRecorder()
+	query := url.Values{}
+	{
+		sliceVal := []string{project}
+		query["project"] = sliceVal
+	}
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v", project),
+		Path:     fmt.Sprintf("/v1/projects/%v", projectid),
+		RawQuery: query.Encode(),
 	}
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	{
+		sliceVal := []string{project}
+		prms["project"] = sliceVal
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -350,7 +380,7 @@ func DeleteProjectNotFound(t goatest.TInterface, ctx context.Context, service *g
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func GetProjectBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, project string) (http.ResponseWriter, error) {
+func GetProjectBadRequest(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, projectid string, project string) (http.ResponseWriter, error) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -370,15 +400,25 @@ func GetProjectBadRequest(t goatest.TInterface, ctx context.Context, service *go
 
 	// Setup request context
 	rw := httptest.NewRecorder()
+	query := url.Values{}
+	{
+		sliceVal := []string{project}
+		query["project"] = sliceVal
+	}
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v", project),
+		Path:     fmt.Sprintf("/v1/projects/%v", projectid),
+		RawQuery: query.Encode(),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	{
+		sliceVal := []string{project}
+		prms["project"] = sliceVal
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -415,7 +455,7 @@ func GetProjectBadRequest(t goatest.TInterface, ctx context.Context, service *go
 // It returns the response writer so it's possible to inspect the response headers.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func GetProjectNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, project string) http.ResponseWriter {
+func GetProjectNotFound(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, projectid string, project string) http.ResponseWriter {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -435,15 +475,25 @@ func GetProjectNotFound(t goatest.TInterface, ctx context.Context, service *goa.
 
 	// Setup request context
 	rw := httptest.NewRecorder()
+	query := url.Values{}
+	{
+		sliceVal := []string{project}
+		query["project"] = sliceVal
+	}
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v", project),
+		Path:     fmt.Sprintf("/v1/projects/%v", projectid),
+		RawQuery: query.Encode(),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	{
+		sliceVal := []string{project}
+		prms["project"] = sliceVal
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -472,7 +522,7 @@ func GetProjectNotFound(t goatest.TInterface, ctx context.Context, service *goa.
 // It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
 // If ctx is nil then context.Background() is used.
 // If service is nil then a default service is created.
-func GetProjectOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, project string) (http.ResponseWriter, *app.Project) {
+func GetProjectOK(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, projectid string, project string) (http.ResponseWriter, *app.Project) {
 	// Setup service
 	var (
 		logBuf bytes.Buffer
@@ -492,15 +542,25 @@ func GetProjectOK(t goatest.TInterface, ctx context.Context, service *goa.Servic
 
 	// Setup request context
 	rw := httptest.NewRecorder()
+	query := url.Values{}
+	{
+		sliceVal := []string{project}
+		query["project"] = sliceVal
+	}
 	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v", project),
+		Path:     fmt.Sprintf("/v1/projects/%v", projectid),
+		RawQuery: query.Encode(),
 	}
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		panic("invalid test " + err.Error()) // bug
 	}
 	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
+	prms["projectid"] = []string{fmt.Sprintf("%v", projectid)}
+	{
+		sliceVal := []string{project}
+		prms["project"] = sliceVal
+	}
 	if ctx == nil {
 		ctx = context.Background()
 	}
@@ -526,75 +586,6 @@ func GetProjectOK(t goatest.TInterface, ctx context.Context, service *goa.Servic
 		mt, ok = resp.(*app.Project)
 		if !ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.Project", resp, resp)
-		}
-		_err = mt.Validate()
-		if _err != nil {
-			t.Errorf("invalid response media type: %s", _err)
-		}
-	}
-
-	// Return results
-	return rw, mt
-}
-
-// GetProjectOKLink runs the method Get of the given controller with the given parameters.
-// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
-// If ctx is nil then context.Background() is used.
-// If service is nil then a default service is created.
-func GetProjectOKLink(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController, project string) (http.ResponseWriter, *app.ProjectLink) {
-	// Setup service
-	var (
-		logBuf bytes.Buffer
-		resp   interface{}
-
-		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
-	)
-	if service == nil {
-		service = goatest.Service(&logBuf, respSetter)
-	} else {
-		logger := log.New(&logBuf, "", log.Ltime)
-		service.WithLogger(goa.NewLogger(logger))
-		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
-		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
-		service.Encoder.Register(newEncoder, "*/*")
-	}
-
-	// Setup request context
-	rw := httptest.NewRecorder()
-	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects/%v", project),
-	}
-	req, err := http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		panic("invalid test " + err.Error()) // bug
-	}
-	prms := url.Values{}
-	prms["project"] = []string{fmt.Sprintf("%v", project)}
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	goaCtx := goa.NewContext(goa.WithAction(ctx, "ProjectTest"), rw, req, prms)
-	getCtx, _err := app.NewGetProjectContext(goaCtx, req, service)
-	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
-	}
-
-	// Perform action
-	_err = ctrl.Get(getCtx)
-
-	// Validate response
-	if _err != nil {
-		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
-	}
-	if rw.Code != 200 {
-		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
-	}
-	var mt *app.ProjectLink
-	if resp != nil {
-		var ok bool
-		mt, ok = resp.(*app.ProjectLink)
-		if !ok {
-			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.ProjectLink", resp, resp)
 		}
 		_err = mt.Validate()
 		if _err != nil {
@@ -663,74 +654,6 @@ func ListProjectOK(t goatest.TInterface, ctx context.Context, service *goa.Servi
 		mt, ok = resp.(app.ProjectCollection)
 		if !ok {
 			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.ProjectCollection", resp, resp)
-		}
-		_err = mt.Validate()
-		if _err != nil {
-			t.Errorf("invalid response media type: %s", _err)
-		}
-	}
-
-	// Return results
-	return rw, mt
-}
-
-// ListProjectOKLink runs the method List of the given controller with the given parameters.
-// It returns the response writer so it's possible to inspect the response headers and the media type struct written to the response.
-// If ctx is nil then context.Background() is used.
-// If service is nil then a default service is created.
-func ListProjectOKLink(t goatest.TInterface, ctx context.Context, service *goa.Service, ctrl app.ProjectController) (http.ResponseWriter, app.ProjectLinkCollection) {
-	// Setup service
-	var (
-		logBuf bytes.Buffer
-		resp   interface{}
-
-		respSetter goatest.ResponseSetterFunc = func(r interface{}) { resp = r }
-	)
-	if service == nil {
-		service = goatest.Service(&logBuf, respSetter)
-	} else {
-		logger := log.New(&logBuf, "", log.Ltime)
-		service.WithLogger(goa.NewLogger(logger))
-		newEncoder := func(io.Writer) goa.Encoder { return respSetter }
-		service.Encoder = goa.NewHTTPEncoder() // Make sure the code ends up using this decoder
-		service.Encoder.Register(newEncoder, "*/*")
-	}
-
-	// Setup request context
-	rw := httptest.NewRecorder()
-	u := &url.URL{
-		Path: fmt.Sprintf("/v1/projects"),
-	}
-	req, err := http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		panic("invalid test " + err.Error()) // bug
-	}
-	prms := url.Values{}
-	if ctx == nil {
-		ctx = context.Background()
-	}
-	goaCtx := goa.NewContext(goa.WithAction(ctx, "ProjectTest"), rw, req, prms)
-	listCtx, _err := app.NewListProjectContext(goaCtx, req, service)
-	if _err != nil {
-		panic("invalid test data " + _err.Error()) // bug
-	}
-
-	// Perform action
-	_err = ctrl.List(listCtx)
-
-	// Validate response
-	if _err != nil {
-		t.Fatalf("controller returned %+v, logs:\n%s", _err, logBuf.String())
-	}
-	if rw.Code != 200 {
-		t.Errorf("invalid response status code: got %+v, expected 200", rw.Code)
-	}
-	var mt app.ProjectLinkCollection
-	if resp != nil {
-		var ok bool
-		mt, ok = resp.(app.ProjectLinkCollection)
-		if !ok {
-			t.Fatalf("invalid response media: got variable of type %T, value %+v, expected instance of app.ProjectLinkCollection", resp, resp)
 		}
 		_err = mt.Validate()
 		if _err != nil {

@@ -20,7 +20,8 @@ import (
 
 // CreateProjectPayload is the project create action payload.
 type CreateProjectPayload struct {
-	Identity string `form:"identity" json:"identity" xml:"identity"`
+	// name of project
+	Name string `form:"name" json:"name" xml:"name"`
 }
 
 // CreateProjectPath computes a request path to the create action of project.
@@ -29,7 +30,7 @@ func CreateProjectPath() string {
 	return fmt.Sprintf("/v1/projects")
 }
 
-// Create a new user/project
+// Create a new project entry
 func (c *Client) CreateProject(ctx context.Context, path string, payload *CreateProjectPayload, contentType string) (*http.Response, error) {
 	req, err := c.NewCreateProjectRequest(ctx, path, payload, contentType)
 	if err != nil {
@@ -67,15 +68,15 @@ func (c *Client) NewCreateProjectRequest(ctx context.Context, path string, paylo
 }
 
 // DeleteProjectPath computes a request path to the delete action of project.
-func DeleteProjectPath(project string) string {
-	param0 := project
+func DeleteProjectPath(projectid string) string {
+	param0 := projectid
 
 	return fmt.Sprintf("/v1/projects/%s", param0)
 }
 
 // DeleteProject makes a request to the delete action endpoint of the project resource
-func (c *Client) DeleteProject(ctx context.Context, path string) (*http.Response, error) {
-	req, err := c.NewDeleteProjectRequest(ctx, path)
+func (c *Client) DeleteProject(ctx context.Context, path string, project string) (*http.Response, error) {
+	req, err := c.NewDeleteProjectRequest(ctx, path, project)
 	if err != nil {
 		return nil, err
 	}
@@ -83,12 +84,15 @@ func (c *Client) DeleteProject(ctx context.Context, path string) (*http.Response
 }
 
 // NewDeleteProjectRequest create the request corresponding to the delete action endpoint of the project resource.
-func (c *Client) NewDeleteProjectRequest(ctx context.Context, path string) (*http.Request, error) {
+func (c *Client) NewDeleteProjectRequest(ctx context.Context, path string, project string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"
 	}
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
+	values := u.Query()
+	values.Set("project", project)
+	u.RawQuery = values.Encode()
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		return nil, err
@@ -97,15 +101,15 @@ func (c *Client) NewDeleteProjectRequest(ctx context.Context, path string) (*htt
 }
 
 // GetProjectPath computes a request path to the get action of project.
-func GetProjectPath(project string) string {
-	param0 := project
+func GetProjectPath(projectid string) string {
+	param0 := projectid
 
 	return fmt.Sprintf("/v1/projects/%s", param0)
 }
 
 // Retrieve project with given id.
-func (c *Client) GetProject(ctx context.Context, path string) (*http.Response, error) {
-	req, err := c.NewGetProjectRequest(ctx, path)
+func (c *Client) GetProject(ctx context.Context, path string, project string) (*http.Response, error) {
+	req, err := c.NewGetProjectRequest(ctx, path, project)
 	if err != nil {
 		return nil, err
 	}
@@ -113,12 +117,15 @@ func (c *Client) GetProject(ctx context.Context, path string) (*http.Response, e
 }
 
 // NewGetProjectRequest create the request corresponding to the get action endpoint of the project resource.
-func (c *Client) NewGetProjectRequest(ctx context.Context, path string) (*http.Request, error) {
+func (c *Client) NewGetProjectRequest(ctx context.Context, path string, project string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"
 	}
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
+	values := u.Query()
+	values.Set("project", project)
+	u.RawQuery = values.Encode()
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		return nil, err

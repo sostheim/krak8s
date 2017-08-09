@@ -19,14 +19,13 @@ import (
 )
 
 // CreateClusterPath computes a request path to the create action of cluster.
-func CreateClusterPath(project string, ns string) string {
-	param0 := project
-	param1 := ns
+func CreateClusterPath(projectid string) string {
+	param0 := projectid
 
-	return fmt.Sprintf("/v1/projects/%s/ns/%s/cluster", param0, param1)
+	return fmt.Sprintf("/v1/projects/%s/cluster", param0)
 }
 
-// Create the specified cluster resources
+// Create the cluster resources
 func (c *Client) CreateCluster(ctx context.Context, path string, payload *CluterPostBody, contentType string) (*http.Response, error) {
 	req, err := c.NewCreateClusterRequest(ctx, path, payload, contentType)
 	if err != nil {
@@ -64,11 +63,10 @@ func (c *Client) NewCreateClusterRequest(ctx context.Context, path string, paylo
 }
 
 // DeleteClusterPath computes a request path to the delete action of cluster.
-func DeleteClusterPath(project string, ns string) string {
-	param0 := project
-	param1 := ns
+func DeleteClusterPath(projectid string) string {
+	param0 := projectid
 
-	return fmt.Sprintf("/v1/projects/%s/ns/%s/cluster", param0, param1)
+	return fmt.Sprintf("/v1/projects/%s/cluster", param0)
 }
 
 // Delete the cluster resource
@@ -95,11 +93,10 @@ func (c *Client) NewDeleteClusterRequest(ctx context.Context, path string) (*htt
 }
 
 // GetClusterPath computes a request path to the get action of cluster.
-func GetClusterPath(project string, ns string) string {
-	param0 := project
-	param1 := ns
+func GetClusterPath(projectid string) string {
+	param0 := projectid
 
-	return fmt.Sprintf("/v1/projects/%s/ns/%s/cluster", param0, param1)
+	return fmt.Sprintf("/v1/projects/%s/cluster", param0)
 }
 
 // Get the status of the cluster resources

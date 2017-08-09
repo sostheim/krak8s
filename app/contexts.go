@@ -14,6 +14,7 @@ import (
 	"context"
 	"github.com/goadesign/goa"
 	"net/http"
+	"unicode/utf8"
 )
 
 // CreateApplicationContext provides the application create action context.
@@ -21,9 +22,8 @@ type CreateApplicationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Ns      string
-	Project string
-	Payload *ApplicationPostBody
+	Projectid string
+	Payload   *ApplicationPostBody
 }
 
 // NewCreateApplicationContext parses the incoming request URL and body, performs validations and creates the
@@ -35,15 +35,10 @@ func NewCreateApplicationContext(ctx context.Context, r *http.Request, service *
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := CreateApplicationContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
-	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -65,9 +60,8 @@ type DeleteApplicationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	App     string
-	Ns      string
-	Project string
+	Appid     string
+	Projectid string
 }
 
 // NewDeleteApplicationContext parses the incoming request URL and body, performs validations and creates the
@@ -79,20 +73,15 @@ func NewDeleteApplicationContext(ctx context.Context, r *http.Request, service *
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := DeleteApplicationContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramApp := req.Params["app"]
-	if len(paramApp) > 0 {
-		rawApp := paramApp[0]
-		rctx.App = rawApp
+	paramAppid := req.Params["appid"]
+	if len(paramAppid) > 0 {
+		rawAppid := paramAppid[0]
+		rctx.Appid = rawAppid
 	}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
-	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -120,9 +109,8 @@ type GetApplicationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	App     string
-	Ns      string
-	Project string
+	Appid     string
+	Projectid string
 }
 
 // NewGetApplicationContext parses the incoming request URL and body, performs validations and creates the
@@ -134,20 +122,15 @@ func NewGetApplicationContext(ctx context.Context, r *http.Request, service *goa
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := GetApplicationContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramApp := req.Params["app"]
-	if len(paramApp) > 0 {
-		rawApp := paramApp[0]
-		rctx.App = rawApp
+	paramAppid := req.Params["appid"]
+	if len(paramAppid) > 0 {
+		rawAppid := paramAppid[0]
+		rctx.Appid = rawAppid
 	}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
-	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -163,8 +146,7 @@ type ListApplicationContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Ns      string
-	Project string
+	Projectid string
 }
 
 // NewListApplicationContext parses the incoming request URL and body, performs validations and creates the
@@ -176,15 +158,10 @@ func NewListApplicationContext(ctx context.Context, r *http.Request, service *go
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := ListApplicationContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
-	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -203,9 +180,8 @@ type CreateClusterContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Ns      string
-	Project string
-	Payload *CluterPostBody
+	Projectid string
+	Payload   *CluterPostBody
 }
 
 // NewCreateClusterContext parses the incoming request URL and body, performs validations and creates the
@@ -217,15 +193,10 @@ func NewCreateClusterContext(ctx context.Context, r *http.Request, service *goa.
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := CreateClusterContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
-	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -247,8 +218,7 @@ type DeleteClusterContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Ns      string
-	Project string
+	Projectid string
 }
 
 // NewDeleteClusterContext parses the incoming request URL and body, performs validations and creates the
@@ -260,15 +230,10 @@ func NewDeleteClusterContext(ctx context.Context, r *http.Request, service *goa.
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := DeleteClusterContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
-	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -296,8 +261,7 @@ type GetClusterContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Ns      string
-	Project string
+	Projectid string
 }
 
 // NewGetClusterContext parses the incoming request URL and body, performs validations and creates the
@@ -309,15 +273,10 @@ func NewGetClusterContext(ctx context.Context, r *http.Request, service *goa.Ser
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := GetClusterContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
-	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -333,8 +292,8 @@ type CreateNamespaceContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Project string
-	Payload *CreateNamespacePayload
+	Projectid string
+	Payload   *CreateNamespacePayload
 }
 
 // NewCreateNamespaceContext parses the incoming request URL and body, performs validations and creates the
@@ -346,10 +305,10 @@ func NewCreateNamespaceContext(ctx context.Context, r *http.Request, service *go
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := CreateNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -406,8 +365,8 @@ type DeleteNamespaceContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Ns      string
-	Project string
+	Namespaceid string
+	Projectid   string
 }
 
 // NewDeleteNamespaceContext parses the incoming request URL and body, performs validations and creates the
@@ -419,15 +378,15 @@ func NewDeleteNamespaceContext(ctx context.Context, r *http.Request, service *go
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := DeleteNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
+	paramNamespaceid := req.Params["namespaceid"]
+	if len(paramNamespaceid) > 0 {
+		rawNamespaceid := paramNamespaceid[0]
+		rctx.Namespaceid = rawNamespaceid
 	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -455,8 +414,8 @@ type GetNamespaceContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Ns      string
-	Project string
+	Namespaceid string
+	Projectid   string
 }
 
 // NewGetNamespaceContext parses the incoming request URL and body, performs validations and creates the
@@ -468,15 +427,15 @@ func NewGetNamespaceContext(ctx context.Context, r *http.Request, service *goa.S
 	req := goa.ContextRequest(ctx)
 	req.Request = r
 	rctx := GetNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramNs := req.Params["ns"]
-	if len(paramNs) > 0 {
-		rawNs := paramNs[0]
-		rctx.Ns = rawNs
+	paramNamespaceid := req.Params["namespaceid"]
+	if len(paramNamespaceid) > 0 {
+		rawNamespaceid := paramNamespaceid[0]
+		rctx.Namespaceid = rawNamespaceid
 	}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -484,55 +443,6 @@ func NewGetNamespaceContext(ctx context.Context, r *http.Request, service *goa.S
 // OK sends a HTTP response with status code 200.
 func (ctx *GetNamespaceContext) OK(r *Namespace) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/namespace+json")
-	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
-}
-
-// OKLink sends a HTTP response with status code 200.
-func (ctx *GetNamespaceContext) OKLink(r *NamespaceLink) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/namespace+json")
-	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
-}
-
-// ListNamespaceContext provides the namespace list action context.
-type ListNamespaceContext struct {
-	context.Context
-	*goa.ResponseData
-	*goa.RequestData
-	Project string
-}
-
-// NewListNamespaceContext parses the incoming request URL and body, performs validations and creates the
-// context used by the namespace controller list action.
-func NewListNamespaceContext(ctx context.Context, r *http.Request, service *goa.Service) (*ListNamespaceContext, error) {
-	var err error
-	resp := goa.ContextResponse(ctx)
-	resp.Service = service
-	req := goa.ContextRequest(ctx)
-	req.Request = r
-	rctx := ListNamespaceContext{Context: ctx, ResponseData: resp, RequestData: req}
-	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
-		rawProject := paramProject[0]
-		rctx.Project = rawProject
-	}
-	return &rctx, err
-}
-
-// OK sends a HTTP response with status code 200.
-func (ctx *ListNamespaceContext) OK(r NamespaceCollection) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/namespace+json; type=collection")
-	if r == nil {
-		r = NamespaceCollection{}
-	}
-	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
-}
-
-// OKLink sends a HTTP response with status code 200.
-func (ctx *ListNamespaceContext) OKLink(r NamespaceLinkCollection) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/namespace+json; type=collection")
-	if r == nil {
-		r = NamespaceLinkCollection{}
-	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
@@ -558,13 +468,19 @@ func NewCreateProjectContext(ctx context.Context, r *http.Request, service *goa.
 
 // createProjectPayload is the project create action payload.
 type createProjectPayload struct {
-	Identity *string `form:"identity,omitempty" json:"identity,omitempty" xml:"identity,omitempty"`
+	// name of project
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 }
 
 // Validate runs the validation rules defined in the design.
 func (payload *createProjectPayload) Validate() (err error) {
-	if payload.Identity == nil {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "identity"))
+	if payload.Name == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "name"))
+	}
+	if payload.Name != nil {
+		if utf8.RuneCountInString(*payload.Name) < 2 {
+			err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.name`, *payload.Name, utf8.RuneCountInString(*payload.Name), 2, true))
+		}
 	}
 	return
 }
@@ -572,21 +488,25 @@ func (payload *createProjectPayload) Validate() (err error) {
 // Publicize creates CreateProjectPayload from createProjectPayload
 func (payload *createProjectPayload) Publicize() *CreateProjectPayload {
 	var pub CreateProjectPayload
-	if payload.Identity != nil {
-		pub.Identity = *payload.Identity
+	if payload.Name != nil {
+		pub.Name = *payload.Name
 	}
 	return &pub
 }
 
 // CreateProjectPayload is the project create action payload.
 type CreateProjectPayload struct {
-	Identity string `form:"identity" json:"identity" xml:"identity"`
+	// name of project
+	Name string `form:"name" json:"name" xml:"name"`
 }
 
 // Validate runs the validation rules defined in the design.
 func (payload *CreateProjectPayload) Validate() (err error) {
-	if payload.Identity == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "identity"))
+	if payload.Name == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "name"))
+	}
+	if utf8.RuneCountInString(payload.Name) < 2 {
+		err = goa.MergeErrors(err, goa.InvalidLengthError(`raw.name`, payload.Name, utf8.RuneCountInString(payload.Name), 2, true))
 	}
 	return
 }
@@ -608,7 +528,8 @@ type DeleteProjectContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Project string
+	Project   string
+	Projectid string
 }
 
 // NewDeleteProjectContext parses the incoming request URL and body, performs validations and creates the
@@ -621,9 +542,16 @@ func NewDeleteProjectContext(ctx context.Context, r *http.Request, service *goa.
 	req.Request = r
 	rctx := DeleteProjectContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
+	if len(paramProject) == 0 {
+		err = goa.MergeErrors(err, goa.MissingParamError("project"))
+	} else {
 		rawProject := paramProject[0]
 		rctx.Project = rawProject
+	}
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
@@ -651,7 +579,8 @@ type GetProjectContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Project string
+	Project   string
+	Projectid string
 }
 
 // NewGetProjectContext parses the incoming request URL and body, performs validations and creates the
@@ -664,21 +593,22 @@ func NewGetProjectContext(ctx context.Context, r *http.Request, service *goa.Ser
 	req.Request = r
 	rctx := GetProjectContext{Context: ctx, ResponseData: resp, RequestData: req}
 	paramProject := req.Params["project"]
-	if len(paramProject) > 0 {
+	if len(paramProject) == 0 {
+		err = goa.MergeErrors(err, goa.MissingParamError("project"))
+	} else {
 		rawProject := paramProject[0]
 		rctx.Project = rawProject
+	}
+	paramProjectid := req.Params["projectid"]
+	if len(paramProjectid) > 0 {
+		rawProjectid := paramProjectid[0]
+		rctx.Projectid = rawProjectid
 	}
 	return &rctx, err
 }
 
 // OK sends a HTTP response with status code 200.
 func (ctx *GetProjectContext) OK(r *Project) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/project+json")
-	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
-}
-
-// OKLink sends a HTTP response with status code 200.
-func (ctx *GetProjectContext) OKLink(r *ProjectLink) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/project+json")
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
@@ -719,15 +649,6 @@ func (ctx *ListProjectContext) OK(r ProjectCollection) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/project+json; type=collection")
 	if r == nil {
 		r = ProjectCollection{}
-	}
-	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
-}
-
-// OKLink sends a HTTP response with status code 200.
-func (ctx *ListProjectContext) OKLink(r ProjectLinkCollection) error {
-	ctx.ResponseData.Header().Set("Content-Type", "application/project+json; type=collection")
-	if r == nil {
-		r = ProjectLinkCollection{}
 	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }

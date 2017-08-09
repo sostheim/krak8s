@@ -24,10 +24,10 @@ type CreateNamespacePayload struct {
 }
 
 // CreateNamespacePath computes a request path to the create action of namespace.
-func CreateNamespacePath(project string) string {
-	param0 := project
+func CreateNamespacePath(projectid string) string {
+	param0 := projectid
 
-	return fmt.Sprintf("/v1/projects/%s/ns", param0)
+	return fmt.Sprintf("/v1/projects/%s/namespaces", param0)
 }
 
 // Create a namespace in the specified project
@@ -68,14 +68,14 @@ func (c *Client) NewCreateNamespaceRequest(ctx context.Context, path string, pay
 }
 
 // DeleteNamespacePath computes a request path to the delete action of namespace.
-func DeleteNamespacePath(project string, ns string) string {
-	param0 := project
-	param1 := ns
+func DeleteNamespacePath(projectid string, namespaceid string) string {
+	param0 := projectid
+	param1 := namespaceid
 
-	return fmt.Sprintf("/v1/projects/%s/ns/%s", param0, param1)
+	return fmt.Sprintf("/v1/projects/%s/namespaces/%s", param0, param1)
 }
 
-// Delete the specified namespace (ns)
+// Delete the specified namespace from the project
 func (c *Client) DeleteNamespace(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewDeleteNamespaceRequest(ctx, path)
 	if err != nil {
@@ -99,14 +99,14 @@ func (c *Client) NewDeleteNamespaceRequest(ctx context.Context, path string) (*h
 }
 
 // GetNamespacePath computes a request path to the get action of namespace.
-func GetNamespacePath(project string, ns string) string {
-	param0 := project
-	param1 := ns
+func GetNamespacePath(projectid string, namespaceid string) string {
+	param0 := projectid
+	param1 := namespaceid
 
-	return fmt.Sprintf("/v1/projects/%s/ns/%s", param0, param1)
+	return fmt.Sprintf("/v1/projects/%s/namespaces/%s", param0, param1)
 }
 
-// Get the details of the specified namespace (ns) in the project
+// Get the details of the specified namespace in the project
 func (c *Client) GetNamespace(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewGetNamespaceRequest(ctx, path)
 	if err != nil {
@@ -117,36 +117,6 @@ func (c *Client) GetNamespace(ctx context.Context, path string) (*http.Response,
 
 // NewGetNamespaceRequest create the request corresponding to the get action endpoint of the namespace resource.
 func (c *Client) NewGetNamespaceRequest(ctx context.Context, path string) (*http.Request, error) {
-	scheme := c.Scheme
-	if scheme == "" {
-		scheme = "http"
-	}
-	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
-	req, err := http.NewRequest("GET", u.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	return req, nil
-}
-
-// ListNamespacePath computes a request path to the list action of namespace.
-func ListNamespacePath(project string) string {
-	param0 := project
-
-	return fmt.Sprintf("/v1/projects/%s/ns", param0)
-}
-
-// Retrieve the collection of all namespaces in the project.
-func (c *Client) ListNamespace(ctx context.Context, path string) (*http.Response, error) {
-	req, err := c.NewListNamespaceRequest(ctx, path)
-	if err != nil {
-		return nil, err
-	}
-	return c.Client.Do(ctx, req)
-}
-
-// NewListNamespaceRequest create the request corresponding to the list action endpoint of the namespace resource.
-func (c *Client) NewListNamespaceRequest(ctx context.Context, path string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"
