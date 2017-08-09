@@ -168,15 +168,3 @@ var _ = Resource("cluster", func() {
 		Response(BadRequest, ErrorMedia)
 	})
 })
-
-var _ = Resource("health", func() {
-	BasePath("/healthz")
-
-	Action("health", func() {
-		Routing(
-			GET(""),
-		)
-		Description("The health check service endpoint")
-		Response(OK, "text/plain")
-	})
-})

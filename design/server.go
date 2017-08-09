@@ -50,3 +50,13 @@ var _ = Resource("openapi", func() {
 	Files("/openapi.json", "swagger/swagger.json")
 	Files("/openapi.yaml", "swagger/swagger.yaml")
 })
+
+var _ = Resource("health", func() {
+	Action("health", func() {
+		Routing(
+			GET("/healthz"),
+		)
+		Description("The health check service endpoint")
+		Response(OK, "text/plain")
+	})
+})
