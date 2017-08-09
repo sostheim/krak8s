@@ -28,8 +28,8 @@ The following are the major categories of resources administered by the API.
 * Swagger - The Swagger 2.0 (OpenAPI) specification for this interface
 * Projects Collection - The primary unit of isolation for users, tennant, teams, etc... 
   * Namespaces Collection - The project's namespace(s), e.g. "proj-dev", "prog-test", "prog-prod" 
-  * Application - The namespace's installed applications
-  * Cluster - The namespace's Kraken orchestrated Kubernetes cluster resources 
+  * Applications Collection - The namespace's installed applications
+  * Cluster - The namespace's Kraken orchestrated Kubernetes cluster resources object 
 
 ## Order of Operations
 There are two restriction on the ordering of operations for the API. 
