@@ -32,8 +32,8 @@ const (
 	Project = "project"
 	// Namespace object type name
 	Namespace = "namespace"
-	// Cluster object type name
-	Cluster = "cluster"
+	// Resource object type name
+	Resource = "Resource"
 	// Application  object type name
 	Application = "application"
 )
@@ -43,7 +43,7 @@ type DataStore struct {
 	sync.Mutex
 	projects     map[string]*ProjectObject
 	namespaces   map[string]*NamespaceObject
-	resources    map[string]*ClusterObject
+	resources    map[string]*ResourceObject
 	applications map[string]*ApplicationObject
 }
 
@@ -109,24 +109,24 @@ type ApplicationObject struct {
 	NamespaceID string
 }
 
-// ClusterOjbect State strings
+// ResourceObject State strings
 const (
-	// ClusterCreateRequested state string
-	ClusterCreateRequested = "create_requested"
-	// ClusterStarting state string
-	ClusterStarting = "starting"
-	// ClusterActive state string
-	ClusterActive = "active"
-	// ClusterDeleteRequested state string
-	ClusterDeleteRequested = "delete_requested"
-	// ClusterDeleting state string
-	ClusterDeleting = "deleting"
-	// ClusterDeleted state string
-	ClusterDeleted = "deleted"
+	// ResourceCreateRequested state string
+	ResourceCreateRequested = "create_requested"
+	// ResourceStarting state string
+	ResourceStarting = "starting"
+	// ResourceActive state string
+	ResourceActive = "active"
+	// ResourceDeleteRequested state string
+	ResourceDeleteRequested = "delete_requested"
+	// ResourceDeleting state string
+	ResourceDeleting = "deleting"
+	// ResourceDeleted state string
+	ResourceDeleted = "deleted"
 )
 
-// ClusterObject base resource type
-type ClusterObject struct {
+// ResourceObject base resource type
+type ResourceObject struct {
 	OID          string
 	ObjType      string
 	NodePoolSize int
@@ -146,7 +146,7 @@ func (ds *DataStore) Reset() {
 	ds.projects = make(map[string]*ProjectObject)
 	ds.namespaces = make(map[string]*NamespaceObject)
 	ds.applications = make(map[string]*ApplicationObject)
-	ds.resources = make(map[string]*ClusterObject)
+	ds.resources = make(map[string]*ResourceObject)
 }
 
 // CheckedRandomHexString - generate a random hex string, and validate
@@ -289,7 +289,7 @@ func (ds *DataStore) DeleteNamespace(obj *NamespaceObject) {
 	for _, link := range ds.namespaces[obj.OID].Applications {
 		ds.DeleteApplication(ds.applications[link.OID])
 	}
-	// DeleteResources(ds.namespaces[obj.OID].Resources.OID)
+	ds.DeleteResource(ds.namespaces[obj.OID].Resources.OID)
 	delete(ds.namespaces, obj.OID)
 }
 
@@ -331,8 +331,8 @@ func (ds *DataStore) Application(oid string) (*ApplicationObject, bool) {
 	return app, ok
 }
 
-// GetApplications return the collection of applications from the indicated namespace.
-func (ds *DataStore) GetApplications(nsOID string) []*ApplicationObject {
+// ApplicationsCollection return the collection of applications from the indicated namespace.
+func (ds *DataStore) ApplicationsCollection(nsOID string) []*ApplicationObject {
 	ds.Lock()
 	defer ds.Unlock()
 	ns, ok := ds.namespaces[nsOID]
@@ -359,4 +359,63 @@ func (ds *DataStore) DeleteApplication(obj *ApplicationObject) {
 	ds.Lock()
 	defer ds.Unlock()
 	delete(ds.applications, obj.OID)
+}
+
+// NewResourceObject creates a default ResourceObject with a valid unique id,
+// type value, and created at timestamp.
+func (ds *DataStore) NewResourceObject(nsOID string) *ResourceObject {
+	ds.Lock()
+	defer ds.Unlock()
+	obj := ResourceObject{
+		OID:         ds.CheckedRandomHexString(),
+		ObjType:     Resource,
+		CreatedAt:   time.Now(),
+		NamespaceID: nsOID,
+	}
+	obj.UpdatedAt = obj.CreatedAt
+	ds.resources[obj.OID] = &obj
+	return &obj
+}
+
+// NewResource creates a new ResourceObject resource.
+func (ds *DataStore) NewResource(namespace string, nodes int) *ResourceObject {
+	ds.Lock()
+	defer ds.Unlock()
+
+	obj := ds.NewResourceObject(namespace)
+	obj.NodePoolSize = nodes
+	return obj
+}
+
+// Resource returns the app with the given oid if found
+func (ds *DataStore) Resource(oid string) (*ResourceObject, bool) {
+	ds.Lock()
+	defer ds.Unlock()
+	res, ok := ds.resources[oid]
+	return res, ok
+}
+
+// ResourceObject return the resource object from the indicated namespace.
+func (ds *DataStore) ResourceObject(nsOID string) (*ResourceObject, bool) {
+	ds.Lock()
+	defer ds.Unlock()
+	ns, ok := ds.namespaces[nsOID]
+	if !ok {
+		return nil, false
+	}
+	return ds.Resource(ns.Resources.OID)
+}
+
+// AddResource add a rsource object to the data store.
+func (ds *DataStore) AddResource(obj *ResourceObject) {
+	ds.Lock()
+	defer ds.Unlock()
+	ds.resources[obj.OID] = obj
+}
+
+// DeleteResource deletes specified application
+func (ds *DataStore) DeleteResource(resOID string) {
+	ds.Lock()
+	defer ds.Unlock()
+	delete(ds.resources, resOID)
 }
