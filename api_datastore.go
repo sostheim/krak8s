@@ -38,15 +38,6 @@ const (
 	Application = "application"
 )
 
-// DataStore in-memory data syncronization structure for API data.
-type DataStore struct {
-	sync.Mutex
-	projects     map[string]*ProjectObject
-	namespaces   map[string]*NamespaceObject
-	resources    map[string]*ResourceObject
-	applications map[string]*ApplicationObject
-}
-
 // ObjectLink nested resource type
 type ObjectLink struct {
 	OID string
@@ -136,9 +127,20 @@ type ResourceObject struct {
 	NamespaceID  string
 }
 
+// DataStore in-memory data syncronization structure for API data.
+type DataStore struct {
+	sync.Mutex
+	projects     map[string]*ProjectObject
+	namespaces   map[string]*NamespaceObject
+	resources    map[string]*ResourceObject
+	applications map[string]*ApplicationObject
+}
+
 // NewDataStore initializes a new "DataStore"
 func NewDataStore() *DataStore {
-	return &DataStore{projects: nil, namespaces: nil, applications: nil, resources: nil}
+	ds := &DataStore{projects: nil, namespaces: nil, applications: nil, resources: nil}
+	ds.Reset()
+	return ds
 }
 
 // Reset removes all entries from the database. Mainly intended for tests.
@@ -172,13 +174,14 @@ func (ds *DataStore) CheckedRandomHexString() string {
 // NewProjectObject creates a default ProjectObject with a valid unique
 // object id, type value, and created at timestamp.
 func (ds *DataStore) NewProjectObject() *ProjectObject {
-	ds.Lock()
-	defer ds.Unlock()
 	obj := ProjectObject{
 		OID:       ds.CheckedRandomHexString(),
 		ObjType:   Project,
 		CreatedAt: time.Now(),
 	}
+
+	ds.Lock()
+	defer ds.Unlock()
 	ds.projects[obj.OID] = &obj
 	return &obj
 }
@@ -220,19 +223,19 @@ func (ds *DataStore) AddProject(obj ProjectObject) {
 
 // DeleteProject removes the project and all subordinate objects.
 func (ds *DataStore) DeleteProject(obj *ProjectObject) {
-	ds.Lock()
-	defer ds.Unlock()
 	for _, link := range ds.projects[obj.OID].Namespaces {
 		ds.DeleteNamespace(ds.namespaces[link.OID])
 	}
+
+	ds.Lock()
+	defer ds.Unlock()
+
 	delete(ds.projects, obj.OID)
 }
 
 // NewNamespaceObject creates aa default NamespaceObject with a valid unique
 // object id, type value and created at timestamp.
 func (ds *DataStore) NewNamespaceObject() *NamespaceObject {
-	ds.Lock()
-	defer ds.Unlock()
 	obj := NamespaceObject{
 		OID:          ds.CheckedRandomHexString(),
 		ObjType:      Namespace,
@@ -240,6 +243,8 @@ func (ds *DataStore) NewNamespaceObject() *NamespaceObject {
 		Resources:    nil,
 		Applications: nil,
 	}
+	ds.Lock()
+	defer ds.Unlock()
 	ds.namespaces[obj.OID] = &obj
 	return &obj
 }
@@ -253,12 +258,13 @@ func (ds *DataStore) NewNamespace(name string) *NamespaceObject {
 
 // NamespacesCollection returns all Namespaces for a project
 func (ds *DataStore) NamespacesCollection(projectOID string) []*NamespaceObject {
-	ds.Lock()
-	defer ds.Unlock()
 	proj, ok := ds.projects[projectOID]
 	if !ok {
 		return nil
 	}
+
+	ds.Lock()
+	defer ds.Unlock()
 
 	collection := make([]*NamespaceObject, len(proj.Namespaces))
 	for oid, link := range proj.Namespaces {
@@ -284,20 +290,19 @@ func (ds *DataStore) AddNamespace(obj NamespaceObject) {
 
 // DeleteNamespace removes the Namespace and all subordinate objects.
 func (ds *DataStore) DeleteNamespace(obj *NamespaceObject) {
-	ds.Lock()
-	defer ds.Unlock()
 	for _, link := range ds.namespaces[obj.OID].Applications {
 		ds.DeleteApplication(ds.applications[link.OID])
 	}
 	ds.DeleteResource(ds.namespaces[obj.OID].Resources.OID)
+
+	ds.Lock()
+	defer ds.Unlock()
 	delete(ds.namespaces, obj.OID)
 }
 
 // NewApplicationObject creates aa default ApplicationObject with a valid
 // unique object id. type value, and created at timestamp.
 func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
-	ds.Lock()
-	defer ds.Unlock()
 	obj := ApplicationObject{
 		OID:         ds.CheckedRandomHexString(),
 		ObjType:     Application,
@@ -306,15 +311,15 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 		NamespaceID: nsOID,
 	}
 	obj.UpdatedAt = obj.CreatedAt
+
+	ds.Lock()
+	defer ds.Unlock()
 	ds.applications[obj.OID] = &obj
 	return &obj
 }
 
 // NewApplication creates a new application resource.
 func (ds *DataStore) NewApplication(namespace, name, version, config, registry string) *ApplicationObject {
-	ds.Lock()
-	defer ds.Unlock()
-
 	obj := ds.NewApplicationObject(namespace)
 	obj.Name = name
 	obj.Version = version
@@ -333,13 +338,12 @@ func (ds *DataStore) Application(oid string) (*ApplicationObject, bool) {
 
 // ApplicationsCollection return the collection of applications from the indicated namespace.
 func (ds *DataStore) ApplicationsCollection(nsOID string) []*ApplicationObject {
-	ds.Lock()
-	defer ds.Unlock()
 	ns, ok := ds.namespaces[nsOID]
 	if !ok {
 		return nil
 	}
-
+	ds.Lock()
+	defer ds.Unlock()
 	collection := make([]*ApplicationObject, len(ns.Applications))
 	for oid, link := range ns.Applications {
 		collection[oid] = ds.applications[link.OID]
@@ -364,8 +368,6 @@ func (ds *DataStore) DeleteApplication(obj *ApplicationObject) {
 // NewResourceObject creates a default ResourceObject with a valid unique id,
 // type value, and created at timestamp.
 func (ds *DataStore) NewResourceObject(nsOID string) *ResourceObject {
-	ds.Lock()
-	defer ds.Unlock()
 	obj := ResourceObject{
 		OID:         ds.CheckedRandomHexString(),
 		ObjType:     Resource,
@@ -373,15 +375,14 @@ func (ds *DataStore) NewResourceObject(nsOID string) *ResourceObject {
 		NamespaceID: nsOID,
 	}
 	obj.UpdatedAt = obj.CreatedAt
+	ds.Lock()
+	defer ds.Unlock()
 	ds.resources[obj.OID] = &obj
 	return &obj
 }
 
 // NewResource creates a new ResourceObject resource.
 func (ds *DataStore) NewResource(namespace string, nodes int) *ResourceObject {
-	ds.Lock()
-	defer ds.Unlock()
-
 	obj := ds.NewResourceObject(namespace)
 	obj.NodePoolSize = nodes
 	return obj
@@ -397,12 +398,12 @@ func (ds *DataStore) Resource(oid string) (*ResourceObject, bool) {
 
 // ResourceObject return the resource object from the indicated namespace.
 func (ds *DataStore) ResourceObject(nsOID string) (*ResourceObject, bool) {
-	ds.Lock()
-	defer ds.Unlock()
 	ns, ok := ds.namespaces[nsOID]
 	if !ok {
 		return nil, false
 	}
+	ds.Lock()
+	defer ds.Unlock()
 	return ds.Resource(ns.Resources.OID)
 }
 
