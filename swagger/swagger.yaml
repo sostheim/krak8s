@@ -9,7 +9,7 @@ definitions:
     example:
       id: e1ea1660
       name: Quos nobis placeat iusto itaque.
-      namesapce_id: da9871c7
+      namespace_id: da9871c7
       status:
         deployed_at: 2012-02-17T21:30:54-08:00
         notes: Impedit iste beatae odit et omnis.
@@ -25,7 +25,7 @@ definitions:
         description: Application name
         example: Quos nobis placeat iusto itaque.
         type: string
-      namesapce_id:
+      namespace_id:
         description: The related namespace's generated unique id, not the namespace's
           name
         example: da9871c7
@@ -75,7 +75,7 @@ definitions:
     - name
     - version
     - status
-    - namesapce_id
+    - namespace_id
     title: 'Mediatype identifier: application/application+json; view=default'
     type: object
   ApplicationCollection:
@@ -84,7 +84,16 @@ definitions:
     example:
     - id: e1ea1660
       name: Quos nobis placeat iusto itaque.
-      namesapce_id: da9871c7
+      namespace_id: da9871c7
+      status:
+        deployed_at: 2012-02-17T21:30:54-08:00
+        notes: Impedit iste beatae odit et omnis.
+        state: UNKNOWN
+      type: application
+      version: Dolores in hic qui sed et voluptates.
+    - id: e1ea1660
+      name: Quos nobis placeat iusto itaque.
+      namespace_id: da9871c7
       status:
         deployed_at: 2012-02-17T21:30:54-08:00
         notes: Impedit iste beatae odit et omnis.
@@ -97,15 +106,15 @@ definitions:
     type: array
   ApplicationPostBody:
     example:
-      name: Perferendis enim.
+      name: Libero qui facere est nostrum.
       namespace_id: da9871c7
-      registry: Non adipisci.
-      set: Iste voluptas debitis voluptatem illum.
-      version: Corrupti omnis atque maxime autem.
+      registry: Perferendis enim.
+      set: Non adipisci.
+      version: Iste voluptas debitis voluptatem illum.
     properties:
       name:
         description: Application name
-        example: Perferendis enim.
+        example: Libero qui facere est nostrum.
         type: string
       namespace_id:
         description: The related namespace's generated unique id, not the namespace's
@@ -114,15 +123,15 @@ definitions:
         type: string
       registry:
         description: Application's registry
-        example: Non adipisci.
+        example: Perferendis enim.
         type: string
       set:
         description: Application config --set argument string
-        example: Iste voluptas debitis voluptatem illum.
+        example: Non adipisci.
         type: string
       version:
         description: Application version string
-        example: Corrupti omnis atque maxime autem.
+        example: Iste voluptas debitis voluptatem illum.
         type: string
     required:
     - name
@@ -130,33 +139,66 @@ definitions:
     - namespace_id
     title: ApplicationPostBody
     type: object
+  ApplicationRef:
+    description: An application object reference by object id (oid), and url (default
+      view)
+    example:
+      oid: e1ea1660
+      url: /v1/project/30299bea/applications
+    properties:
+      oid:
+        description: The application resource unique oid
+        example: e1ea1660
+        type: string
+      url:
+        description: url of the collection that contains this object
+        example: /v1/project/30299bea/applications
+        type: string
+    required:
+    - oid
+    - url
+    title: 'Mediatype identifier: application/application.ref+json; view=default'
+    type: object
+  ApplicationRefCollection:
+    description: ApplicationRefCollection is the media type for an array of ApplicationRef
+      (default view)
+    example:
+    - oid: e1ea1660
+      url: /v1/project/30299bea/applications
+    - oid: e1ea1660
+      url: /v1/project/30299bea/applications
+    items:
+      $ref: '#/definitions/ApplicationRef'
+    title: 'Mediatype identifier: application/application.ref+json; type=collection;
+      view=default'
+    type: array
   Cluster:
     description: Cluster resource representation type (default view)
     example:
-      created_at: 1988-11-12T15:18:46-08:00
+      created_at: 1975-10-06T15:58:38-07:00
       id: de2760b1
-      namesapce_id: da9871c7
-      nodePoolSize: 1.7768362e+18
-      state: create_requested
+      namespace_id: da9871c7
+      nodePoolSize: 8.9315617e+18
+      state: active
       type: cluster
     properties:
       created_at:
         description: Date of creation
-        example: 1988-11-12T15:18:46-08:00
+        example: 1975-10-06T15:58:38-07:00
         format: date-time
         type: string
       id:
         description: generated resource unique id (8 character hexadecimal value)
         example: de2760b1
         type: string
-      namesapce_id:
+      namespace_id:
         description: The related namespace's generated unique id, not the namespace's
           name
         example: da9871c7
         type: string
       nodePoolSize:
         description: Requested node pool size
-        example: 1.7768362e+18
+        example: 8.9315617e+18
         format: int64
         type: integer
       state:
@@ -168,7 +210,7 @@ definitions:
         - delete_requested
         - deleting
         - deleted
-        example: create_requested
+        example: active
         type: string
       type:
         description: 'constant: object type'
@@ -180,13 +222,13 @@ definitions:
     - nodePoolSize
     - created_at
     - state
-    - namesapce_id
+    - namespace_id
     title: 'Mediatype identifier: application/cluster+json; view=default'
     type: object
   CluterPostBody:
     example:
       namespace_id: da9871c7
-      nodePoolSize: 7
+      nodePoolSize: 5
     properties:
       namespace_id:
         description: The related namespace's generated unique id, not the namespace's
@@ -196,7 +238,7 @@ definitions:
       nodePoolSize:
         default: 3
         description: The number of worker nodes in the projects resource pool
-        example: 7
+        example: 5
         maximum: 11
         minimum: 3
         type: integer
@@ -207,10 +249,10 @@ definitions:
     type: object
   CreateNamespacePayload:
     example:
-      name: Corporis eaque id saepe.
+      name: Omnis atque maxime autem et ea.
     properties:
       name:
-        example: Corporis eaque id saepe.
+        example: Omnis atque maxime autem et ea.
         type: string
     required:
     - name
@@ -233,14 +275,26 @@ definitions:
     description: Users and tennants of the system are represented as the type Project
       (default view)
     example:
-      created_at: 1982-09-27T18:11:09-07:00
+      applications:
+      - oid: e1ea1660
+        url: /v1/project/30299bea/applications
+      created_at: 1994-10-14T20:16:57-07:00
       id: da9871c7
       name: newco-prod
+      resources:
+        created_at: 1975-10-06T15:58:38-07:00
+        id: de2760b1
+        namespace_id: da9871c7
+        nodePoolSize: 8.9315617e+18
+        state: active
+        type: cluster
       type: namespace
     properties:
+      applications:
+        $ref: '#/definitions/ApplicationRefCollection'
       created_at:
         description: Date of creation
-        example: 1982-09-27T18:11:09-07:00
+        example: 1994-10-14T20:16:57-07:00
         format: date-time
         type: string
       id:
@@ -252,6 +306,8 @@ definitions:
         example: newco-prod
         minLength: 2
         type: string
+      resources:
+        $ref: '#/definitions/Cluster'
       type:
         description: 'constant: object type'
         example: namespace
@@ -261,23 +317,94 @@ definitions:
     - type
     - name
     - created_at
+    - resources
+    - applications
     title: 'Mediatype identifier: application/namespace+json; view=default'
     type: object
+  NamespaceCollection:
+    description: NamespaceCollection is the media type for an array of Namespace (default
+      view)
+    example:
+    - applications:
+      - oid: e1ea1660
+        url: /v1/project/30299bea/applications
+      created_at: 1994-10-14T20:16:57-07:00
+      id: da9871c7
+      name: newco-prod
+      resources:
+        created_at: 1975-10-06T15:58:38-07:00
+        id: de2760b1
+        namespace_id: da9871c7
+        nodePoolSize: 8.9315617e+18
+        state: active
+        type: cluster
+      type: namespace
+    - applications:
+      - oid: e1ea1660
+        url: /v1/project/30299bea/applications
+      created_at: 1994-10-14T20:16:57-07:00
+      id: da9871c7
+      name: newco-prod
+      resources:
+        created_at: 1975-10-06T15:58:38-07:00
+        id: de2760b1
+        namespace_id: da9871c7
+        nodePoolSize: 8.9315617e+18
+        state: active
+        type: cluster
+      type: namespace
+    items:
+      $ref: '#/definitions/Namespace'
+    title: 'Mediatype identifier: application/namespace+json; type=collection; view=default'
+    type: array
+  NamespaceRef:
+    description: Users and tennants of the system are represented as the type Project
+      (default view)
+    example:
+      oid: da9871c7
+      url: /v1/project/30299bea/namespaces
+    properties:
+      oid:
+        description: The namespace resource unique oid
+        example: da9871c7
+        type: string
+      url:
+        description: url of the collection that contains this object
+        example: /v1/project/30299bea/namespaces
+        type: string
+    required:
+    - oid
+    - url
+    title: 'Mediatype identifier: application/namespace.ref+json; view=default'
+    type: object
+  NamespaceRefCollection:
+    description: NamespaceRefCollection is the media type for an array of NamespaceRef
+      (default view)
+    example:
+    - oid: da9871c7
+      url: /v1/project/30299bea/namespaces
+    - oid: da9871c7
+      url: /v1/project/30299bea/namespaces
+    items:
+      $ref: '#/definitions/NamespaceRef'
+    title: 'Mediatype identifier: application/namespace.ref+json; type=collection;
+      view=default'
+    type: array
   Project:
     description: Users and tennants of the system are represented as the type Project
       (default view)
     example:
-      created_at: 1997-09-05T09:38:23-07:00
+      created_at: 1991-05-26T01:29:46-07:00
       id: 30299bea
       name: newco
       namespaces:
-        id: Qui facere est.
+      - oid: da9871c7
         url: /v1/project/30299bea/namespaces
       type: project
     properties:
       created_at:
         description: Date of creation
-        example: 1997-09-05T09:38:23-07:00
+        example: 1991-05-26T01:29:46-07:00
         format: date-time
         type: string
       id:
@@ -290,22 +417,7 @@ definitions:
         minLength: 2
         type: string
       namespaces:
-        example:
-          id: Qui facere est.
-          url: /v1/project/30299bea/namespaces
-        properties:
-          id:
-            description: generated resource unique id
-            example: Qui facere est.
-            type: string
-          url:
-            description: namespaces collection url
-            example: /v1/project/30299bea/namespaces
-            type: string
-        required:
-        - id
-        - url
-        type: object
+        $ref: '#/definitions/NamespaceRefCollection'
       type:
         description: 'constant: object type'
         example: project
@@ -315,24 +427,18 @@ definitions:
     - type
     - name
     - created_at
+    - namespaces
     title: 'Mediatype identifier: application/project+json; view=default'
     type: object
   ProjectCollection:
     description: ProjectCollection is the media type for an array of Project (default
       view)
     example:
-    - created_at: 1997-09-05T09:38:23-07:00
+    - created_at: 1991-05-26T01:29:46-07:00
       id: 30299bea
       name: newco
       namespaces:
-        id: Qui facere est.
-        url: /v1/project/30299bea/namespaces
-      type: project
-    - created_at: 1997-09-05T09:38:23-07:00
-      id: 30299bea
-      name: newco
-      namespaces:
-        id: Qui facere est.
+      - oid: da9871c7
         url: /v1/project/30299bea/namespaces
       type: project
     items:
@@ -485,7 +591,7 @@ paths:
       tags:
       - project
     post:
-      description: Create a new project entry
+      description: Create a new project entry with the provided name.
       operationId: project#create
       parameters:
       - in: body
@@ -511,11 +617,6 @@ paths:
     delete:
       operationId: project#delete
       parameters:
-      - description: project name
-        in: query
-        name: project
-        required: true
-        type: string
       - in: path
         name: projectid
         required: true
@@ -540,11 +641,6 @@ paths:
       description: Retrieve project with given id.
       operationId: project#get
       parameters:
-      - description: project name
-        in: query
-        name: project
-        required: true
-        type: string
       - in: path
         name: projectid
         required: true
@@ -744,6 +840,26 @@ paths:
       tags:
       - cluster
   /v1/projects/{projectid}/namespaces:
+    get:
+      description: Retrieve all projects.
+      operationId: namespace#list
+      parameters:
+      - in: path
+        name: projectid
+        required: true
+        type: string
+      produces:
+      - application/namespace+json; type=collection
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/NamespaceCollection'
+      schemes:
+      - http
+      summary: list namespace
+      tags:
+      - namespace
     post:
       description: Create a namespace in the specified project
       operationId: namespace#create
@@ -776,8 +892,7 @@ paths:
       description: Delete the specified namespace from the project
       operationId: namespace#delete
       parameters:
-      - description: namespace identifier
-        in: path
+      - in: path
         name: namespaceid
         required: true
         type: string
@@ -802,11 +917,10 @@ paths:
       tags:
       - namespace
     get:
-      description: Get the details of the specified namespace in the project
+      description: Get the details of the specified namespace from the project
       operationId: namespace#get
       parameters:
-      - description: namespace identifier
-        in: path
+      - in: path
         name: namespaceid
         required: true
         type: string

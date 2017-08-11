@@ -26,10 +26,6 @@ var _ = Resource("project", func() {
 	Action("get", func() {
 		Routing(GET("/:projectid"))
 		Description("Retrieve project with given id.")
-		Params(func() {
-			Param("project", String, "project name")
-			Required("project")
-		})
 		Response(OK)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
@@ -37,21 +33,17 @@ var _ = Resource("project", func() {
 
 	Action("create", func() {
 		Routing(POST(""))
-		Description("Create a new project entry")
+		Description("Create a new project entry with the provided name.")
 		Payload(func() {
 			Member("name")
 			Required("name")
 		})
-		Response(Created, "/projects/[a-z,A-Z,0-9]+")
+		Response(Created, "/projects/[a-f,0-9]+")
 		Response(BadRequest, ErrorMedia)
 	})
 
 	Action("delete", func() {
 		Routing(DELETE("/:projectid"))
-		Params(func() {
-			Param("project", String, "project name")
-			Required("project")
-		})
 		Response(NoContent)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
@@ -73,27 +65,25 @@ var _ = Resource("namespace", func() {
 			Member("name")
 			Required("name")
 		})
-		Response(Created, "^/projects/[a-z,A-Z,0-9]+/namespaces/[a-z,A-Z,0-9]+")
+		Response(Created, "^/projects/[a-f,0-9]+/namespaces/[a-f,0-9]+")
 		Response(BadRequest, ErrorMedia)
+	})
+
+	Action("list", func() {
+		Routing(GET(""))
+		Description("Retrieve all projects.")
+		Response(OK, CollectionOf(Namespace))
 	})
 
 	Action("get", func() {
 		Routing(GET("/:namespaceid"))
-		Description("Get the details of the specified namespace in the project")
-		Params(func() {
-			Param("namespaceid", String, "namespace identifier")
-			Required("namespaceid")
-		})
+		Description("Get the details of the specified namespace from the project")
 		Response(OK, Namespace)
 	})
 
 	Action("delete", func() {
 		Routing(DELETE("/:namespaceid"))
 		Description("Delete the specified namespace from the project")
-		Params(func() {
-			Param("namespaceid", String, "namespace identifier")
-			Required("namespaceid")
-		})
 		Response(NoContent)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
@@ -112,7 +102,7 @@ var _ = Resource("application", func() {
 		Routing(POST(""))
 		Description("Create an application deployment")
 		Payload(ApplicationPostBody)
-		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/applications/[a-z,A-Z,0-9]+")
+		Response(Accepted, "^/projects/[a-f,0-9]+/applications/[a-f,0-9]+")
 		Response(BadRequest, ErrorMedia)
 	})
 
@@ -149,7 +139,7 @@ var _ = Resource("cluster", func() {
 		Routing(POST(""))
 		Description("Create the cluster resources")
 		Payload(ClusterPostBody)
-		Response(Accepted, "^/projects/[a-z,A-Z,0-9]+/cluster/[a-z,A-Z,0-9]+")
+		Response(Accepted, "^/projects/[a-f,0-9]+/cluster/[a-f,0-9]+")
 		Response(BadRequest, ErrorMedia)
 	})
 

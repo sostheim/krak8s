@@ -265,10 +265,11 @@ func (ds *DataStore) NamespacesCollection(projectOID string) []*NamespaceObject 
 
 	ds.Lock()
 	defer ds.Unlock()
-
+	i := 0
 	collection := make([]*NamespaceObject, len(proj.Namespaces))
-	for oid, link := range proj.Namespaces {
-		collection[oid] = ds.namespaces[link.OID]
+	for _, link := range proj.Namespaces {
+		collection[i] = ds.namespaces[link.OID]
+		i++
 	}
 	return collection
 }

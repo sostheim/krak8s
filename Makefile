@@ -1,5 +1,5 @@
 NAME      := krak8s
-VERSION   := 0.2.12
+VERSION   := 0.2.21
 TYPE      := alpha
 COMMIT    := $(shell git rev-parse HEAD)
 IMAGE     := quay.io/samsung_cnct/krak8s
@@ -11,10 +11,11 @@ TIMESTAMP    := $(shell date +"%s")
 GOAGEN_FILES := openapi.go swagger.go project.go namespace.go application.go cluster.go health.go
 
 design: # Execute goagen to rebuild API, save existing impl files
+	@echo "Backing up previous generated soruces with timestamp: $(TIMESTAMP)"
 	@for f in $(GOAGEN_FILES); do \
 		if [ -f ./$$f ] ; \
 		then \
-			 mv -f ./$$f ./$$f.$(TIMESTAMP) ; \
+			 mv -f ./$$f ../goagen_backups/$$f.$(TIMESTAMP); \
 		fi; \
 	done
 	@goagen bootstrap -d krak8s/design

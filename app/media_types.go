@@ -25,7 +25,7 @@ type Application struct {
 	// Application name
 	Name string `form:"name" json:"name" xml:"name"`
 	// The related namespace's generated unique id, not the namespace's name
-	NamesapceID string `form:"namesapce_id" json:"namesapce_id" xml:"namesapce_id"`
+	NamespaceID string `form:"namespace_id" json:"namespace_id" xml:"namespace_id"`
 	Status      *struct {
 		// Last deployment time
 		DeployedAt time.Time `form:"deployed_at" json:"deployed_at" xml:"deployed_at"`
@@ -57,8 +57,8 @@ func (mt *Application) Validate() (err error) {
 	if mt.Status == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "status"))
 	}
-	if mt.NamesapceID == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namesapce_id"))
+	if mt.NamespaceID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace_id"))
 	}
 	if mt.Status != nil {
 
@@ -67,6 +67,44 @@ func (mt *Application) Validate() (err error) {
 		}
 		if !(mt.Status.State == "UNKNOWN" || mt.Status.State == "DEPLOYED" || mt.Status.State == "DELETED" || mt.Status.State == "SUPERSEDED" || mt.Status.State == "FAILED" || mt.Status.State == "DELETING") {
 			err = goa.MergeErrors(err, goa.InvalidEnumValueError(`response.status.state`, mt.Status.State, []interface{}{"UNKNOWN", "DEPLOYED", "DELETED", "SUPERSEDED", "FAILED", "DELETING"}))
+		}
+	}
+	return
+}
+
+// An application object reference by object id (oid), and url (default view)
+//
+// Identifier: application/application.ref+json; view=default
+type ApplicationRef struct {
+	// The application resource unique oid
+	Oid string `form:"oid" json:"oid" xml:"oid"`
+	// url of the collection that contains this object
+	URL string `form:"url" json:"url" xml:"url"`
+}
+
+// Validate validates the ApplicationRef media type instance.
+func (mt *ApplicationRef) Validate() (err error) {
+	if mt.Oid == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "oid"))
+	}
+	if mt.URL == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "url"))
+	}
+	return
+}
+
+// ApplicationRefCollection is the media type for an array of ApplicationRef (default view)
+//
+// Identifier: application/application.ref+json; type=collection; view=default
+type ApplicationRefCollection []*ApplicationRef
+
+// Validate validates the ApplicationRefCollection media type instance.
+func (mt ApplicationRefCollection) Validate() (err error) {
+	for _, e := range mt {
+		if e != nil {
+			if err2 := e.Validate(); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
 		}
 	}
 	return
@@ -98,7 +136,7 @@ type Cluster struct {
 	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
 	// The related namespace's generated unique id, not the namespace's name
-	NamesapceID string `form:"namesapce_id" json:"namesapce_id" xml:"namesapce_id"`
+	NamespaceID string `form:"namespace_id" json:"namespace_id" xml:"namespace_id"`
 	// Requested node pool size
 	NodePoolSize int `form:"nodePoolSize" json:"nodePoolSize" xml:"nodePoolSize"`
 	// Lifecycle state
@@ -119,8 +157,8 @@ func (mt *Cluster) Validate() (err error) {
 	if mt.State == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "state"))
 	}
-	if mt.NamesapceID == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namesapce_id"))
+	if mt.NamespaceID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace_id"))
 	}
 	if !(mt.State == "create_requested" || mt.State == "starting" || mt.State == "active" || mt.State == "delete_requested" || mt.State == "deleting" || mt.State == "deleted") {
 		err = goa.MergeErrors(err, goa.InvalidEnumValueError(`response.state`, mt.State, []interface{}{"create_requested", "starting", "active", "delete_requested", "deleting", "deleted"}))
@@ -132,12 +170,16 @@ func (mt *Cluster) Validate() (err error) {
 //
 // Identifier: application/namespace+json; view=default
 type Namespace struct {
+	// applications assoicated with namespace
+	Applications ApplicationRefCollection `form:"applications" json:"applications" xml:"applications"`
 	// Date of creation
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
 	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
 	// system wide unique namespace name
 	Name string `form:"name" json:"name" xml:"name"`
+	// cluster resource assoicated with namespace
+	Resources *Cluster `form:"resources" json:"resources" xml:"resources"`
 	// constant: object type
 	Type string `form:"type" json:"type" xml:"type"`
 }
@@ -154,8 +196,77 @@ func (mt *Namespace) Validate() (err error) {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
 
+	if mt.Resources == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "resources"))
+	}
+	if mt.Applications == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "applications"))
+	}
+	if err2 := mt.Applications.Validate(); err2 != nil {
+		err = goa.MergeErrors(err, err2)
+	}
 	if utf8.RuneCountInString(mt.Name) < 2 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 2, true))
+	}
+	if mt.Resources != nil {
+		if err2 := mt.Resources.Validate(); err2 != nil {
+			err = goa.MergeErrors(err, err2)
+		}
+	}
+	return
+}
+
+// Users and tennants of the system are represented as the type Project (default view)
+//
+// Identifier: application/namespace.ref+json; view=default
+type NamespaceRef struct {
+	// The namespace resource unique oid
+	Oid string `form:"oid" json:"oid" xml:"oid"`
+	// url of the collection that contains this object
+	URL string `form:"url" json:"url" xml:"url"`
+}
+
+// Validate validates the NamespaceRef media type instance.
+func (mt *NamespaceRef) Validate() (err error) {
+	if mt.Oid == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "oid"))
+	}
+	if mt.URL == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "url"))
+	}
+	return
+}
+
+// NamespaceRefCollection is the media type for an array of NamespaceRef (default view)
+//
+// Identifier: application/namespace.ref+json; type=collection; view=default
+type NamespaceRefCollection []*NamespaceRef
+
+// Validate validates the NamespaceRefCollection media type instance.
+func (mt NamespaceRefCollection) Validate() (err error) {
+	for _, e := range mt {
+		if e != nil {
+			if err2 := e.Validate(); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
+	}
+	return
+}
+
+// NamespaceCollection is the media type for an array of Namespace (default view)
+//
+// Identifier: application/namespace+json; type=collection; view=default
+type NamespaceCollection []*Namespace
+
+// Validate validates the NamespaceCollection media type instance.
+func (mt NamespaceCollection) Validate() (err error) {
+	for _, e := range mt {
+		if e != nil {
+			if err2 := e.Validate(); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
+		}
 	}
 	return
 }
@@ -169,13 +280,9 @@ type Project struct {
 	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
 	// name of project
-	Name       string `form:"name" json:"name" xml:"name"`
-	Namespaces *struct {
-		// generated resource unique id
-		ID string `form:"id" json:"id" xml:"id"`
-		// namespaces collection url
-		URL string `form:"url" json:"url" xml:"url"`
-	} `form:"namespaces,omitempty" json:"namespaces,omitempty" xml:"namespaces,omitempty"`
+	Name string `form:"name" json:"name" xml:"name"`
+	// namespace assoications for this project
+	Namespaces NamespaceRefCollection `form:"namespaces" json:"namespaces" xml:"namespaces"`
 	// constant: object type
 	Type string `form:"type" json:"type" xml:"type"`
 }
@@ -192,16 +299,14 @@ func (mt *Project) Validate() (err error) {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
 
+	if mt.Namespaces == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespaces"))
+	}
 	if utf8.RuneCountInString(mt.Name) < 2 {
 		err = goa.MergeErrors(err, goa.InvalidLengthError(`response.name`, mt.Name, utf8.RuneCountInString(mt.Name), 2, true))
 	}
-	if mt.Namespaces != nil {
-		if mt.Namespaces.ID == "" {
-			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.namespaces`, "id"))
-		}
-		if mt.Namespaces.URL == "" {
-			err = goa.MergeErrors(err, goa.MissingAttributeError(`response.namespaces`, "url"))
-		}
+	if err2 := mt.Namespaces.Validate(); err2 != nil {
+		err = goa.MergeErrors(err, err2)
 	}
 	return
 }

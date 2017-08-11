@@ -30,7 +30,7 @@ func CreateProjectPath() string {
 	return fmt.Sprintf("/v1/projects")
 }
 
-// Create a new project entry
+// Create a new project entry with the provided name.
 func (c *Client) CreateProject(ctx context.Context, path string, payload *CreateProjectPayload, contentType string) (*http.Response, error) {
 	req, err := c.NewCreateProjectRequest(ctx, path, payload, contentType)
 	if err != nil {
@@ -75,8 +75,8 @@ func DeleteProjectPath(projectid string) string {
 }
 
 // DeleteProject makes a request to the delete action endpoint of the project resource
-func (c *Client) DeleteProject(ctx context.Context, path string, project string) (*http.Response, error) {
-	req, err := c.NewDeleteProjectRequest(ctx, path, project)
+func (c *Client) DeleteProject(ctx context.Context, path string) (*http.Response, error) {
+	req, err := c.NewDeleteProjectRequest(ctx, path)
 	if err != nil {
 		return nil, err
 	}
@@ -84,15 +84,12 @@ func (c *Client) DeleteProject(ctx context.Context, path string, project string)
 }
 
 // NewDeleteProjectRequest create the request corresponding to the delete action endpoint of the project resource.
-func (c *Client) NewDeleteProjectRequest(ctx context.Context, path string, project string) (*http.Request, error) {
+func (c *Client) NewDeleteProjectRequest(ctx context.Context, path string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"
 	}
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
-	values := u.Query()
-	values.Set("project", project)
-	u.RawQuery = values.Encode()
 	req, err := http.NewRequest("DELETE", u.String(), nil)
 	if err != nil {
 		return nil, err
@@ -108,8 +105,8 @@ func GetProjectPath(projectid string) string {
 }
 
 // Retrieve project with given id.
-func (c *Client) GetProject(ctx context.Context, path string, project string) (*http.Response, error) {
-	req, err := c.NewGetProjectRequest(ctx, path, project)
+func (c *Client) GetProject(ctx context.Context, path string) (*http.Response, error) {
+	req, err := c.NewGetProjectRequest(ctx, path)
 	if err != nil {
 		return nil, err
 	}
@@ -117,15 +114,12 @@ func (c *Client) GetProject(ctx context.Context, path string, project string) (*
 }
 
 // NewGetProjectRequest create the request corresponding to the get action endpoint of the project resource.
-func (c *Client) NewGetProjectRequest(ctx context.Context, path string, project string) (*http.Request, error) {
+func (c *Client) NewGetProjectRequest(ctx context.Context, path string) (*http.Request, error) {
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"
 	}
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
-	values := u.Query()
-	values.Set("project", project)
-	u.RawQuery = values.Encode()
 	req, err := http.NewRequest("GET", u.String(), nil)
 	if err != nil {
 		return nil, err

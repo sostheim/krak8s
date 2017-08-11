@@ -45,3 +45,14 @@ func (c *NamespaceController) Get(ctx *app.GetNamespaceContext) error {
 	res := &app.Namespace{}
 	return ctx.OK(res)
 }
+
+// List runs the list action.
+func (c *NamespaceController) List(ctx *app.ListNamespaceContext) error {
+	// NamespaceController_List: start_implement
+
+	// Put your logic here
+
+	// NamespaceController_List: end_implement
+	res := app.NamespaceCollection{}
+	return ctx.OK(res)
+}

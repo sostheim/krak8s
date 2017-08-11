@@ -241,6 +241,7 @@ type NamespaceController interface {
 	Create(*CreateNamespaceContext) error
 	Delete(*DeleteNamespaceContext) error
 	Get(*GetNamespaceContext) error
+	List(*ListNamespaceContext) error
 }
 
 // MountNamespaceController "mounts" a Namespace resource controller on the given service.
@@ -298,6 +299,21 @@ func MountNamespaceController(service *goa.Service, ctrl NamespaceController) {
 	}
 	service.Mux.Handle("GET", "/v1/projects/:projectid/namespaces/:namespaceid", ctrl.MuxHandler("get", h, nil))
 	service.LogInfo("mount", "ctrl", "Namespace", "action", "Get", "route", "GET /v1/projects/:projectid/namespaces/:namespaceid")
+
+	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
+		// Check if there was an error loading the request
+		if err := goa.ContextError(ctx); err != nil {
+			return err
+		}
+		// Build the context
+		rctx, err := NewListNamespaceContext(ctx, req, service)
+		if err != nil {
+			return err
+		}
+		return ctrl.List(rctx)
+	}
+	service.Mux.Handle("GET", "/v1/projects/:projectid/namespaces", ctrl.MuxHandler("list", h, nil))
+	service.LogInfo("mount", "ctrl", "Namespace", "action", "List", "route", "GET /v1/projects/:projectid/namespaces")
 }
 
 // unmarshalCreateNamespacePayload unmarshals the request body into the context request data Payload field.

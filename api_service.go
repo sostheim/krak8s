@@ -37,6 +37,7 @@ type apiServer struct {
 	cfg       *config
 	clientset *kubernetes.Clientset
 	server    *goa.Service
+	ds        *DataStore
 }
 
 func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
@@ -47,6 +48,7 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 		clientset: clientset,
 		cfg:       cfg,
 		server:    goa.New("krak8s"),
+		ds:        NewDataStore(),
 	}
 
 	// Mount middleware
@@ -61,6 +63,9 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 
 	openapi := NewOpenapiController(as.server)
 	app.MountOpenapiController(as.server, openapi)
+
+	//	project := NewProjectController(as.server, as.ds)
+	//	app.MountProjectController(as.server, project)
 
 	project := NewProjectController(as.server)
 	app.MountProjectController(as.server, project)
