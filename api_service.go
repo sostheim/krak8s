@@ -64,19 +64,16 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	openapi := NewOpenapiController(as.server)
 	app.MountOpenapiController(as.server, openapi)
 
-	//	project := NewProjectController(as.server, as.ds)
-	//	app.MountProjectController(as.server, project)
-
-	project := NewProjectController(as.server)
+	project := NewProjectController(as.server, as.ds)
 	app.MountProjectController(as.server, project)
 
-	ns := NewNamespaceController(as.server)
+	ns := NewNamespaceController(as.server, as.ds)
 	app.MountNamespaceController(as.server, ns)
 
-	application := NewApplicationController(as.server)
+	application := NewApplicationController(as.server, as.ds)
 	app.MountApplicationController(as.server, application)
 
-	cluster := NewClusterController(as.server)
+	cluster := NewClusterController(as.server, as.ds)
 	app.MountClusterController(as.server, cluster)
 
 	health := NewHealthController(as.server)
