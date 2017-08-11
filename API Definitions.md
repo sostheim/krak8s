@@ -46,4 +46,104 @@ Status: 200 (Ok)
 }
 ```
 
+## Example Usage
 
+The following example uses the commonly available `curl` command to create and retrieve objects from the API.  Note that in all the following examples the JSON output has been run through a formatter for improved readability.  The JSON pretty printing process is not shown here.
+
+1. Create (POST) an initial project, then read (GET) it back
+```
+$ curl -X POST -H "Content-Type: application/json" \
+       -d '{"name":"acme"}' http://localhost:8080/v1/projects 
+
+# GET the projects collection
+$ curl http://localhost:8080/v1/projects
+[{
+	"created_at": "2017-08-11T01:49:37.637611633-07:00",
+	"id": "d99656af",
+	"name": "acme",
+	"namespaces": null,
+	"type": "project"
+}]
+
+# Alternately - GET just the single project
+$ curl http://localhost:8080/v1/projects/d99656af
+{
+	"created_at": "2017-08-11T01:49:37.637611633-07:00",
+	"id": "d99656af",
+	"name": "acme",
+	"namespaces": null,
+	"type": "project"
+}
+```
+2. Create (POST) a namespace in the newly created project, and read (GET) it back.
+```
+$ curl -X POST -H "Content-Type: application/json" \
+      -d '{"name":"acme-prod"}' http://localhost:8080/v1/projects/d99656af/namespaces 
+
+# GET the namespaces collection
+$ curl http://localhost:8080/v1/projects/d99656af/namespaces
+[{
+	"applications": null,
+	"created_at": "2017-08-11T01:53:34.247129355-07:00",
+	"id": "2eb210b5",
+	"name": "acme-prod",
+	"resources": null,
+	"type": "namespace"
+}]
+
+# Alternately - GET just the single namespace
+$ curl http://localhost:8080/v1/projects/d99656af/namespaces/2eb210b5
+{
+	"applications": null,
+	"created_at": "2017-08-11T01:53:34.247129355-07:00",
+	"id": "2eb210b5",
+	"name": "acme-prod",
+	"resources": null,
+	"type": "namespace"
+}
+```
+3. Create (POST) a cluster resources specification in the newly created namespace, and read (GET) it back.
+```
+$ curl -X POST -H "Content-Type: application/json" \
+       -d '{"namespace_id":"2eb210b5", "nodePoolSize": 7}' \
+       http://localhost:8080/v1/projects/d99656af/cluster
+
+# GET the cluster resources specification
+$ curl http://localhost:8080/v1/projects/d99656af/cluster/52f7fabb
+{
+	"created_at": "0001-01-01T00:00:00Z",
+	"id": "52f7fabb",
+	"namespace_id": "2eb210b5",
+	"nodePoolSize": 7,
+	"state": "",
+	"type": "Resource"
+}
+```
+4. Note that, as we've been creating objects in the API that have relationships with existing objects, those existing objects have been incrementally updated with references to the newly created elements.
+```
+# Repeat the GET on the project object
+$ curl http://localhost:8080/v1/projects/d99656af
+{
+	"created_at": "2017-08-11T01:49:37.637611633-07:00",
+	"id": "d99656af",
+	"name": "acme",
+	"namespaces": [{
+		"oid": "2eb210b5",
+		"url": "/v1/projects/d99656af/namespaces/2eb210b5"
+	}],
+	"type": "project"
+}
+
+# Repeat the GET on the namespace object
+{
+	"applications": null,
+	"created_at": "2017-08-11T01:53:34.247129355-07:00",
+	"id": "2eb210b5",
+	"name": "acme-prod",
+	"resources": {
+		"oid": "52f7fabb",
+		"url": "/v1/projects/d99656af/cluster/52f7fabb"
+	},
+	"type": "namespace"
+}
+```
