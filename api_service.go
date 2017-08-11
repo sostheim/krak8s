@@ -17,8 +17,6 @@ limitations under the License.
 package main
 
 import (
-	"time"
-
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/goadesign/goa"
@@ -27,13 +25,16 @@ import (
 	"krak8s/app"
 )
 
-var (
-	resyncPeriod = 30 * time.Second
+const (
+	APIVersion      = "/v1"
+	APIProjects     = "/projects/"
+	APIApplications = "/applications/"
+	APICluster      = "/cluster/"
+	APINamespaces   = "/namespaces/"
 )
 
 // API Server
 type apiServer struct {
-	// Command line / environment supplied configuration values
 	cfg       *config
 	clientset *kubernetes.Clientset
 	server    *goa.Service

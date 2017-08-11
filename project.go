@@ -14,7 +14,10 @@ type ProjectController struct {
 
 // NewProjectController creates a project controller.
 func NewProjectController(service *goa.Service, store *DataStore) *ProjectController {
-	return &ProjectController{Controller: service.NewController("ProjectController"), ds: store}
+	return &ProjectController{
+		Controller: service.NewController("ProjectController"),
+		ds:         store,
+	}
 }
 
 // MarshaNamespaceRef to project media type

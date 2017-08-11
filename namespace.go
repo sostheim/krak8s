@@ -14,7 +14,10 @@ type NamespaceController struct {
 
 // NewNamespaceController creates a namespace controller.
 func NewNamespaceController(service *goa.Service, store *DataStore) *NamespaceController {
-	return &NamespaceController{Controller: service.NewController("NamespaceController"), ds: store}
+	return &NamespaceController{
+		Controller: service.NewController("NamespaceController"),
+		ds:         store,
+	}
 }
 
 // MarshaApplicationRef to project media type
@@ -62,7 +65,7 @@ func (c *NamespaceController) Create(ctx *app.CreateNamespaceContext) error {
 		return nil
 		// return ctx.ServerError()
 	}
-	url := "/v1/projects/" + ctx.Projectid + "/namespaces/" + ns.OID
+	url := APIVersion + APIProjects + ctx.Projectid + APINamespaces + ns.OID
 	proj.Namespaces = append(proj.Namespaces, &ObjectLink{OID: ns.OID, URL: url})
 	// NamespaceController_Create: end_implement
 	return nil

@@ -14,7 +14,10 @@ type ApplicationController struct {
 
 // NewApplicationController creates a application controller.
 func NewApplicationController(service *goa.Service, store *DataStore) *ApplicationController {
-	return &ApplicationController{Controller: service.NewController("ApplicationController"), ds: store}
+	return &ApplicationController{
+		Controller: service.NewController("ApplicationController"),
+		ds:         store,
+	}
 }
 
 // MarshalApplicationObject to project media type
@@ -52,7 +55,7 @@ func (c *ApplicationController) Create(ctx *app.CreateApplicationContext) error 
 		return nil
 		// return ctx.ServerError()
 	}
-	url := "/v1/projects/" + ctx.Projectid + "/applications/" + app.OID
+	url := APIVersion + APIProjects + ctx.Projectid + APIApplications + app.OID
 	ns.Applications = append(ns.Applications, &ObjectLink{OID: app.OID, URL: url})
 
 	// ApplicationController_Create: end_implement

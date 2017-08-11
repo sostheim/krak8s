@@ -14,7 +14,10 @@ type ClusterController struct {
 
 // NewClusterController creates a cluster controller.
 func NewClusterController(service *goa.Service, store *DataStore) *ClusterController {
-	return &ClusterController{Controller: service.NewController("ClusterController"), ds: store}
+	return &ClusterController{
+		Controller: service.NewController("ClusterController"),
+		ds:         store,
+	}
 }
 
 // MarshalResourcesObject to project media type
@@ -24,6 +27,7 @@ func MarshalResourcesObject(obj *ResourceObject) *app.Cluster {
 		Type:         obj.ObjType,
 		NodePoolSize: obj.NodePoolSize,
 		NamespaceID:  obj.NamespaceID,
+		State:        obj.State,
 	}
 }
 
@@ -45,7 +49,7 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	if res == nil {
 		return ctx.InternalServerError()
 	}
-	url := "/v1/projects/" + ctx.Projectid + "/cluster/" + res.OID
+	url := APIVersion + APIProjects + ctx.Projectid + APICluster + res.OID
 	ns.Resources = &ObjectLink{OID: res.OID, URL: url}
 
 	// ClusterController_Create: end_implement
