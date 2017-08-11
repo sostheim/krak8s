@@ -73,6 +73,7 @@ type (
 	// GetClusterCommand is the command line data structure for the get action of cluster
 	GetClusterCommand struct {
 		Projectid   string
+		Resourceid  string
 		PrettyPrint bool
 	}
 
@@ -203,8 +204,8 @@ Payload example:
 	tmp4 := new(CreateProjectCommand)
 	sub = &cobra.Command{
 		Use:   `project ["/v1/projects"]`,
-		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
-		Long: `Manage {create, delete} individual projects, read the list of all projects, read a specific project
+		Short: `Manage {create, delete}, and get a project, or all projects`,
+		Long: `Manage {create, delete}, and get a project, or all projects
 
 Payload example:
 
@@ -251,7 +252,7 @@ Payload example:
 	tmp8 := new(DeleteProjectCommand)
 	sub = &cobra.Command{
 		Use:   `project ["/v1/projects/PROJECTID"]`,
-		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
+		Short: `Manage {create, delete}, and get a project, or all projects`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp8.Run(c, args) },
 	}
 	tmp8.RegisterFlags(sub, c)
@@ -273,7 +274,7 @@ Payload example:
 	command.AddCommand(sub)
 	tmp10 := new(GetClusterCommand)
 	sub = &cobra.Command{
-		Use:   `cluster ["/v1/projects/PROJECTID/cluster"]`,
+		Use:   `cluster ["/v1/projects/PROJECTID/cluster/RESOURCEID"]`,
 		Short: `Manage {create, delete}, and get cluster resources`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp10.Run(c, args) },
 	}
@@ -292,7 +293,7 @@ Payload example:
 	tmp12 := new(GetProjectCommand)
 	sub = &cobra.Command{
 		Use:   `project ["/v1/projects/PROJECTID"]`,
-		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
+		Short: `Manage {create, delete}, and get a project, or all projects`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp12.Run(c, args) },
 	}
 	tmp12.RegisterFlags(sub, c)
@@ -338,7 +339,7 @@ Payload example:
 	tmp16 := new(ListProjectCommand)
 	sub = &cobra.Command{
 		Use:   `project ["/v1/projects"]`,
-		Short: `Manage {create, delete} individual projects, read the list of all projects, read a specific project`,
+		Short: `Manage {create, delete}, and get a project, or all projects`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp16.Run(c, args) },
 	}
 	tmp16.RegisterFlags(sub, c)
@@ -769,7 +770,7 @@ func (cmd *GetClusterCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/cluster", url.QueryEscape(cmd.Projectid))
+		path = fmt.Sprintf("/v1/projects/%v/cluster/%v", url.QueryEscape(cmd.Projectid), url.QueryEscape(cmd.Resourceid))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -787,6 +788,8 @@ func (cmd *GetClusterCommand) Run(c *client.Client, args []string) error {
 func (cmd *GetClusterCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var projectid string
 	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
+	var resourceid string
+	cc.Flags().StringVar(&cmd.Resourceid, "resourceid", resourceid, ``)
 }
 
 // Run makes the HTTP request corresponding to the HealthHealthCommand command.

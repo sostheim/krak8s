@@ -93,10 +93,11 @@ func (c *Client) NewDeleteClusterRequest(ctx context.Context, path string) (*htt
 }
 
 // GetClusterPath computes a request path to the get action of cluster.
-func GetClusterPath(projectid string) string {
+func GetClusterPath(projectid string, resourceid string) string {
 	param0 := projectid
+	param1 := resourceid
 
-	return fmt.Sprintf("/v1/projects/%s/cluster", param0)
+	return fmt.Sprintf("/v1/projects/%s/cluster/%s", param0, param1)
 }
 
 // Get the status of the cluster resources

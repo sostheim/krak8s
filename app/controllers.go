@@ -188,8 +188,8 @@ func MountClusterController(service *goa.Service, ctrl ClusterController) {
 		}
 		return ctrl.Get(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:projectid/cluster", ctrl.MuxHandler("get", h, nil))
-	service.LogInfo("mount", "ctrl", "Cluster", "action", "Get", "route", "GET /v1/projects/:projectid/cluster")
+	service.Mux.Handle("GET", "/v1/projects/:projectid/cluster/:resourceid", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "Cluster", "action", "Get", "route", "GET /v1/projects/:projectid/cluster/:resourceid")
 }
 
 // unmarshalCreateClusterPayload unmarshals the request body into the context request data Payload field.

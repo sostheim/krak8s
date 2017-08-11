@@ -55,6 +55,18 @@ func (ctx *CreateApplicationContext) BadRequest(r error) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
+// NotFound sends a HTTP response with status code 404.
+func (ctx *CreateApplicationContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *CreateApplicationContext) InternalServerError() error {
+	ctx.ResponseData.WriteHeader(500)
+	return nil
+}
+
 // DeleteApplicationContext provides the application delete action context.
 type DeleteApplicationContext struct {
 	context.Context
@@ -213,6 +225,24 @@ func (ctx *CreateClusterContext) BadRequest(r error) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
 }
 
+// NotFound sends a HTTP response with status code 404.
+func (ctx *CreateClusterContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
+// Conflict sends a HTTP response with status code 409.
+func (ctx *CreateClusterContext) Conflict() error {
+	ctx.ResponseData.WriteHeader(409)
+	return nil
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *CreateClusterContext) InternalServerError() error {
+	ctx.ResponseData.WriteHeader(500)
+	return nil
+}
+
 // DeleteClusterContext provides the cluster delete action context.
 type DeleteClusterContext struct {
 	context.Context
@@ -261,7 +291,8 @@ type GetClusterContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Projectid string
+	Projectid  string
+	Resourceid string
 }
 
 // NewGetClusterContext parses the incoming request URL and body, performs validations and creates the
@@ -277,6 +308,11 @@ func NewGetClusterContext(ctx context.Context, r *http.Request, service *goa.Ser
 	if len(paramProjectid) > 0 {
 		rawProjectid := paramProjectid[0]
 		rctx.Projectid = rawProjectid
+	}
+	paramResourceid := req.Params["resourceid"]
+	if len(paramResourceid) > 0 {
+		rawResourceid := paramResourceid[0]
+		rctx.Resourceid = rawResourceid
 	}
 	return &rctx, err
 }
@@ -391,6 +427,18 @@ func (ctx *CreateNamespaceContext) Created() error {
 func (ctx *CreateNamespaceContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *CreateNamespaceContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *CreateNamespaceContext) InternalServerError() error {
+	ctx.ResponseData.WriteHeader(500)
+	return nil
 }
 
 // DeleteNamespaceContext provides the namespace delete action context.
@@ -588,6 +636,12 @@ func (ctx *CreateProjectContext) Created() error {
 func (ctx *CreateProjectContext) BadRequest(r error) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/vnd.goa.error")
 	return ctx.ResponseData.Service.Send(ctx.Context, 400, r)
+}
+
+// InternalServerError sends a HTTP response with status code 500.
+func (ctx *CreateProjectContext) InternalServerError() error {
+	ctx.ResponseData.WriteHeader(500)
+	return nil
 }
 
 // DeleteProjectContext provides the project delete action context.

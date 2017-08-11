@@ -23,9 +23,10 @@ func ApplicationHref(projectid, appid interface{}) string {
 }
 
 // ClusterHref returns the resource href.
-func ClusterHref(projectid interface{}) string {
+func ClusterHref(projectid, resourceid interface{}) string {
 	paramprojectid := strings.TrimLeftFunc(fmt.Sprintf("%v", projectid), func(r rune) bool { return r == '/' })
-	return fmt.Sprintf("/v1/projects/%v/cluster", paramprojectid)
+	paramresourceid := strings.TrimLeftFunc(fmt.Sprintf("%v", resourceid), func(r rune) bool { return r == '/' })
+	return fmt.Sprintf("/v1/projects/%v/cluster/%v", paramprojectid, paramresourceid)
 }
 
 // NamespaceHref returns the resource href.

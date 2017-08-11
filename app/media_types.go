@@ -166,6 +166,27 @@ func (mt *Cluster) Validate() (err error) {
 	return
 }
 
+// An cluster reesources object reference by object id (oid), and url (default view)
+//
+// Identifier: application/cluster.ref+json; view=default
+type ClusterRef struct {
+	// The cluster resources resource unique oid
+	Oid string `form:"oid" json:"oid" xml:"oid"`
+	// url of the collection that contains this object
+	URL string `form:"url" json:"url" xml:"url"`
+}
+
+// Validate validates the ClusterRef media type instance.
+func (mt *ClusterRef) Validate() (err error) {
+	if mt.Oid == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "oid"))
+	}
+	if mt.URL == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "url"))
+	}
+	return
+}
+
 // Users and tennants of the system are represented as the type Project (default view)
 //
 // Identifier: application/namespace+json; view=default
@@ -179,7 +200,7 @@ type Namespace struct {
 	// system wide unique namespace name
 	Name string `form:"name" json:"name" xml:"name"`
 	// cluster resource assoicated with namespace
-	Resources *Cluster `form:"resources" json:"resources" xml:"resources"`
+	Resources *ClusterRef `form:"resources" json:"resources" xml:"resources"`
 	// constant: object type
 	Type string `form:"type" json:"type" xml:"type"`
 }

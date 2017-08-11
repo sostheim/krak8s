@@ -225,6 +225,26 @@ definitions:
     - namespace_id
     title: 'Mediatype identifier: application/cluster+json; view=default'
     type: object
+  ClusterRef:
+    description: An cluster reesources object reference by object id (oid), and url
+      (default view)
+    example:
+      oid: de2760b1
+      url: /v1/project/30299bea/cluster
+    properties:
+      oid:
+        description: The cluster resources resource unique oid
+        example: de2760b1
+        type: string
+      url:
+        description: url of the collection that contains this object
+        example: /v1/project/30299bea/cluster
+        type: string
+    required:
+    - oid
+    - url
+    title: 'Mediatype identifier: application/cluster.ref+json; view=default'
+    type: object
   CluterPostBody:
     example:
       namespace_id: da9871c7
@@ -282,12 +302,8 @@ definitions:
       id: da9871c7
       name: newco-prod
       resources:
-        created_at: 1975-10-06T15:58:38-07:00
-        id: de2760b1
-        namespace_id: da9871c7
-        nodePoolSize: 8.9315617e+18
-        state: active
-        type: cluster
+        oid: de2760b1
+        url: /v1/project/30299bea/cluster
       type: namespace
     properties:
       applications:
@@ -307,7 +323,7 @@ definitions:
         minLength: 2
         type: string
       resources:
-        $ref: '#/definitions/Cluster'
+        $ref: '#/definitions/ClusterRef'
       type:
         description: 'constant: object type'
         example: namespace
@@ -332,12 +348,8 @@ definitions:
       id: da9871c7
       name: newco-prod
       resources:
-        created_at: 1975-10-06T15:58:38-07:00
-        id: de2760b1
-        namespace_id: da9871c7
-        nodePoolSize: 8.9315617e+18
-        state: active
-        type: cluster
+        oid: de2760b1
+        url: /v1/project/30299bea/cluster
       type: namespace
     - applications:
       - oid: e1ea1660
@@ -346,12 +358,8 @@ definitions:
       id: da9871c7
       name: newco-prod
       resources:
-        created_at: 1975-10-06T15:58:38-07:00
-        id: de2760b1
-        namespace_id: da9871c7
-        nodePoolSize: 8.9315617e+18
-        state: active
-        type: cluster
+        oid: de2760b1
+        url: /v1/project/30299bea/cluster
       type: namespace
     items:
       $ref: '#/definitions/Namespace'
@@ -608,6 +616,8 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/error'
+        "500":
+          description: Internal Server Error
       schemes:
       - http
       summary: create project
@@ -707,6 +717,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/error'
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
       schemes:
       - http
       summary: create application
@@ -790,28 +804,6 @@ paths:
       summary: delete cluster
       tags:
       - cluster
-    get:
-      description: Get the status of the cluster resources
-      operationId: cluster#get
-      parameters:
-      - in: path
-        name: projectid
-        required: true
-        type: string
-      produces:
-      - application/cluster+json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/Cluster'
-        "404":
-          description: Not Found
-      schemes:
-      - http
-      summary: get cluster
-      tags:
-      - cluster
     post:
       description: Create the cluster resources
       operationId: cluster#create
@@ -834,9 +826,42 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/error'
+        "404":
+          description: Not Found
+        "409":
+          description: Conflict
+        "500":
+          description: Internal Server Error
       schemes:
       - http
       summary: create cluster
+      tags:
+      - cluster
+  /v1/projects/{projectid}/cluster/{resourceid}:
+    get:
+      description: Get the status of the cluster resources
+      operationId: cluster#get
+      parameters:
+      - in: path
+        name: projectid
+        required: true
+        type: string
+      - in: path
+        name: resourceid
+        required: true
+        type: string
+      produces:
+      - application/cluster+json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Cluster'
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: get cluster
       tags:
       - cluster
   /v1/projects/{projectid}/namespaces:
@@ -882,6 +907,10 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/error'
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
       schemes:
       - http
       summary: create namespace
@@ -946,6 +975,10 @@ produces:
 - application/gob
 - application/x-gob
 responses:
+  Conflict:
+    description: Conflict
+  InternalServerError:
+    description: Internal Server Error
   NoContent:
     description: No Content
   NotFound:

@@ -32,22 +32,18 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	// ClusterController_Create: start_implement
 	_, ok := c.ds.Project(ctx.Projectid)
 	if !ok {
-		return nil
-		// return ctx.NotFound()
+		return ctx.NotFound()
 	}
 	// TODO: validation step for project oid + namespace oid
 	ns, ok := c.ds.Namespace(ctx.Payload.NamespaceID)
 	if !ok {
-		return nil
-		// return ctx.NotFound()
+		return ctx.NotFound()
 	} else if ns.Resources != nil {
-		return nil
-		// return ctx.AlreadyExists()
+		return ctx.Conflict()
 	}
 	res := c.ds.NewResource(ctx.Payload.NamespaceID, ctx.Payload.NodePoolSize)
 	if res == nil {
-		return nil
-		// return ctx.ServerError()
+		return ctx.InternalServerError()
 	}
 	url := "/v1/projects/" + ctx.Projectid + "/cluster/" + res.OID
 	ns.Resources = &ObjectLink{OID: res.OID, URL: url}
@@ -73,8 +69,7 @@ func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 // Get runs the get action.
 func (c *ClusterController) Get(ctx *app.GetClusterContext) error {
 	// ClusterController_Get: start_implement
-
-	resource, ok := c.ds.Resource(ctx.Projectid)
+	resource, ok := c.ds.Resource(ctx.Resourceid)
 	if !ok {
 		return ctx.NotFound()
 	}
