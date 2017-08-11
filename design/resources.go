@@ -10,7 +10,7 @@ import (
 // The top level resource is /projects which contains a collection of the existing
 // users in the system (users and projects are synonyms).
 var _ = Resource("project", func() {
-	Description("Manage {create, delete} individual projects, read the list of all projects, read a specific project")
+	Description("Manage {create, delete}, and get a project, or all projects")
 
 	DefaultMedia(Project)
 	BasePath("/projects")
@@ -40,6 +40,7 @@ var _ = Resource("project", func() {
 		})
 		Response(Created, "/projects/[a-f,0-9]+")
 		Response(BadRequest, ErrorMedia)
+		Response(InternalServerError)
 	})
 
 	Action("delete", func() {
@@ -67,6 +68,8 @@ var _ = Resource("namespace", func() {
 		})
 		Response(Created, "^/projects/[a-f,0-9]+/namespaces/[a-f,0-9]+")
 		Response(BadRequest, ErrorMedia)
+		Response(InternalServerError)
+		Response(NotFound)
 	})
 
 	Action("list", func() {
@@ -104,6 +107,8 @@ var _ = Resource("application", func() {
 		Payload(ApplicationPostBody)
 		Response(Accepted, "^/projects/[a-f,0-9]+/applications/[a-f,0-9]+")
 		Response(BadRequest, ErrorMedia)
+		Response(InternalServerError)
+		Response(NotFound)
 	})
 
 	Action("list", func() {
@@ -141,10 +146,13 @@ var _ = Resource("cluster", func() {
 		Payload(ClusterPostBody)
 		Response(Accepted, "^/projects/[a-f,0-9]+/cluster/[a-f,0-9]+")
 		Response(BadRequest, ErrorMedia)
+		Response(InternalServerError)
+		Response(Conflict)
+		Response(NotFound)
 	})
 
 	Action("get", func() {
-		Routing(GET(""))
+		Routing(GET("/:resourceid"))
 		Description("Get the status of the cluster resources")
 		Response(OK, Cluster)
 		Response(NotFound)

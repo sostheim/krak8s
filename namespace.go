@@ -34,6 +34,9 @@ func MarshalNamespaceObject(obj *NamespaceObject) *app.Namespace {
 		CreatedAt: obj.CreatedAt,
 	}
 
+	if obj.Resources != nil {
+		ns.Resources = &app.ClusterRef{Oid: obj.Resources.OID, URL: obj.Resources.URL}
+	}
 	count := len(obj.Applications)
 	if count > 0 {
 		ns.Applications = make(app.ApplicationRefCollection, count)

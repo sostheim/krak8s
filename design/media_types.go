@@ -5,6 +5,25 @@ import (
 	. "github.com/goadesign/goa/design/apidsl"
 )
 
+// ClusterRef is the cluster resource reference media type.
+var ClusterRef = MediaType("application/cluster.ref+json", func() {
+	Description("An cluster reesources object reference by object id (oid), and url")
+	Attributes(func() {
+		Attribute("oid", String, "The cluster resources resource unique oid", func() {
+			Example("de2760b1")
+		})
+		Attribute("url", String, "url of the collection that contains this object", func() {
+			Example("/v1/project/30299bea/cluster")
+		})
+		Required("oid", "url")
+	})
+
+	View("default", func() {
+		Attribute("oid")
+		Attribute("url")
+	})
+})
+
 // Cluster is the cluster resource's MediaType.
 var Cluster = MediaType("application/cluster+json", func() {
 	Description("Cluster resource representation type")
@@ -135,7 +154,7 @@ var Namespace = MediaType("application/namespace+json", func() {
 		})
 		Attribute("created_at", DateTime, "Date of creation")
 
-		Attribute("resources", Cluster, "cluster resource assoicated with namespace")
+		Attribute("resources", ClusterRef, "cluster resource assoicated with namespace")
 		Attribute("applications", CollectionOf(ApplicationRef), "applications assoicated with namespace")
 
 		Required("id", "type", "name", "created_at", "resources", "applications")
