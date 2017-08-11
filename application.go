@@ -31,13 +31,29 @@ func MarshalApplicationObject(obj *ApplicationObject) *app.Application {
 // Create runs the create action.
 func (c *ApplicationController) Create(ctx *app.CreateApplicationContext) error {
 	// ApplicationController_Create: start_implement
-
-	c.ds.NewApplication(
+	_, ok := c.ds.Project(ctx.Projectid)
+	if !ok {
+		return nil
+		// return ctx.NotFound()
+	}
+	// TODO: validation step for project oid + namespace oid
+	ns, ok := c.ds.Namespace(ctx.Payload.NamespaceID)
+	if !ok {
+		return nil
+		// return ctx.NotFound()
+	}
+	app := c.ds.NewApplication(
 		ctx.Payload.NamespaceID,
 		ctx.Payload.Name,
 		ctx.Payload.Version,
 		*ctx.Payload.Set,
 		*ctx.Payload.Registry)
+	if app == nil {
+		return nil
+		// return ctx.ServerError()
+	}
+	url := "/v1/projects/" + ctx.Projectid + "/applications/" + app.OID
+	ns.Applications = append(ns.Applications, &ObjectLink{OID: app.OID, URL: url})
 
 	// ApplicationController_Create: end_implement
 	return nil

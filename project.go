@@ -50,7 +50,11 @@ func MarshalProjectObject(obj *ProjectObject) *app.Project {
 func (c *ProjectController) Create(ctx *app.CreateProjectContext) error {
 	// ProjectController_Create: start_implement
 
-	c.ds.NewProject(ctx.Payload.Name)
+	p := c.ds.NewProject(ctx.Payload.Name)
+	if p == nil {
+		return nil
+		// return ctx.ServerError()
+	}
 
 	// ProjectController_Create: end_implement
 	return nil

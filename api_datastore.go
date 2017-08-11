@@ -179,7 +179,9 @@ func (ds *DataStore) NewProjectObject() *ProjectObject {
 		ObjType:   Project,
 		CreatedAt: time.Now(),
 	}
-
+	if obj.OID == "" {
+		return nil
+	}
 	ds.Lock()
 	defer ds.Unlock()
 	ds.projects[obj.OID] = &obj
@@ -189,6 +191,9 @@ func (ds *DataStore) NewProjectObject() *ProjectObject {
 // NewProject creates ProjectObject with given name and unique object id.
 func (ds *DataStore) NewProject(name string) *ProjectObject {
 	obj := ds.NewProjectObject()
+	if obj == nil {
+		return nil
+	}
 	obj.Name = name
 	return obj
 }
@@ -243,6 +248,9 @@ func (ds *DataStore) NewNamespaceObject() *NamespaceObject {
 		Resources:    nil,
 		Applications: nil,
 	}
+	if obj.OID == "" {
+		return nil
+	}
 	ds.Lock()
 	defer ds.Unlock()
 	ds.namespaces[obj.OID] = &obj
@@ -252,6 +260,9 @@ func (ds *DataStore) NewNamespaceObject() *NamespaceObject {
 // NewNamespace creates NamespaceObject with given name
 func (ds *DataStore) NewNamespace(name string) *NamespaceObject {
 	obj := ds.NewNamespaceObject()
+	if obj == nil {
+		return nil
+	}
 	obj.Name = name
 	return obj
 }
@@ -311,8 +322,10 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 		Status:      nil,
 		NamespaceID: nsOID,
 	}
+	if obj.OID == "" {
+		return nil
+	}
 	obj.UpdatedAt = obj.CreatedAt
-
 	ds.Lock()
 	defer ds.Unlock()
 	ds.applications[obj.OID] = &obj
@@ -322,6 +335,9 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 // NewApplication creates a new application resource.
 func (ds *DataStore) NewApplication(namespace, name, version, config, registry string) *ApplicationObject {
 	obj := ds.NewApplicationObject(namespace)
+	if obj == nil {
+		return nil
+	}
 	obj.Name = name
 	obj.Version = version
 	obj.Config = config
@@ -375,6 +391,9 @@ func (ds *DataStore) NewResourceObject(nsOID string) *ResourceObject {
 		CreatedAt:   time.Now(),
 		NamespaceID: nsOID,
 	}
+	if obj.OID == "" {
+		return nil
+	}
 	obj.UpdatedAt = obj.CreatedAt
 	ds.Lock()
 	defer ds.Unlock()
@@ -385,6 +404,9 @@ func (ds *DataStore) NewResourceObject(nsOID string) *ResourceObject {
 // NewResource creates a new ResourceObject resource.
 func (ds *DataStore) NewResource(namespace string, nodes int) *ResourceObject {
 	obj := ds.NewResourceObject(namespace)
+	if obj == nil {
+		return nil
+	}
 	obj.NodePoolSize = nodes
 	return obj
 }

@@ -30,8 +30,27 @@ func MarshalResourcesObject(obj *ResourceObject) *app.Cluster {
 // Create runs the create action.
 func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	// ClusterController_Create: start_implement
-
-	c.ds.NewResource(ctx.Payload.NamespaceID, ctx.Payload.NodePoolSize)
+	_, ok := c.ds.Project(ctx.Projectid)
+	if !ok {
+		return nil
+		// return ctx.NotFound()
+	}
+	// TODO: validation step for project oid + namespace oid
+	ns, ok := c.ds.Namespace(ctx.Payload.NamespaceID)
+	if !ok {
+		return nil
+		// return ctx.NotFound()
+	} else if ns.Resources != nil {
+		return nil
+		// return ctx.AlreadyExists()
+	}
+	res := c.ds.NewResource(ctx.Payload.NamespaceID, ctx.Payload.NodePoolSize)
+	if res == nil {
+		return nil
+		// return ctx.ServerError()
+	}
+	url := "/v1/projects/" + ctx.Projectid + "/cluster/" + res.OID
+	ns.Resources = &ObjectLink{OID: res.OID, URL: url}
 
 	// ClusterController_Create: end_implement
 	return nil

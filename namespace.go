@@ -49,9 +49,18 @@ func MarshalNamespaceObject(obj *NamespaceObject) *app.Namespace {
 // Create runs the create action.
 func (c *NamespaceController) Create(ctx *app.CreateNamespaceContext) error {
 	// NamespaceController_Create: start_implement
-
-	c.ds.NewNamespace(ctx.Payload.Name)
-
+	proj, ok := c.ds.Project(ctx.Projectid)
+	if !ok {
+		return nil
+		// return ctx.NotFound()
+	}
+	ns := c.ds.NewNamespace(ctx.Payload.Name)
+	if ns == nil {
+		return nil
+		// return ctx.ServerError()
+	}
+	url := "/v1/projects/" + ctx.Projectid + "/namespaces/" + ns.OID
+	proj.Namespaces = append(proj.Namespaces, &ObjectLink{OID: ns.OID, URL: url})
 	// NamespaceController_Create: end_implement
 	return nil
 }
