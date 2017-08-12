@@ -131,7 +131,7 @@ type ResourceObject struct {
 	NamespaceID  string
 }
 
-// DataStore in-memory data syncronization structure for API data.
+// DataStore in-memory data synchronization structure for API data.
 type DataStore struct {
 	sync.Mutex
 	projects     map[string]*ProjectObject

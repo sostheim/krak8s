@@ -26,11 +26,16 @@ import (
 )
 
 const (
-	APIVersion      = "/v1"
-	APIProjects     = "/projects/"
+	// APIVersion - URL path root for API versioning
+	APIVersion = "/v1"
+	// APIProjects - URL path segment for projects
+	APIProjects = "/projects/"
+	// APIApplications - URL path segment for applications
 	APIApplications = "/applications/"
-	APICluster      = "/cluster/"
-	APINamespaces   = "/namespaces/"
+	// APICluster - URL path segment for cluster resources
+	APICluster = "/cluster/"
+	// APIClAPINamespacesuster - URL path segment for namespaces
+	APINamespaces = "/namespaces/"
 )
 
 // API Server

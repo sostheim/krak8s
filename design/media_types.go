@@ -160,8 +160,8 @@ var Namespace = MediaType("application/namespace+json", func() {
 		})
 		Attribute("created_at", DateTime, "Date of creation")
 
-		Attribute("resources", ClusterRef, "cluster resource assoicated with namespace")
-		Attribute("applications", CollectionOf(ApplicationRef), "applications assoicated with namespace")
+		Attribute("resources", ClusterRef, "cluster resource associated with namespace")
+		Attribute("applications", CollectionOf(ApplicationRef), "applications associated with namespace")
 
 		Required("id", "type", "name", "created_at", "resources", "applications")
 	})
@@ -193,7 +193,7 @@ var Project = MediaType("application/project+json", func() {
 		})
 		Attribute("created_at", DateTime, "Date of creation")
 
-		Attribute("namespaces", CollectionOf(NamespaceRef), "namespace assoications for this project")
+		Attribute("namespaces", CollectionOf(NamespaceRef), "namespace associations for this project")
 
 		Required("id", "type", "name", "created_at", "namespaces")
 	})
