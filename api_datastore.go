@@ -66,6 +66,8 @@ type NamespaceObject struct {
 
 // ApplicationStatusObject State strings
 const (
+	// Note: that the use UPPERCASE is intentional
+
 	// ApplicationUnknown state string
 	ApplicationUnknown = "UNKNOWN"
 	// ApplicationDeployed state string
@@ -102,6 +104,8 @@ type ApplicationObject struct {
 
 // ResourceObject State strings
 const (
+	// Note: that the use lowercase and understcroes is intentional
+
 	// ResourceCreateRequested state string
 	ResourceCreateRequested = "create_requested"
 	// ResourceStarting state string
@@ -319,7 +323,7 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 		OID:         ds.CheckedRandomHexString(),
 		ObjType:     Application,
 		CreatedAt:   time.Now(),
-		Status:      nil,
+		Status:      &ApplicationStatusObject{State: ApplicationUnknown},
 		NamespaceID: nsOID,
 	}
 	if obj.OID == "" {
@@ -389,12 +393,12 @@ func (ds *DataStore) NewResourceObject(nsOID string) *ResourceObject {
 		OID:         ds.CheckedRandomHexString(),
 		ObjType:     Resource,
 		CreatedAt:   time.Now(),
+		State:       ResourceCreateRequested,
 		NamespaceID: nsOID,
 	}
 	if obj.OID == "" {
 		return nil
 	}
-	obj.UpdatedAt = obj.CreatedAt
 	ds.Lock()
 	defer ds.Unlock()
 	ds.resources[obj.OID] = &obj
