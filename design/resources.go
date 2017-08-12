@@ -106,9 +106,9 @@ var _ = Resource("application", func() {
 
 	Action("create", func() {
 		Routing(POST(""))
-		Description("Create an application deployment")
+		Description("Request the creation of an application deployment in the project/namespace")
 		Payload(ApplicationPostBody)
-		Response(Accepted, "^/projects/[a-f,0-9]+/applications/[a-f,0-9]+")
+		Response(Accepted, Application)
 		Response(BadRequest, ErrorMedia)
 		Response(InternalServerError)
 		Response(NotFound)
@@ -116,21 +116,25 @@ var _ = Resource("application", func() {
 
 	Action("list", func() {
 		Routing(GET(""))
-		Description("Retrieve the collection of all applications in the namespace.")
-		// Can always return success, including w/ empty list.
+		Description("Retrieve the collection of all applications in the project/namespace.")
+		Payload(func() {
+			Member("namespaceid")
+			Required("namespaceid")
+		})
+		Response(NotFound)
 		Response(OK, CollectionOf(Application))
 	})
 
 	Action("get", func() {
 		Routing(GET("/:appid"))
-		Description("Get the status of the specified application from the project")
+		Description("Get the status of the specified application in the project/namespace")
 		Response(NotFound)
 		Response(OK, Application)
 	})
 
 	Action("delete", func() {
 		Routing(DELETE("/:appid"))
-		Description("Delete the specified application from the project")
+		Description("Delete the specified application from the project/namespace")
 		Response(NoContent)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
@@ -147,9 +151,9 @@ var _ = Resource("cluster", func() {
 
 	Action("create", func() {
 		Routing(POST(""))
-		Description("Create the cluster resources")
+		Description("Request the creation of the cluster resources in the project/namespace")
 		Payload(ClusterPostBody)
-		Response(Accepted, "^/projects/[a-f,0-9]+/cluster/[a-f,0-9]+")
+		Response(Accepted, Cluster)
 		Response(BadRequest, ErrorMedia)
 		Response(InternalServerError)
 		Response(Conflict)
@@ -158,14 +162,14 @@ var _ = Resource("cluster", func() {
 
 	Action("get", func() {
 		Routing(GET("/:resourceid"))
-		Description("Get the status of the cluster resources")
+		Description("Get the status of the cluster resources in the project/namespace")
 		Response(OK, Cluster)
 		Response(NotFound)
 	})
 
 	Action("delete", func() {
 		Routing(DELETE(""))
-		Description("Delete the cluster resource")
+		Description("Delete the cluster resources from the project/namespace")
 		Response(NoContent)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)

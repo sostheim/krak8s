@@ -91,15 +91,6 @@ definitions:
         state: UNKNOWN
       type: application
       version: Dolores in hic qui sed et voluptates.
-    - id: e1ea1660
-      name: Quos nobis placeat iusto itaque.
-      namespace_id: da9871c7
-      status:
-        deployed_at: 2012-02-17T21:30:54-08:00
-        notes: Impedit iste beatae odit et omnis.
-        state: UNKNOWN
-      type: application
-      version: Dolores in hic qui sed et voluptates.
     items:
       $ref: '#/definitions/Application'
     title: 'Mediatype identifier: application/application+json; type=collection; view=default'
@@ -248,7 +239,7 @@ definitions:
   CluterPostBody:
     example:
       namespace_id: da9871c7
-      nodePoolSize: 5
+      nodePoolSize: 7
     properties:
       namespace_id:
         description: The related namespace's generated unique id, not the namespace's
@@ -258,7 +249,7 @@ definitions:
       nodePoolSize:
         default: 3
         description: The number of worker nodes in the projects resource pool
-        example: 5
+        example: 7
         maximum: 11
         minimum: 3
         type: integer
@@ -269,10 +260,10 @@ definitions:
     type: object
   CreateNamespacePayload:
     example:
-      name: Omnis atque maxime autem et ea.
+      name: Corporis eaque id saepe.
     properties:
       name:
-        example: Omnis atque maxime autem et ea.
+        example: Corporis eaque id saepe.
         type: string
     required:
     - name
@@ -290,6 +281,17 @@ definitions:
     required:
     - name
     title: CreateProjectPayload
+    type: object
+  ListApplicationPayload:
+    example:
+      namespaceid: Corrupti omnis atque maxime autem.
+    properties:
+      namespaceid:
+        example: Corrupti omnis atque maxime autem.
+        type: string
+    required:
+    - namespaceid
+    title: ListApplicationPayload
     type: object
   Namespace:
     description: Users and tennants of the system are represented as the type Project
@@ -361,6 +363,16 @@ definitions:
         oid: de2760b1
         url: /v1/project/30299bea/cluster
       type: namespace
+    - applications:
+      - oid: e1ea1660
+        url: /v1/project/30299bea/applications
+      created_at: 1994-10-14T20:16:57-07:00
+      id: da9871c7
+      name: newco-prod
+      resources:
+        oid: de2760b1
+        url: /v1/project/30299bea/cluster
+      type: namespace
     items:
       $ref: '#/definitions/Namespace'
     title: 'Mediatype identifier: application/namespace+json; type=collection; view=default'
@@ -389,8 +401,6 @@ definitions:
     description: NamespaceRefCollection is the media type for an array of NamespaceRef
       (default view)
     example:
-    - oid: da9871c7
-      url: /v1/project/30299bea/namespaces
     - oid: da9871c7
       url: /v1/project/30299bea/namespaces
     items:
@@ -442,6 +452,20 @@ definitions:
     description: ProjectCollection is the media type for an array of Project (default
       view)
     example:
+    - created_at: 1991-05-26T01:29:46-07:00
+      id: 30299bea
+      name: newco
+      namespaces:
+      - oid: da9871c7
+        url: /v1/project/30299bea/namespaces
+      type: project
+    - created_at: 1991-05-26T01:29:46-07:00
+      id: 30299bea
+      name: newco
+      namespaces:
+      - oid: da9871c7
+        url: /v1/project/30299bea/namespaces
+      type: project
     - created_at: 1991-05-26T01:29:46-07:00
       id: 30299bea
       name: newco
@@ -679,13 +703,18 @@ paths:
       - project
   /v1/projects/{projectid}/applications:
     get:
-      description: Retrieve the collection of all applications in the namespace.
+      description: Retrieve the collection of all applications in the project/namespace.
       operationId: application#list
       parameters:
       - in: path
         name: projectid
         required: true
         type: string
+      - in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/ListApplicationPayload'
       produces:
       - application/application+json; type=collection
       responses:
@@ -693,13 +722,15 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/ApplicationCollection'
+        "404":
+          description: Not Found
       schemes:
       - http
       summary: list application
       tags:
       - application
     post:
-      description: Create an application deployment
+      description: Request the creation of an application deployment in the project/namespace
       operationId: application#create
       parameters:
       - in: path
@@ -712,10 +743,13 @@ paths:
         schema:
           $ref: '#/definitions/ApplicationPostBody'
       produces:
+      - application/application+json
       - application/vnd.goa.error
       responses:
         "202":
-          description: The request has been accepted for processing
+          description: Accepted
+          schema:
+            $ref: '#/definitions/Application'
         "400":
           description: Bad Request
           schema:
@@ -731,7 +765,7 @@ paths:
       - application
   /v1/projects/{projectid}/applications/{appid}:
     delete:
-      description: Delete the specified application from the project
+      description: Delete the specified application from the project/namespace
       operationId: application#delete
       parameters:
       - in: path
@@ -759,7 +793,7 @@ paths:
       tags:
       - application
     get:
-      description: Get the status of the specified application from the project
+      description: Get the status of the specified application in the project/namespace
       operationId: application#get
       parameters:
       - in: path
@@ -786,7 +820,7 @@ paths:
       - application
   /v1/projects/{projectid}/cluster:
     delete:
-      description: Delete the cluster resource
+      description: Delete the cluster resources from the project/namespace
       operationId: cluster#delete
       parameters:
       - in: path
@@ -810,7 +844,7 @@ paths:
       tags:
       - cluster
     post:
-      description: Create the cluster resources
+      description: Request the creation of the cluster resources in the project/namespace
       operationId: cluster#create
       parameters:
       - in: path
@@ -823,10 +857,13 @@ paths:
         schema:
           $ref: '#/definitions/CluterPostBody'
       produces:
+      - application/cluster+json
       - application/vnd.goa.error
       responses:
         "202":
-          description: The request has been accepted for processing
+          description: Accepted
+          schema:
+            $ref: '#/definitions/Cluster'
         "400":
           description: Bad Request
           schema:
@@ -844,7 +881,7 @@ paths:
       - cluster
   /v1/projects/{projectid}/cluster/{resourceid}:
     get:
-      description: Get the status of the cluster resources
+      description: Get the status of the cluster resources in the project/namespace
       operationId: cluster#get
       parameters:
       - in: path

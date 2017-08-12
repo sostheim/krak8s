@@ -47,15 +47,15 @@ func (c *ApplicationController) Create(ctx *app.CreateApplicationContext) error 
 		ctx.Payload.NamespaceID,
 		ctx.Payload.Name,
 		ctx.Payload.Version,
-		*ctx.Payload.Set,
-		*ctx.Payload.Registry)
+		ctx.Payload.Set,
+		ctx.Payload.Registry)
 	if app == nil {
 		return ctx.InternalServerError()
 	}
 	url := APIVersion + APIProjects + ctx.Projectid + APIApplications + app.OID
 	ns.Applications = append(ns.Applications, &ObjectLink{OID: app.OID, URL: url})
 
-	return ctx.Accepted()
+	return ctx.Accepted(MarshalApplicationObject(app))
 	// ApplicationController_Create: end_implement
 }
 
@@ -87,8 +87,17 @@ func (c *ApplicationController) Get(ctx *app.GetApplicationContext) error {
 // List runs the list action.
 func (c *ApplicationController) List(ctx *app.ListApplicationContext) error {
 	// ApplicationController_List: start_implement
+	_, ok := c.ds.Project(ctx.Projectid)
+	if !ok {
+		return ctx.NotFound()
+	}
+	// TODO: validation step for project oid + namespace oid
+	_, ok = c.ds.Namespace(ctx.Payload.Namespaceid)
+	if !ok {
+		return ctx.NotFound()
+	}
 	collection := app.ApplicationCollection{}
-	apps := c.ds.ApplicationsCollection(ctx.Projectid)
+	apps := c.ds.ApplicationsCollection(ctx.Payload.Namespaceid)
 	count := len(apps)
 	if count > 0 {
 		collection = make(app.ApplicationCollection, count)

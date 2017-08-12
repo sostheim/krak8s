@@ -337,15 +337,20 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 }
 
 // NewApplication creates a new application resource.
-func (ds *DataStore) NewApplication(namespace, name, version, config, registry string) *ApplicationObject {
+func (ds *DataStore) NewApplication(namespace, name, version string, config, registry *string) *ApplicationObject {
 	obj := ds.NewApplicationObject(namespace)
 	if obj == nil {
 		return nil
 	}
 	obj.Name = name
 	obj.Version = version
-	obj.Config = config
-	obj.Registry = registry
+	// Optional fields, may be unset (nil)
+	if config != nil {
+		obj.Config = *config
+	}
+	if registry != nil {
+		obj.Registry = *registry
+	}
 	return obj
 }
 
@@ -359,15 +364,18 @@ func (ds *DataStore) Application(oid string) (*ApplicationObject, bool) {
 
 // ApplicationsCollection return the collection of applications from the indicated namespace.
 func (ds *DataStore) ApplicationsCollection(nsOID string) []*ApplicationObject {
-	ns, ok := ds.namespaces[nsOID]
+	namespace, ok := ds.namespaces[nsOID]
 	if !ok {
 		return nil
 	}
-	ds.Lock()
-	defer ds.Unlock()
-	collection := make([]*ApplicationObject, len(ns.Applications))
-	for oid, link := range ns.Applications {
-		collection[oid] = ds.applications[link.OID]
+	i := 0
+	collection := make([]*ApplicationObject, len(namespace.Applications))
+	for _, link := range namespace.Applications {
+		collection[i], ok = ds.Application(link.OID)
+		if !ok {
+			return nil
+		}
+		i++
 	}
 	return collection
 }

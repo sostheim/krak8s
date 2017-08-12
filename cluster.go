@@ -52,7 +52,7 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	url := APIVersion + APIProjects + ctx.Projectid + APICluster + res.OID
 	ns.Resources = &ObjectLink{OID: res.OID, URL: url}
 
-	return ctx.Accepted()
+	return ctx.Accepted(MarshalResourcesObject(res))
 	// ClusterController_Create: end_implement
 }
 

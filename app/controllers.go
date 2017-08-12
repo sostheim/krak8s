@@ -106,15 +106,36 @@ func MountApplicationController(service *goa.Service, ctrl ApplicationController
 		if err != nil {
 			return err
 		}
+		// Build the payload
+		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
+			rctx.Payload = rawPayload.(*ListApplicationPayload)
+		} else {
+			return goa.MissingPayloadError()
+		}
 		return ctrl.List(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:projectid/applications", ctrl.MuxHandler("list", h, nil))
+	service.Mux.Handle("GET", "/v1/projects/:projectid/applications", ctrl.MuxHandler("list", h, unmarshalListApplicationPayload))
 	service.LogInfo("mount", "ctrl", "Application", "action", "List", "route", "GET /v1/projects/:projectid/applications")
 }
 
 // unmarshalCreateApplicationPayload unmarshals the request body into the context request data Payload field.
 func unmarshalCreateApplicationPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
 	payload := &applicationPostBody{}
+	if err := service.DecodeRequest(req, payload); err != nil {
+		return err
+	}
+	if err := payload.Validate(); err != nil {
+		// Initialize payload with private data structure so it can be logged
+		goa.ContextRequest(ctx).Payload = payload
+		return err
+	}
+	goa.ContextRequest(ctx).Payload = payload.Publicize()
+	return nil
+}
+
+// unmarshalListApplicationPayload unmarshals the request body into the context request data Payload field.
+func unmarshalListApplicationPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
+	payload := &listApplicationPayload{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}

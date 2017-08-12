@@ -25,7 +25,7 @@ func CreateApplicationPath(projectid string) string {
 	return fmt.Sprintf("/v1/projects/%s/applications", param0)
 }
 
-// Create an application deployment
+// Request the creation of an application deployment in the project/namespace
 func (c *Client) CreateApplication(ctx context.Context, path string, payload *ApplicationPostBody, contentType string) (*http.Response, error) {
 	req, err := c.NewCreateApplicationRequest(ctx, path, payload, contentType)
 	if err != nil {
@@ -70,7 +70,7 @@ func DeleteApplicationPath(projectid string, appid string) string {
 	return fmt.Sprintf("/v1/projects/%s/applications/%s", param0, param1)
 }
 
-// Delete the specified application from the project
+// Delete the specified application from the project/namespace
 func (c *Client) DeleteApplication(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewDeleteApplicationRequest(ctx, path)
 	if err != nil {
@@ -101,7 +101,7 @@ func GetApplicationPath(projectid string, appid string) string {
 	return fmt.Sprintf("/v1/projects/%s/applications/%s", param0, param1)
 }
 
-// Get the status of the specified application from the project
+// Get the status of the specified application in the project/namespace
 func (c *Client) GetApplication(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewGetApplicationRequest(ctx, path)
 	if err != nil {
@@ -124,6 +124,11 @@ func (c *Client) NewGetApplicationRequest(ctx context.Context, path string) (*ht
 	return req, nil
 }
 
+// ListApplicationPayload is the application list action payload.
+type ListApplicationPayload struct {
+	Namespaceid string `form:"namespaceid" json:"namespaceid" xml:"namespaceid"`
+}
+
 // ListApplicationPath computes a request path to the list action of application.
 func ListApplicationPath(projectid string) string {
 	param0 := projectid
@@ -131,9 +136,9 @@ func ListApplicationPath(projectid string) string {
 	return fmt.Sprintf("/v1/projects/%s/applications", param0)
 }
 
-// Retrieve the collection of all applications in the namespace.
-func (c *Client) ListApplication(ctx context.Context, path string) (*http.Response, error) {
-	req, err := c.NewListApplicationRequest(ctx, path)
+// Retrieve the collection of all applications in the project/namespace.
+func (c *Client) ListApplication(ctx context.Context, path string, payload *ListApplicationPayload, contentType string) (*http.Response, error) {
+	req, err := c.NewListApplicationRequest(ctx, path, payload, contentType)
 	if err != nil {
 		return nil, err
 	}
@@ -141,15 +146,29 @@ func (c *Client) ListApplication(ctx context.Context, path string) (*http.Respon
 }
 
 // NewListApplicationRequest create the request corresponding to the list action endpoint of the application resource.
-func (c *Client) NewListApplicationRequest(ctx context.Context, path string) (*http.Request, error) {
+func (c *Client) NewListApplicationRequest(ctx context.Context, path string, payload *ListApplicationPayload, contentType string) (*http.Request, error) {
+	var body bytes.Buffer
+	if contentType == "" {
+		contentType = "*/*" // Use default encoder
+	}
+	err := c.Encoder.Encode(payload, &body, contentType)
+	if err != nil {
+		return nil, fmt.Errorf("failed to encode body: %s", err)
+	}
 	scheme := c.Scheme
 	if scheme == "" {
 		scheme = "http"
 	}
 	u := url.URL{Host: c.Host, Scheme: scheme, Path: path}
-	req, err := http.NewRequest("GET", u.String(), nil)
+	req, err := http.NewRequest("GET", u.String(), &body)
 	if err != nil {
 		return nil, err
+	}
+	header := req.Header
+	if contentType == "*/*" {
+		header.Set("Content-Type", "application/json")
+	} else {
+		header.Set("Content-Type", contentType)
 	}
 	return req, nil
 }

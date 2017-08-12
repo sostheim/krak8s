@@ -54,22 +54,29 @@ The following example uses the commonly available `curl` command to create and r
 ```
 $ curl -X POST -H "Content-Type: application/json" \
        -d '{"name":"acme"}' http://localhost:8080/v1/projects 
+{
+	"created_at": "2017-08-11T22:03:46.021222713-07:00",
+	"id": "d1226f6a",
+	"name": "acme",
+	"namespaces": null,
+	"type": "project"
+}
 
 # GET the projects collection
 $ curl http://localhost:8080/v1/projects
 [{
-	"created_at": "2017-08-11T01:49:37.637611633-07:00",
-	"id": "d99656af",
+	"created_at": "2017-08-11T22:03:46.021222713-07:00",
+	"id": "d1226f6a",
 	"name": "acme",
 	"namespaces": null,
 	"type": "project"
 }]
 
 # Alternately - GET just the single project
-$ curl http://localhost:8080/v1/projects/d99656af
+$ curl http://localhost:8080/v1/projects/a0b4574a
 {
-	"created_at": "2017-08-11T01:49:37.637611633-07:00",
-	"id": "d99656af",
+	"created_at": "2017-08-11T22:03:46.021222713-07:00",
+	"id": "d1226f6a",
 	"name": "acme",
 	"namespaces": null,
 	"type": "project"
@@ -78,25 +85,33 @@ $ curl http://localhost:8080/v1/projects/d99656af
 2. Create (POST) a namespace in the newly created project, and read (GET) it back.
 ```
 $ curl -X POST -H "Content-Type: application/json" \
-      -d '{"name":"acme-prod"}' http://localhost:8080/v1/projects/d99656af/namespaces 
+       -d '{"name":"acme-prod"}' http://localhost:8080/v1/projects/d1226f6a/namespaces
+{
+	"applications": null,
+	"created_at": "2017-08-11T22:04:48.613174018-07:00",
+	"id": "20b5bac8",
+	"name": "acme-prod",
+	"resources": null,
+	"type": "namespace"
+}
 
 # GET the namespaces collection
-$ curl http://localhost:8080/v1/projects/d99656af/namespaces
+$ curl http://localhost:8080/v1/projects/d1226f6a/namespaces
 [{
 	"applications": null,
-	"created_at": "2017-08-11T01:53:34.247129355-07:00",
-	"id": "2eb210b5",
+	"created_at": "2017-08-11T22:04:48.613174018-07:00",
+	"id": "20b5bac8",
 	"name": "acme-prod",
 	"resources": null,
 	"type": "namespace"
 }]
 
 # Alternately - GET just the single namespace
-$ curl http://localhost:8080/v1/projects/d99656af/namespaces/2eb210b5
+$ curl http://localhost:8080/v1/projects/d1226f6a/namespaces/20b5bac8
 {
 	"applications": null,
-	"created_at": "2017-08-11T01:53:34.247129355-07:00",
-	"id": "2eb210b5",
+	"created_at": "2017-08-11T22:04:48.613174018-07:00",
+	"id": "20b5bac8",
 	"name": "acme-prod",
 	"resources": null,
 	"type": "namespace"
@@ -105,44 +120,92 @@ $ curl http://localhost:8080/v1/projects/d99656af/namespaces/2eb210b5
 3. Create (POST) a cluster resources specification in the newly created namespace, and read (GET) it back.
 ```
 $ curl -X POST -H "Content-Type: application/json" \
-       -d '{"namespace_id":"2eb210b5", "nodePoolSize": 7}' \
-       http://localhost:8080/v1/projects/d99656af/cluster
-
-# GET the cluster resources specification
-$ curl http://localhost:8080/v1/projects/d99656af/cluster/52f7fabb
+       -d '{"namespace_id":"20b5bac8", "nodePoolSize": 7}' \
+       http://localhost:8080/v1/projects/d1226f6a/cluster
 {
 	"created_at": "0001-01-01T00:00:00Z",
-	"id": "52f7fabb",
-	"namespace_id": "2eb210b5",
+	"id": "c7454a66",
+	"namespace_id": "20b5bac8",
 	"nodePoolSize": 7,
-	"state": "",
+	"state": "create_requested",
+	"type": "Resource"
+}
+
+# GET the cluster resources specification
+$ curl http://localhost:8080/v1/projects/d1226f6a/cluster/c7454a66
+{
+	"created_at": "0001-01-01T00:00:00Z",
+	"id": "c7454a66",
+	"namespace_id": "20b5bac8",
+	"nodePoolSize": 7,
+	"state": "create_requested",
 	"type": "Resource"
 }
 ```
-4. Note that, as we've been creating objects in the API that have relationships with existing objects, those existing objects have been incrementally updated with references to the newly created elements.
+4. Create (POST) an application in to the namespace in the project, and read (GET) it back.
+```
+$ curl -X POST -H "Content-Type: application/json" \
+       -d '{"name": "AcmeWidgetPipeline", "version": "v1.0.0-alpha.2", "namespace_id":"20b5bac8"}' \ http://localhost:8080/v1/projects/d1226f6a/applications
+{
+	"id": "99bf7a79",
+	"name": "AcmeWidgetPipeline",
+	"namespace_id": "20b5bac8",
+	"status": null,
+	"type": "application",
+	"version": "v1.0.0-alpha.2"
+}
+
+# GET the applications collection for the namespace
+$ curl -X GET -H "Content-Type: application/json" \
+       -d '{"namespaceid":"20b5bac8"}' http://localhost:8080/v1/projects/d1226f6a/applications
+[{
+	"id": "99bf7a79",
+	"name": "AcmeWidgetPipeline",
+	"namespace_id": "20b5bac8",
+	"status": null,
+	"type": "application",
+	"version": "v1.0.0-alpha.2"
+}]
+
+# Alternately - GET just the single application
+$ curl http://localhost:8080/v1/projects/d1226f6a/applications/99bf7a79
+{
+	"id": "99bf7a79",
+	"name": "AcmeWidgetPipeline",
+	"namespace_id": "20b5bac8",
+	"status": null,
+	"type": "application",
+	"version": "v1.0.0-alpha.2"
+}
+```
+5. Note that, as we've been creating objects in the API that have relationships with existing objects, those existing objects have been incrementally updated with references to the newly created elements.
 ```
 # Repeat the GET on the project object
-$ curl http://localhost:8080/v1/projects/d99656af
+$ curl http://localhost:8080/v1/projects/d1226f6a
 {
-	"created_at": "2017-08-11T01:49:37.637611633-07:00",
-	"id": "d99656af",
+	"created_at": "2017-08-11T22:03:46.021222713-07:00",
+	"id": "d1226f6a",
 	"name": "acme",
 	"namespaces": [{
-		"oid": "2eb210b5",
-		"url": "/v1/projects/d99656af/namespaces/2eb210b5"
+		"oid": "20b5bac8",
+		"url": "/v1/projects/d1226f6a/namespaces/20b5bac8"
 	}],
 	"type": "project"
 }
 
 # Repeat the GET on the namespace object
+$ curl http://localhost:8080/v1/projects/d1226f6a/namespaces/20b5bac8
 {
-	"applications": null,
-	"created_at": "2017-08-11T01:53:34.247129355-07:00",
-	"id": "2eb210b5",
+	"applications": [{
+		"oid": "99bf7a79",
+		"url": "/v1/projects/d1226f6a/applications/99bf7a79"
+	}],
+	"created_at": "2017-08-11T22:04:48.613174018-07:00",
+	"id": "20b5bac8",
 	"name": "acme-prod",
 	"resources": {
-		"oid": "52f7fabb",
-		"url": "/v1/projects/d99656af/cluster/52f7fabb"
+		"oid": "c7454a66",
+		"url": "/v1/projects/d1226f6a/cluster/c7454a66"
 	},
 	"type": "namespace"
 }

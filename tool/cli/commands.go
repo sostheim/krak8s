@@ -52,6 +52,8 @@ type (
 
 	// ListApplicationCommand is the command line data structure for the list action of application
 	ListApplicationCommand struct {
+		Payload     string
+		ContentType string
 		Projectid   string
 		PrettyPrint bool
 	}
@@ -178,7 +180,7 @@ Payload example:
 
 {
    "namespace_id": "da9871c7",
-   "nodePoolSize": 5
+   "nodePoolSize": 7
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -194,7 +196,7 @@ Payload example:
 Payload example:
 
 {
-   "name": "Omnis atque maxime autem et ea."
+   "name": "Corporis eaque id saepe."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
@@ -322,7 +324,14 @@ Payload example:
 	sub = &cobra.Command{
 		Use:   `application ["/v1/projects/PROJECTID/applications"]`,
 		Short: `Manage {create, delete}, and get namespaces's Application(s)`,
-		RunE:  func(cmd *cobra.Command, args []string) error { return tmp14.Run(c, args) },
+		Long: `Manage {create, delete}, and get namespaces's Application(s)
+
+Payload example:
+
+{
+   "namespaceid": "Corrupti omnis atque maxime autem."
+}`,
+		RunE: func(cmd *cobra.Command, args []string) error { return tmp14.Run(c, args) },
 	}
 	tmp14.RegisterFlags(sub, c)
 	sub.PersistentFlags().BoolVar(&tmp14.PrettyPrint, "pp", false, "Pretty print response body")
@@ -685,9 +694,16 @@ func (cmd *ListApplicationCommand) Run(c *client.Client, args []string) error {
 	} else {
 		path = fmt.Sprintf("/v1/projects/%v/applications", url.QueryEscape(cmd.Projectid))
 	}
+	var payload client.ListApplicationPayload
+	if cmd.Payload != "" {
+		err := json.Unmarshal([]byte(cmd.Payload), &payload)
+		if err != nil {
+			return fmt.Errorf("failed to deserialize payload: %s", err)
+		}
+	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
-	resp, err := c.ListApplication(ctx, path)
+	resp, err := c.ListApplication(ctx, path, &payload, cmd.ContentType)
 	if err != nil {
 		goa.LogError(ctx, "failed", "err", err)
 		return err
@@ -699,6 +715,8 @@ func (cmd *ListApplicationCommand) Run(c *client.Client, args []string) error {
 
 // RegisterFlags registers the command flags with the command line.
 func (cmd *ListApplicationCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
+	cc.Flags().StringVar(&cmd.Payload, "payload", "", "Request body encoded in JSON")
+	cc.Flags().StringVar(&cmd.ContentType, "content", "", "Request content type override, e.g. 'application/x-www-form-urlencoded'")
 	var projectid string
 	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
 }

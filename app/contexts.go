@@ -44,9 +44,9 @@ func NewCreateApplicationContext(ctx context.Context, r *http.Request, service *
 }
 
 // Accepted sends a HTTP response with status code 202.
-func (ctx *CreateApplicationContext) Accepted() error {
-	ctx.ResponseData.WriteHeader(202)
-	return nil
+func (ctx *CreateApplicationContext) Accepted(r *Application) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/application+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 202, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
@@ -165,6 +165,7 @@ type ListApplicationContext struct {
 	*goa.ResponseData
 	*goa.RequestData
 	Projectid string
+	Payload   *ListApplicationPayload
 }
 
 // NewListApplicationContext parses the incoming request URL and body, performs validations and creates the
@@ -184,6 +185,41 @@ func NewListApplicationContext(ctx context.Context, r *http.Request, service *go
 	return &rctx, err
 }
 
+// listApplicationPayload is the application list action payload.
+type listApplicationPayload struct {
+	Namespaceid *string `form:"namespaceid,omitempty" json:"namespaceid,omitempty" xml:"namespaceid,omitempty"`
+}
+
+// Validate runs the validation rules defined in the design.
+func (payload *listApplicationPayload) Validate() (err error) {
+	if payload.Namespaceid == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "namespaceid"))
+	}
+	return
+}
+
+// Publicize creates ListApplicationPayload from listApplicationPayload
+func (payload *listApplicationPayload) Publicize() *ListApplicationPayload {
+	var pub ListApplicationPayload
+	if payload.Namespaceid != nil {
+		pub.Namespaceid = *payload.Namespaceid
+	}
+	return &pub
+}
+
+// ListApplicationPayload is the application list action payload.
+type ListApplicationPayload struct {
+	Namespaceid string `form:"namespaceid" json:"namespaceid" xml:"namespaceid"`
+}
+
+// Validate runs the validation rules defined in the design.
+func (payload *ListApplicationPayload) Validate() (err error) {
+	if payload.Namespaceid == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`raw`, "namespaceid"))
+	}
+	return
+}
+
 // OK sends a HTTP response with status code 200.
 func (ctx *ListApplicationContext) OK(r ApplicationCollection) error {
 	ctx.ResponseData.Header().Set("Content-Type", "application/application+json; type=collection")
@@ -191,6 +227,12 @@ func (ctx *ListApplicationContext) OK(r ApplicationCollection) error {
 		r = ApplicationCollection{}
 	}
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
+}
+
+// NotFound sends a HTTP response with status code 404.
+func (ctx *ListApplicationContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
 }
 
 // CreateClusterContext provides the cluster create action context.
@@ -220,9 +262,9 @@ func NewCreateClusterContext(ctx context.Context, r *http.Request, service *goa.
 }
 
 // Accepted sends a HTTP response with status code 202.
-func (ctx *CreateClusterContext) Accepted() error {
-	ctx.ResponseData.WriteHeader(202)
-	return nil
+func (ctx *CreateClusterContext) Accepted(r *Cluster) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/cluster+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 202, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
