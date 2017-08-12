@@ -145,7 +145,8 @@ $ curl http://localhost:8080/v1/projects/d1226f6a/cluster/c7454a66
 4. Create (POST) an application in to the namespace in the project, and read (GET) it back.
 ```
 $ curl -X POST -H "Content-Type: application/json" \
-       -d '{"name": "AcmeWidgetPipeline", "version": "v1.0.0-alpha.2", "namespace_id":"20b5bac8"}' \ http://localhost:8080/v1/projects/d1226f6a/applications
+       -d '{"name": "AcmeWidgetPipeline", "version": "v1.0.0-alpha.2", "namespace_id":"20b5bac8"}' \
+       http://localhost:8080/v1/projects/d1226f6a/applications
 {
 	"id": "99bf7a79",
 	"name": "AcmeWidgetPipeline",
