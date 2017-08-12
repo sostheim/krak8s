@@ -52,61 +52,52 @@ func MarshalProjectObject(obj *ProjectObject) *app.Project {
 // Create runs the create action.
 func (c *ProjectController) Create(ctx *app.CreateProjectContext) error {
 	// ProjectController_Create: start_implement
-
-	p := c.ds.NewProject(ctx.Payload.Name)
-	if p == nil {
-		return nil
-		// return ctx.ServerError()
+	proj := c.ds.NewProject(ctx.Payload.Name)
+	if proj == nil {
+		return ctx.InternalServerError()
 	}
-
+	return ctx.Created(MarshalProjectObject(proj))
 	// ProjectController_Create: end_implement
-	return nil
 }
 
 // Delete runs the delete action.
 func (c *ProjectController) Delete(ctx *app.DeleteProjectContext) error {
 	// ProjectController_Delete: start_implement
-
 	proj, ok := c.ds.Project(ctx.Projectid)
 	if !ok {
 		return ctx.NotFound()
 	}
 	c.ds.DeleteProject(proj)
-
+	return ctx.NoContent()
 	// ProjectController_Delete: end_implement
-	return nil
 }
 
 // Get runs the get action.
 func (c *ProjectController) Get(ctx *app.GetProjectContext) error {
 	// ProjectController_Get: start_implement
-
 	proj, ok := c.ds.Project(ctx.Projectid)
 	if !ok {
 		return ctx.NotFound()
 	}
 	res := MarshalProjectObject(proj)
-
-	// ProjectController_Get: end_implement
 	return ctx.OK(res)
+	// ProjectController_Get: end_implement
 }
 
 // List runs the list action.
 func (c *ProjectController) List(ctx *app.ListProjectContext) error {
 	// ProjectController_List: start_implement
-
-	res := app.ProjectCollection{}
+	collection := app.ProjectCollection{}
 	projects := c.ds.ProjectsCollection()
 	count := len(projects)
 	if count > 0 {
-		res = make(app.ProjectCollection, count)
+		collection = make(app.ProjectCollection, count)
 		i := 0
 		for _, obj := range projects {
-			res[i] = MarshalProjectObject(obj)
+			collection[i] = MarshalProjectObject(obj)
 			i++
 		}
 	}
-
+	return ctx.OK(collection)
 	// ProjectController_List: end_implement
-	return ctx.OK(res)
 }

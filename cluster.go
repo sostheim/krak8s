@@ -52,22 +52,20 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	url := APIVersion + APIProjects + ctx.Projectid + APICluster + res.OID
 	ns.Resources = &ObjectLink{OID: res.OID, URL: url}
 
+	return ctx.Accepted()
 	// ClusterController_Create: end_implement
-	return nil
 }
 
 // Delete runs the delete action.
 func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 	// ClusterController_Delete: start_implement
-
 	_, ok := c.ds.Resource(ctx.Projectid)
 	if !ok {
 		return ctx.NotFound()
 	}
 	c.ds.DeleteResource(ctx.Projectid)
-
+	return ctx.NoContent()
 	// ClusterController_Delete: end_implement
-	return nil
 }
 
 // Get runs the get action.
@@ -78,7 +76,6 @@ func (c *ClusterController) Get(ctx *app.GetClusterContext) error {
 		return ctx.NotFound()
 	}
 	res := MarshalResourcesObject(resource)
-
-	// ClusterController_Get: end_implement
 	return ctx.OK(res)
+	// ClusterController_Get: end_implement
 }

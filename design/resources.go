@@ -20,13 +20,14 @@ var _ = Resource("project", func() {
 	Action("list", func() {
 		Routing(GET(""))
 		Description("Retrieve all projects.")
+		// Can always return success, including w/ empty list.
 		Response(OK, CollectionOf(Project))
 	})
 
 	Action("get", func() {
 		Routing(GET("/:projectid"))
 		Description("Retrieve project with given id.")
-		Response(OK)
+		Response(OK, Project)
 		Response(NotFound)
 		Response(BadRequest, ErrorMedia)
 	})
@@ -38,7 +39,7 @@ var _ = Resource("project", func() {
 			Member("name")
 			Required("name")
 		})
-		Response(Created, "/projects/[a-f,0-9]+")
+		Response(Created, Project)
 		Response(BadRequest, ErrorMedia)
 		Response(InternalServerError)
 	})
@@ -66,21 +67,23 @@ var _ = Resource("namespace", func() {
 			Member("name")
 			Required("name")
 		})
-		Response(Created, "^/projects/[a-f,0-9]+/namespaces/[a-f,0-9]+")
+		Response(Created, Namespace)
 		Response(BadRequest, ErrorMedia)
 		Response(InternalServerError)
-		Response(NotFound)
+		Response(NotFound) // IFF projectid != valid project
 	})
 
 	Action("list", func() {
 		Routing(GET(""))
 		Description("Retrieve all projects.")
+		// Can always return success, including w/ empty list.
 		Response(OK, CollectionOf(Namespace))
 	})
 
 	Action("get", func() {
 		Routing(GET("/:namespaceid"))
 		Description("Get the details of the specified namespace from the project")
+		Response(NotFound)
 		Response(OK, Namespace)
 	})
 
@@ -114,12 +117,14 @@ var _ = Resource("application", func() {
 	Action("list", func() {
 		Routing(GET(""))
 		Description("Retrieve the collection of all applications in the namespace.")
+		// Can always return success, including w/ empty list.
 		Response(OK, CollectionOf(Application))
 	})
 
 	Action("get", func() {
 		Routing(GET("/:appid"))
 		Description("Get the status of the specified application from the project")
+		Response(NotFound)
 		Response(OK, Application)
 	})
 

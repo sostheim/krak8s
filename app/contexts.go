@@ -153,6 +153,12 @@ func (ctx *GetApplicationContext) OK(r *Application) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
+// NotFound sends a HTTP response with status code 404.
+func (ctx *GetApplicationContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
 // ListApplicationContext provides the application list action context.
 type ListApplicationContext struct {
 	context.Context
@@ -418,9 +424,9 @@ func (payload *CreateNamespacePayload) Validate() (err error) {
 }
 
 // Created sends a HTTP response with status code 201.
-func (ctx *CreateNamespaceContext) Created() error {
-	ctx.ResponseData.WriteHeader(201)
-	return nil
+func (ctx *CreateNamespaceContext) Created(r *Namespace) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/namespace+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 201, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.
@@ -527,6 +533,12 @@ func (ctx *GetNamespaceContext) OK(r *Namespace) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
+// NotFound sends a HTTP response with status code 404.
+func (ctx *GetNamespaceContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
 // ListNamespaceContext provides the namespace list action context.
 type ListNamespaceContext struct {
 	context.Context
@@ -627,9 +639,9 @@ func (payload *CreateProjectPayload) Validate() (err error) {
 }
 
 // Created sends a HTTP response with status code 201.
-func (ctx *CreateProjectContext) Created() error {
-	ctx.ResponseData.WriteHeader(201)
-	return nil
+func (ctx *CreateProjectContext) Created(r *Project) error {
+	ctx.ResponseData.Header().Set("Content-Type", "application/project+json")
+	return ctx.ResponseData.Service.Send(ctx.Context, 201, r)
 }
 
 // BadRequest sends a HTTP response with status code 400.

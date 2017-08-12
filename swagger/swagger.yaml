@@ -609,9 +609,12 @@ paths:
           $ref: '#/definitions/CreateProjectPayload'
       produces:
       - application/vnd.goa.error
+      - application/project+json
       responses:
         "201":
-          description: The requested resource has been created
+          description: Created
+          schema:
+            $ref: '#/definitions/Project'
         "400":
           description: Bad Request
           schema:
@@ -774,6 +777,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Application'
+        "404":
+          description: Not Found
       schemes:
       - http
       summary: get application
@@ -900,9 +905,12 @@ paths:
           $ref: '#/definitions/CreateNamespacePayload'
       produces:
       - application/vnd.goa.error
+      - application/namespace+json
       responses:
         "201":
-          description: The requested resource has been created
+          description: Created
+          schema:
+            $ref: '#/definitions/Namespace'
         "400":
           description: Bad Request
           schema:
@@ -964,6 +972,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Namespace'
+        "404":
+          description: Not Found
       schemes:
       - http
       summary: get namespace
@@ -983,10 +993,6 @@ responses:
     description: No Content
   NotFound:
     description: Not Found
-  OK:
-    description: OK
-    schema:
-      $ref: '#/definitions/Project'
 schemes:
 - http
 swagger: "2.0"
