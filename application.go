@@ -28,6 +28,7 @@ func MarshalApplicationObject(obj *ApplicationObject) *app.Application {
 		Name:        obj.Name,
 		Version:     obj.Version,
 		NamespaceID: obj.NamespaceID,
+		CreatedAt:   obj.CreatedAt,
 	}
 }
 

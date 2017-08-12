@@ -28,6 +28,8 @@ func MarshalResourcesObject(obj *ResourceObject) *app.Cluster {
 		NodePoolSize: obj.NodePoolSize,
 		NamespaceID:  obj.NamespaceID,
 		State:        obj.State,
+		CreatedAt:    obj.CreatedAt,
+		UpdatedAt:    obj.UpdatedAt,
 	}
 }
 

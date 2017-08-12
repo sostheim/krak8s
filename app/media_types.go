@@ -20,6 +20,8 @@ import (
 //
 // Identifier: application/application+json; view=default
 type Application struct {
+	// Date of creation
+	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
 	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
 	// Application name
@@ -36,6 +38,8 @@ type Application struct {
 	} `form:"status" json:"status" xml:"status"`
 	// constant: object type
 	Type string `form:"type" json:"type" xml:"type"`
+	// Date of last update
+	UpdatedAt time.Time `form:"updated_at" json:"updated_at" xml:"updated_at"`
 	// Application version
 	Version string `form:"version" json:"version" xml:"version"`
 }
@@ -60,6 +64,7 @@ func (mt *Application) Validate() (err error) {
 	if mt.NamespaceID == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace_id"))
 	}
+
 	if mt.Status != nil {
 
 		if mt.Status.State == "" {
@@ -143,6 +148,8 @@ type Cluster struct {
 	State string `form:"state" json:"state" xml:"state"`
 	// constant: object type
 	Type string `form:"type" json:"type" xml:"type"`
+	// Date of last update
+	UpdatedAt time.Time `form:"updated_at" json:"updated_at" xml:"updated_at"`
 }
 
 // Validate validates the Cluster media type instance.

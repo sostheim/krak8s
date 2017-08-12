@@ -36,6 +36,7 @@ var Cluster = MediaType("application/cluster+json", func() {
 		})
 		Attribute("nodePoolSize", Integer, "Requested node pool size")
 		Attribute("created_at", DateTime, "Date of creation")
+		Attribute("updated_at", DateTime, "Date of last update")
 		Attribute("state", func() {
 			Description("Lifecycle state")
 			Enum("create_requested", "starting", "active", "delete_requested", "deleting", "deleted")
@@ -44,7 +45,7 @@ var Cluster = MediaType("application/cluster+json", func() {
 			Description("The related namespace's generated unique id, not the namespace's name")
 			Example("da9871c7")
 		})
-		Required("id", "type", "nodePoolSize", "created_at", "state", "namespace_id")
+		Required("id", "type", "nodePoolSize", "created_at", "updated_at", "state", "namespace_id")
 	})
 
 	View("default", func() {
@@ -52,6 +53,7 @@ var Cluster = MediaType("application/cluster+json", func() {
 		Attribute("type")
 		Attribute("nodePoolSize")
 		Attribute("created_at")
+		Attribute("updated_at")
 		Attribute("state")
 		Attribute("namespace_id")
 	})
@@ -103,7 +105,9 @@ var Application = MediaType("application/application+json", func() {
 			Description("The related namespace's generated unique id, not the namespace's name")
 			Example("da9871c7")
 		})
-		Required("id", "type", "name", "version", "status", "namespace_id")
+		Attribute("created_at", DateTime, "Date of creation")
+		Attribute("updated_at", DateTime, "Date of last update")
+		Required("id", "type", "name", "version", "status", "namespace_id", "created_at", "updated_at")
 	})
 
 	View("default", func() {
@@ -113,6 +117,8 @@ var Application = MediaType("application/application+json", func() {
 		Attribute("version")
 		Attribute("status")
 		Attribute("namespace_id")
+		Attribute("created_at")
+		Attribute("updated_at")
 	})
 })
 

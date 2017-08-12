@@ -7,23 +7,30 @@ definitions:
   Application:
     description: Application representation type (default view)
     example:
+      created_at: 2007-12-31T06:53:54-08:00
       id: e1ea1660
-      name: Quos nobis placeat iusto itaque.
+      name: Nobis placeat iusto itaque tempora aliquam nemo.
       namespace_id: da9871c7
       status:
-        deployed_at: 2012-02-17T21:30:54-08:00
-        notes: Impedit iste beatae odit et omnis.
-        state: UNKNOWN
+        deployed_at: 2007-02-14T06:00:13-08:00
+        notes: Beatae odit.
+        state: DELETED
       type: application
-      version: Dolores in hic qui sed et voluptates.
+      updated_at: 1978-05-06T07:31:33-07:00
+      version: Aperiam dolores in hic qui sed et.
     properties:
+      created_at:
+        description: Date of creation
+        example: 2007-12-31T06:53:54-08:00
+        format: date-time
+        type: string
       id:
         description: generated resource unique id (8 character hexadecimal value)
         example: e1ea1660
         type: string
       name:
         description: Application name
-        example: Quos nobis placeat iusto itaque.
+        example: Nobis placeat iusto itaque tempora aliquam nemo.
         type: string
       namespace_id:
         description: The related namespace's generated unique id, not the namespace's
@@ -32,19 +39,19 @@ definitions:
         type: string
       status:
         example:
-          deployed_at: 2012-02-17T21:30:54-08:00
-          notes: Impedit iste beatae odit et omnis.
-          state: UNKNOWN
+          deployed_at: 2007-02-14T06:00:13-08:00
+          notes: Beatae odit.
+          state: DELETED
         properties:
           deployed_at:
             description: Last deployment time
-            example: 2012-02-17T21:30:54-08:00
+            example: 2007-02-14T06:00:13-08:00
             format: date-time
             type: string
           notes:
             description: Application specific notification / statuses / notes (if
               any)
-            example: Impedit iste beatae odit et omnis.
+            example: Beatae odit.
             type: string
           state:
             description: Deployment state
@@ -55,7 +62,7 @@ definitions:
             - SUPERSEDED
             - FAILED
             - DELETING
-            example: UNKNOWN
+            example: DELETED
             type: string
         required:
         - deployed_at
@@ -65,9 +72,14 @@ definitions:
         description: 'constant: object type'
         example: application
         type: string
+      updated_at:
+        description: Date of last update
+        example: 1978-05-06T07:31:33-07:00
+        format: date-time
+        type: string
       version:
         description: Application version
-        example: Dolores in hic qui sed et voluptates.
+        example: Aperiam dolores in hic qui sed et.
         type: string
     required:
     - id
@@ -76,21 +88,25 @@ definitions:
     - version
     - status
     - namespace_id
+    - created_at
+    - updated_at
     title: 'Mediatype identifier: application/application+json; view=default'
     type: object
   ApplicationCollection:
     description: ApplicationCollection is the media type for an array of Application
       (default view)
     example:
-    - id: e1ea1660
-      name: Quos nobis placeat iusto itaque.
+    - created_at: 2007-12-31T06:53:54-08:00
+      id: e1ea1660
+      name: Nobis placeat iusto itaque tempora aliquam nemo.
       namespace_id: da9871c7
       status:
-        deployed_at: 2012-02-17T21:30:54-08:00
-        notes: Impedit iste beatae odit et omnis.
-        state: UNKNOWN
+        deployed_at: 2007-02-14T06:00:13-08:00
+        notes: Beatae odit.
+        state: DELETED
       type: application
-      version: Dolores in hic qui sed et voluptates.
+      updated_at: 1978-05-06T07:31:33-07:00
+      version: Aperiam dolores in hic qui sed et.
     items:
       $ref: '#/definitions/Application'
     title: 'Mediatype identifier: application/application+json; type=collection; view=default'
@@ -166,16 +182,17 @@ definitions:
   Cluster:
     description: Cluster resource representation type (default view)
     example:
-      created_at: 1975-10-06T15:58:38-07:00
+      created_at: 1988-11-12T15:18:46-08:00
       id: de2760b1
       namespace_id: da9871c7
-      nodePoolSize: 8.9315617e+18
-      state: active
+      nodePoolSize: 1.7768362e+18
+      state: create_requested
       type: cluster
+      updated_at: 1990-12-11T22:09:50-08:00
     properties:
       created_at:
         description: Date of creation
-        example: 1975-10-06T15:58:38-07:00
+        example: 1988-11-12T15:18:46-08:00
         format: date-time
         type: string
       id:
@@ -189,7 +206,7 @@ definitions:
         type: string
       nodePoolSize:
         description: Requested node pool size
-        example: 8.9315617e+18
+        example: 1.7768362e+18
         format: int64
         type: integer
       state:
@@ -201,17 +218,23 @@ definitions:
         - delete_requested
         - deleting
         - deleted
-        example: active
+        example: create_requested
         type: string
       type:
         description: 'constant: object type'
         example: cluster
+        type: string
+      updated_at:
+        description: Date of last update
+        example: 1990-12-11T22:09:50-08:00
+        format: date-time
         type: string
     required:
     - id
     - type
     - nodePoolSize
     - created_at
+    - updated_at
     - state
     - namespace_id
     title: 'Mediatype identifier: application/cluster+json; view=default'
