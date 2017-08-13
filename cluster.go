@@ -36,7 +36,7 @@ func MarshalResourcesObject(obj *ResourceObject) *app.Cluster {
 // Create runs the create action.
 func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	// ClusterController_Create: start_implement
-	_, ok := c.ds.Project(ctx.Projectid)
+	proj, ok := c.ds.Project(ctx.Projectid)
 	if !ok {
 		return ctx.NotFound()
 	}
@@ -53,6 +53,8 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	}
 	url := APIVersion + APIProjects + ctx.Projectid + APICluster + res.OID
 	ns.Resources = &ObjectLink{OID: res.OID, URL: url}
+
+	AddProjectRequest(proj.Name, ns.Name, res.NodePoolSize)
 
 	return ctx.Accepted(MarshalResourcesObject(res))
 	// ClusterController_Create: end_implement

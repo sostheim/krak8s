@@ -18,11 +18,11 @@ const (
 	ClusterArgDown = "down"
 	// ClusterArgUpdate - cluster subcommand argment "update"
 	ClusterArgUpdate = "update"
-	// UpdateArgAddNodePools - cluster subcommand update argment "--add-nodepools"
+	// UpdateArgAddNodePools - cluster subcommand update argment to add node pool
 	UpdateArgAddNodePools = "--add-nodepools"
-	// UpdateArgUpdateNodePools - cluster subcommand update argment "--update-nodepools"
+	// UpdateArgUpdateNodePools - cluster subcommand update argment to update node pool
 	UpdateArgUpdateNodePools = "--update-nodepools"
-	// UpdateArgRemoveNodePools - cluster subcommand update argment "--rm-nodepools"
+	// UpdateArgRemoveNodePools - cluster subcommand update argment to remove node pool
 	UpdateArgRemoveNodePools = "--rm-nodepools"
 )
 
@@ -37,7 +37,9 @@ func Execute(command string, commandString []string) ([]byte, error) {
 	cmd.Stderr = stderrBuf
 
 	if err := cmd.Run(); err != nil {
-		glog.V(3).Infof("k2cli: error return: %v", err)
+		glog.Warningf("k2cli.Execute(): cmd:  %s, args: %s returned error: %v", command, commandString, err)
+		glog.Warningf("k2cli.Execute(): cmd:  %s, stderr: %s", command, string(stderrBuf.Bytes()))
+		glog.Warningf("k2cli.Execute(): cmd:  %s, stdout: %v", command, string(stdoutBuf.Bytes()))
 		return stderrBuf.Bytes(), err
 	}
 	return stdoutBuf.Bytes(), nil
