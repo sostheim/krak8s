@@ -18,6 +18,7 @@ package main
 
 import (
 	"fmt"
+	"krak8s/kraken"
 	"os"
 	"strings"
 
@@ -26,21 +27,27 @@ import (
 )
 
 type config struct {
-	flagSet     *flag.FlagSet
-	kubeconfig  *string
-	proxy       *string
-	serviceName *string
-	version     *bool
-	healthCheck *bool
+	flagSet          *flag.FlagSet
+	kubeconfig       *string
+	proxy            *string
+	serviceName      *string
+	version          *bool
+	healthCheck      *bool
+	keyPairName      *string
+	krakenKubeConfig *string
+	krakenConfigDir  *string
 }
 
 func newConfig() *config {
 	return &config{
-		kubeconfig:  flag.String("kubeconfig", "", "absolute path to the kubeconfig file"),
-		proxy:       flag.String("proxy", "", "kubctl proxy server running at the given url"),
-		serviceName: flag.String("service-name", "", "API Service name"),
-		version:     flag.Bool("version", false, "display version info and exit"),
-		healthCheck: flag.Bool("health-check", false, "enable health checking for API service"),
+		kubeconfig:       flag.String("kubeconfig", "", "absolute path to the kubeconfig file"),
+		proxy:            flag.String("proxy", "", "kubctl proxy server running at the given url"),
+		serviceName:      flag.String("service-name", "", "API Service name"),
+		version:          flag.Bool("version", false, "display version info and exit"),
+		healthCheck:      flag.Bool("health-check", false, "enable health checking for API service"),
+		keyPairName:      flag.String("nodepool-keypair", kraken.DefaultKeyPair, "kraken config.yaml: deployment.clusters[0].nodePools.keyPair"),
+		krakenKubeConfig: flag.String("kraken-kubeconfig", kraken.DefaultKubeConfig, "kraken config.yaml: deployment.clusters[0].nodePools.kubeConfig"),
+		krakenConfigDir:  flag.String("kraken-config-dir", kraken.DefaultConfigDir, "kraken config.yaml directory path"),
 	}
 }
 
@@ -50,11 +57,14 @@ func (cfg *config) String() string {
 }
 
 var envSupport = map[string]bool{
-	"kubeconfig":   true,
-	"proxy":        true,
-	"service-name": true,
-	"version":      false,
-	"health-check": true,
+	"kubeconfig":        true,
+	"proxy":             true,
+	"service-name":      true,
+	"version":           false,
+	"health-check":      true,
+	"nodepool-keypair":  true,
+	"kraken-kubeconfig": true,
+	"kraken-config-dir": true,
 }
 
 func variableName(name string) string {

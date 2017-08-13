@@ -15,14 +15,23 @@ import (
 )
 
 const (
-	// DefautlKubeConfig - defautl kubeConfig in ~/.kraken/config.yaml::kubeConfigs
-	DefautlKubeConfig = "defaultKube"
-	// DefautlKeyPair - defautl keyPair in ~/.kraken/config.yaml::keyPairs
-	DefautlKeyPair = "defaultKeyPair"
-	// NodePoolMarker - generated node pool configuration insertion point
-	NodePoolMarker = "# |--> NODE_POOL_MARKER <--|"
-	// ServicesMarker - generated services configuration insertion point
-	ServicesMarker = "# |--> SERVICES_MARKER <--|"
+	// DefaultConfigDir - defautl kubeConfig in ~/.kraken/config.yaml::kubeConfigs
+	DefaultConfigDir = "~/.kraken"
+	// DefaultKubeConfig - defautl kubeConfig in ~/.kraken/config.yaml::kubeConfigs
+	DefaultKubeConfig = "defaultKube"
+	// DefaultKeyPair - defautl keyPair in ~/.kraken/config.yaml::keyPairs
+	DefaultKeyPair = "defaultKeyPair"
+)
+
+const (
+	serviceTmplName    = "services.tmpl"
+	serviceTmplLines   = 5
+	serviceNameSuffix  = "-mongodb"
+	servicesMarker     = "# |--> SERVICES_MARKER <--|"
+	nodePoolTmplName   = "node_pool.tmpl"
+	nodePoolTmplLines  = 11
+	nodePoolNameSuffix = "Nodes"
+	nodePoolMarker     = "# |--> NODE_POOL_MARKER <--|"
 )
 
 // ProjectConfig describes the cluster resource configuration for a project
@@ -40,8 +49,8 @@ func NewProjectConfig(name string, count int, ns string) ProjectConfig {
 		Name:           name,
 		NodePoolCount:  count,
 		Namespace:      ns,
-		KeyPair:        DefautlKeyPair,
-		KubeConfigName: DefautlKubeConfig,
+		KeyPair:        DefaultKeyPair,
+		KubeConfigName: DefaultKubeConfig,
 	}
 }
 
@@ -85,8 +94,7 @@ func copyConfigFileBackup(path string) error {
 }
 
 func templateNodes(config ProjectConfig) (string, error) {
-	// path.Join(configPath, "config.yaml"")
-	tmpl, err := template.New("node_pool.tmpl").ParseFiles("node_pool.tmpl")
+	tmpl, err := template.New(nodePoolTmplName).ParseFiles(nodePoolTmplName)
 	if err != nil {
 		glog.Warningf("failed to parse node pool template file: %v", err)
 		return "", err
@@ -100,8 +108,7 @@ func templateNodes(config ProjectConfig) (string, error) {
 }
 
 func templateServices(config ProjectConfig) (string, error) {
-	// path.Join(configPath, "config.yaml"")
-	tmpl, err := template.New("services.tmpl").ParseFiles("services.tmpl")
+	tmpl, err := template.New(serviceTmplName).ParseFiles(serviceTmplName)
 	if err != nil {
 		glog.Warningf("failed to parse services template file: %v", err)
 		return "", err
@@ -153,9 +160,9 @@ func AddProjectTemplate(config ProjectConfig, filename string) error {
 			return nil
 		}
 		outputFileLines = append(outputFileLines, line)
-		if strings.Contains(line, NodePoolMarker) {
+		if strings.Contains(line, nodePoolMarker) {
 			outputFileLines = append(outputFileLines, nodeConfig)
-		} else if strings.Contains(line, ServicesMarker) {
+		} else if strings.Contains(line, servicesMarker) {
 			outputFileLines = append(outputFileLines, svcConfig)
 		}
 	}
@@ -193,10 +200,10 @@ func DeleteProject(config ProjectConfig, filename string) error {
 	var outputFileLines []string
 	for _, line := range configFileLines {
 		if strings.Contains(line, config.Name) {
-			if strings.Contains(line, config.Name+"Nodes") {
-				skip = 12
-			} else if strings.Contains(line, config.Name+"-mongodb") {
-				skip = 5
+			if strings.Contains(line, config.Name+nodePoolNameSuffix) {
+				skip = nodePoolTmplLines
+			} else if strings.Contains(line, config.Name+serviceNameSuffix) {
+				skip = serviceTmplLines
 			}
 		}
 		if skip > 0 {
