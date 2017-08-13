@@ -34,7 +34,7 @@ const (
 	APIApplications = "/applications/"
 	// APICluster - URL path segment for cluster resources
 	APICluster = "/cluster/"
-	// APIClAPINamespacesuster - URL path segment for namespaces
+	// APINamespaces - URL path segment for namespaces
 	APINamespaces = "/namespaces/"
 )
 

@@ -8,13 +8,21 @@ import (
 )
 
 const (
-	K2CLICommand             = "k2cli"
-	SubCmdCluster            = "cluster"
-	ClusterArgUp             = "up"
-	ClusterArgDown           = "down"
-	ClusterArgUpdate         = "update"
-	UpdateArgAddNodePools    = "--add-nodepools"
+	// K2CLICommand - kraken cli command name
+	K2CLICommand = "k2cli"
+	// SubCmdCluster - k2cli subcommand
+	SubCmdCluster = "cluster"
+	// ClusterArgUp - cluster subcommand argment "up"
+	ClusterArgUp = "up"
+	// ClusterArgDown - cluster subcommand argment "down"
+	ClusterArgDown = "down"
+	// ClusterArgUpdate - cluster subcommand argment "update"
+	ClusterArgUpdate = "update"
+	// UpdateArgAddNodePools - cluster subcommand update argment "--add-nodepools"
+	UpdateArgAddNodePools = "--add-nodepools"
+	// UpdateArgUpdateNodePools - cluster subcommand update argment "--update-nodepools"
 	UpdateArgUpdateNodePools = "--update-nodepools"
+	// UpdateArgRemoveNodePools - cluster subcommand update argment "--rm-nodepools"
 	UpdateArgRemoveNodePools = "--rm-nodepools"
 )
 
