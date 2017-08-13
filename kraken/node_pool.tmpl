@@ -1,0 +1,12 @@
+         - name: {{.Name}}Nodes
+           count: {{.NodePoolCount}}
+           kubeConfig: *{{.KubeConfigName}}
+           containerConfig: *defaultDocker
+           osConfig: *defaultCoreOs
+           nodeConfig:
+           >> : *defaultAwsClusterNode
+           taints:
+            - key: node-role.kubernetes.io/{{.Name}}
+                 values: ""
+                 effect: NoSchedule
+           keyPair: *{{.KeyPair}}
