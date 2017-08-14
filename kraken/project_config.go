@@ -2,6 +2,7 @@ package kraken
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"io/ioutil"
 	"os"
@@ -15,11 +16,13 @@ import (
 )
 
 const (
-	// DefaultConfigDir - defautl kubeConfig in ~/.kraken/config.yaml::kubeConfigs
+	// DefaultConfigFile - default configuration file name
+	DefaultConfigFile = "config.yaml"
+	// DefaultConfigDir - default configuration directory
 	DefaultConfigDir = "~/.kraken"
-	// DefaultKubeConfig - defautl kubeConfig in ~/.kraken/config.yaml::kubeConfigs
+	// DefaultKubeConfig - default kubeConfig
 	DefaultKubeConfig = "defaultKube"
-	// DefaultKeyPair - defautl keyPair in ~/.kraken/config.yaml::keyPairs
+	// DefaultKeyPair - default keyPair name
 	DefaultKeyPair = "defaultKeyPair"
 )
 
@@ -140,7 +143,7 @@ func AddProjectTemplate(config ProjectConfig, filename string) error {
 
 	err = copyConfigFileBackup(filename)
 	if err != nil {
-		glog.Warning("failed to make backup copy of config file")
+		glog.Warningf("failed to make backup copy of config file, error: %v", err)
 		return err
 	}
 
@@ -157,7 +160,7 @@ func AddProjectTemplate(config ProjectConfig, filename string) error {
 		if strings.Contains(line, config.Name) || strings.Contains(line, config.Namespace) {
 			glog.Infof("Configuration file already contains the Project Name: %s, or Namespace: %s",
 				config.Name, config.Name)
-			return nil
+			return errors.New("Can't add potentially duplicate value to configuration file")
 		}
 		outputFileLines = append(outputFileLines, line)
 		if strings.Contains(line, nodePoolMarker) {

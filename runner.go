@@ -19,6 +19,7 @@ package main
 import (
 	"krak8s/kraken"
 	"krak8s/queue"
+	"path"
 	"sync"
 
 	"github.com/golang/glog"
@@ -140,22 +141,25 @@ func (r *Runner) handleProjects(request *Request) bool {
 	}
 
 	cfg := kraken.NewProjectConfig(request.name, request.nodes, request.namespace)
-	cfg.KeyPair = *krak8sCfg.keyPairName
+	cfg.KeyPair = *krak8sCfg.krakenKeyPair
 	cfg.KubeConfigName = *krak8sCfg.krakenKubeConfig
 	commandArgs := []string{
 		kraken.SubCmdCluster,
 		kraken.ClusterArgUpdate,
 	}
+	configPath := path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile)
 	if request.requestType == AddProject {
-		err := kraken.AddProjectTemplate(cfg, "config.yaml")
+		err := kraken.AddProjectTemplate(cfg, configPath)
 		if err != nil {
 			glog.Errorf("Discarding add: configuration update failure: %v", err)
+			return true
 		}
 		commandArgs = append(commandArgs, kraken.UpdateArgAddNodePools)
 	} else {
-		err := kraken.DeleteProject(cfg, "config.yaml")
+		err := kraken.DeleteProject(cfg, configPath)
 		if err != nil {
 			glog.Errorf("Discarding remove: configuration update failure: %v", err)
+			return true
 		}
 		commandArgs = append(commandArgs, kraken.UpdateArgRemoveNodePools)
 	}

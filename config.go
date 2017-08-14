@@ -33,9 +33,10 @@ type config struct {
 	serviceName      *string
 	version          *bool
 	healthCheck      *bool
-	keyPairName      *string
-	krakenKubeConfig *string
+	krakenConfigFile *string
 	krakenConfigDir  *string
+	krakenKeyPair    *string
+	krakenKubeConfig *string
 }
 
 func newConfig() *config {
@@ -45,9 +46,10 @@ func newConfig() *config {
 		serviceName:      flag.String("service-name", "", "API Service name"),
 		version:          flag.Bool("version", false, "display version info and exit"),
 		healthCheck:      flag.Bool("health-check", false, "enable health checking for API service"),
-		keyPairName:      flag.String("nodepool-keypair", kraken.DefaultKeyPair, "kraken config.yaml: deployment.clusters[0].nodePools.keyPair"),
-		krakenKubeConfig: flag.String("kraken-kubeconfig", kraken.DefaultKubeConfig, "kraken config.yaml: deployment.clusters[0].nodePools.kubeConfig"),
-		krakenConfigDir:  flag.String("kraken-config-dir", kraken.DefaultConfigDir, "kraken config.yaml directory path"),
+		krakenConfigFile: flag.String("kraken-config-file", kraken.DefaultConfigFile, "kraken configuration yaml file name"),
+		krakenConfigDir:  flag.String("kraken-config-dir", kraken.DefaultConfigDir, "kraken configuration yaml directory path"),
+		krakenKeyPair:    flag.String("kraken-nodepool-keypair", kraken.DefaultKeyPair, "kraken configuration yaml: deployment.clusters[0].nodePools.keyPair"),
+		krakenKubeConfig: flag.String("kraken-kubeconfig", kraken.DefaultKubeConfig, "kraken configuration yaml: deployment.clusters[0].nodePools.kubeConfig"),
 	}
 }
 
@@ -57,14 +59,15 @@ func (cfg *config) String() string {
 }
 
 var envSupport = map[string]bool{
-	"kubeconfig":        true,
-	"proxy":             true,
-	"service-name":      true,
-	"version":           false,
-	"health-check":      true,
-	"nodepool-keypair":  true,
-	"kraken-kubeconfig": true,
-	"kraken-config-dir": true,
+	"kubeconfig":              true,
+	"proxy":                   true,
+	"service-name":            true,
+	"version":                 false,
+	"health-check":            true,
+	"kraken-config-file":      true,
+	"kraken-config-dir":       true,
+	"kraken-nodepool-keypair": true,
+	"kraken-kubeconfig":       true,
 }
 
 func variableName(name string) string {
