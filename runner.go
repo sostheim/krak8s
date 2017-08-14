@@ -163,8 +163,10 @@ func (r *Runner) handleProjects(request *Request) bool {
 		}
 		commandArgs = append(commandArgs, kraken.UpdateArgRemoveNodePools)
 	}
+	queue.Started()
 	commandArgs = append(commandArgs, request.name+"Nodes")
 	kraken.Execute(kraken.K2CLICommand, commandArgs)
+	queue.Done()
 	return true
 }
 
@@ -188,7 +190,10 @@ func (r *Runner) DeleteRequest(index int) {
 		return
 	}
 
-	// ork to remove the request from the pending map
+	glog.Infof("Queued task delted: type: %v, name: %s, namespace: %s, queueing duration: %s, running duration %s",
+		request.requestType, request.name, request.namespace, queue.QueuedDuration().String(), queue.RunningDuration().String())
+
+	// ok to remove the request from the pending map
 	r.mutex.Lock()
 	defer r.mutex.Unlock()
 	delete(r.pendingRequests, index)
@@ -198,7 +203,7 @@ func (r *Runner) DeleteRequest(index int) {
 
 // ProjectRequest - submit project add request for processing.
 func (r *Runner) ProjectRequest(action RequestType, name, namespace string, nodes int) RequestStatus {
-	req := NewRequest(AddProject)
+	req := NewRequest(action)
 	req.name = name
 	req.namespace = namespace
 	req.nodes = nodes
