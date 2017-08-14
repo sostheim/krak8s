@@ -40,6 +40,22 @@ const (
 	RemoveChart
 )
 
+// RequestStatus - request statuses
+type RequestStatus int
+
+const (
+	// Waiting - request is queued, but not started processing yet
+	Waiting RequestStatus = iota
+	// Processing - request is being processed
+	Processing
+	// Deleting - a delete of the request is pending
+	Deleting
+	// Finished - request processing is complete
+	Finished
+	// Absent - request could not be found, it may have already finished or be deleted
+	Absent
+)
+
 // Request - task to run
 type Request struct {
 	task      *queue.Task
@@ -62,12 +78,28 @@ func NewRequest(req RequestType) *Request {
 
 var pendingRequests []*Request
 
-// AddProjectRequest - submit project add request for processing.
-func AddProjectRequest(name, namespace string, nodes int) {
+// ProjectRequest - submit project add request for processing.
+func ProjectRequest(action RequestType, name, namespace string, nodes int) RequestStatus {
 	req := NewRequest(AddProject)
 	req.name = name
 	req.namespace = namespace
 	req.nodes = nodes
 	queue.Submit(req.task)
 	pendingRequests = append(pendingRequests, req)
+	return Waiting
+}
+
+// ProjectStatus - search for a request and, if found, return status
+func ProjectStatus(name, namespace string) RequestStatus {
+	for _, req := range pendingRequests {
+		if req.name == name && req.namespace == namespace {
+			switch status := queue.Status(req.task.ID); status {
+			case queue.Queued:
+				return Waiting
+			case queue.Running:
+				return Processing
+			}
+		}
+	}
+	return Absent
 }

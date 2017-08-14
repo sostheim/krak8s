@@ -173,7 +173,7 @@ func MountClusterController(service *goa.Service, ctrl ClusterController) {
 		}
 		// Build the payload
 		if rawPayload := goa.ContextRequest(ctx).Payload; rawPayload != nil {
-			rctx.Payload = rawPayload.(*CluterPostBody)
+			rctx.Payload = rawPayload.(*ClusterPostBody)
 		} else {
 			return goa.MissingPayloadError()
 		}
@@ -194,8 +194,8 @@ func MountClusterController(service *goa.Service, ctrl ClusterController) {
 		}
 		return ctrl.Delete(rctx)
 	}
-	service.Mux.Handle("DELETE", "/v1/projects/:projectid/cluster", ctrl.MuxHandler("delete", h, nil))
-	service.LogInfo("mount", "ctrl", "Cluster", "action", "Delete", "route", "DELETE /v1/projects/:projectid/cluster")
+	service.Mux.Handle("DELETE", "/v1/projects/:projectid/cluster/:resource_id", ctrl.MuxHandler("delete", h, nil))
+	service.LogInfo("mount", "ctrl", "Cluster", "action", "Delete", "route", "DELETE /v1/projects/:projectid/cluster/:resource_id")
 
 	h = func(ctx context.Context, rw http.ResponseWriter, req *http.Request) error {
 		// Check if there was an error loading the request
@@ -209,13 +209,13 @@ func MountClusterController(service *goa.Service, ctrl ClusterController) {
 		}
 		return ctrl.Get(rctx)
 	}
-	service.Mux.Handle("GET", "/v1/projects/:projectid/cluster/:resourceid", ctrl.MuxHandler("get", h, nil))
-	service.LogInfo("mount", "ctrl", "Cluster", "action", "Get", "route", "GET /v1/projects/:projectid/cluster/:resourceid")
+	service.Mux.Handle("GET", "/v1/projects/:projectid/cluster/:resource_id", ctrl.MuxHandler("get", h, nil))
+	service.LogInfo("mount", "ctrl", "Cluster", "action", "Get", "route", "GET /v1/projects/:projectid/cluster/:resource_id")
 }
 
 // unmarshalCreateClusterPayload unmarshals the request body into the context request data Payload field.
 func unmarshalCreateClusterPayload(ctx context.Context, service *goa.Service, req *http.Request) error {
-	payload := &cluterPostBody{}
+	payload := &clusterPostBody{}
 	if err := service.DecodeRequest(req, payload); err != nil {
 		return err
 	}

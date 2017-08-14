@@ -26,7 +26,7 @@ func CreateClusterPath(projectid string) string {
 }
 
 // Request the creation of the cluster resources in the project/namespace
-func (c *Client) CreateCluster(ctx context.Context, path string, payload *CluterPostBody, contentType string) (*http.Response, error) {
+func (c *Client) CreateCluster(ctx context.Context, path string, payload *ClusterPostBody, contentType string) (*http.Response, error) {
 	req, err := c.NewCreateClusterRequest(ctx, path, payload, contentType)
 	if err != nil {
 		return nil, err
@@ -35,7 +35,7 @@ func (c *Client) CreateCluster(ctx context.Context, path string, payload *Cluter
 }
 
 // NewCreateClusterRequest create the request corresponding to the create action endpoint of the cluster resource.
-func (c *Client) NewCreateClusterRequest(ctx context.Context, path string, payload *CluterPostBody, contentType string) (*http.Request, error) {
+func (c *Client) NewCreateClusterRequest(ctx context.Context, path string, payload *ClusterPostBody, contentType string) (*http.Request, error) {
 	var body bytes.Buffer
 	if contentType == "" {
 		contentType = "*/*" // Use default encoder
@@ -63,10 +63,11 @@ func (c *Client) NewCreateClusterRequest(ctx context.Context, path string, paylo
 }
 
 // DeleteClusterPath computes a request path to the delete action of cluster.
-func DeleteClusterPath(projectid string) string {
+func DeleteClusterPath(projectid string, resourceID string) string {
 	param0 := projectid
+	param1 := resourceID
 
-	return fmt.Sprintf("/v1/projects/%s/cluster", param0)
+	return fmt.Sprintf("/v1/projects/%s/cluster/%s", param0, param1)
 }
 
 // Delete the cluster resources from the project/namespace
@@ -93,9 +94,9 @@ func (c *Client) NewDeleteClusterRequest(ctx context.Context, path string) (*htt
 }
 
 // GetClusterPath computes a request path to the get action of cluster.
-func GetClusterPath(projectid string, resourceid string) string {
+func GetClusterPath(projectid string, resourceID string) string {
 	param0 := projectid
-	param1 := resourceid
+	param1 := resourceID
 
 	return fmt.Sprintf("/v1/projects/%s/cluster/%s", param0, param1)
 }

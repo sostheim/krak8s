@@ -241,7 +241,7 @@ type CreateClusterContext struct {
 	*goa.ResponseData
 	*goa.RequestData
 	Projectid string
-	Payload   *CluterPostBody
+	Payload   *ClusterPostBody
 }
 
 // NewCreateClusterContext parses the incoming request URL and body, performs validations and creates the
@@ -296,7 +296,8 @@ type DeleteClusterContext struct {
 	context.Context
 	*goa.ResponseData
 	*goa.RequestData
-	Projectid string
+	Projectid  string
+	ResourceID string
 }
 
 // NewDeleteClusterContext parses the incoming request URL and body, performs validations and creates the
@@ -312,6 +313,11 @@ func NewDeleteClusterContext(ctx context.Context, r *http.Request, service *goa.
 	if len(paramProjectid) > 0 {
 		rawProjectid := paramProjectid[0]
 		rctx.Projectid = rawProjectid
+	}
+	paramResourceID := req.Params["resource_id"]
+	if len(paramResourceID) > 0 {
+		rawResourceID := paramResourceID[0]
+		rctx.ResourceID = rawResourceID
 	}
 	return &rctx, err
 }
@@ -340,7 +346,7 @@ type GetClusterContext struct {
 	*goa.ResponseData
 	*goa.RequestData
 	Projectid  string
-	Resourceid string
+	ResourceID string
 }
 
 // NewGetClusterContext parses the incoming request URL and body, performs validations and creates the
@@ -357,10 +363,10 @@ func NewGetClusterContext(ctx context.Context, r *http.Request, service *goa.Ser
 		rawProjectid := paramProjectid[0]
 		rctx.Projectid = rawProjectid
 	}
-	paramResourceid := req.Params["resourceid"]
-	if len(paramResourceid) > 0 {
-		rawResourceid := paramResourceid[0]
-		rctx.Resourceid = rawResourceid
+	paramResourceID := req.Params["resource_id"]
+	if len(paramResourceID) > 0 {
+		rawResourceID := paramResourceID[0]
+		rctx.ResourceID = rawResourceID
 	}
 	return &rctx, err
 }

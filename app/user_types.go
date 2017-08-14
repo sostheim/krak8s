@@ -91,24 +91,24 @@ func (ut *ApplicationPostBody) Validate() (err error) {
 	return
 }
 
-// cluterPostBody user type.
-type cluterPostBody struct {
+// clusterPostBody user type.
+type clusterPostBody struct {
 	// The related namespace's generated unique id, not the namespace's name
 	NamespaceID *string `form:"namespace_id,omitempty" json:"namespace_id,omitempty" xml:"namespace_id,omitempty"`
 	// The number of worker nodes in the projects resource pool
 	NodePoolSize *int `form:"nodePoolSize,omitempty" json:"nodePoolSize,omitempty" xml:"nodePoolSize,omitempty"`
 }
 
-// Finalize sets the default values for cluterPostBody type instance.
-func (ut *cluterPostBody) Finalize() {
+// Finalize sets the default values for clusterPostBody type instance.
+func (ut *clusterPostBody) Finalize() {
 	var defaultNodePoolSize = 3
 	if ut.NodePoolSize == nil {
 		ut.NodePoolSize = &defaultNodePoolSize
 	}
 }
 
-// Validate validates the cluterPostBody type instance.
-func (ut *cluterPostBody) Validate() (err error) {
+// Validate validates the clusterPostBody type instance.
+func (ut *clusterPostBody) Validate() (err error) {
 	if ut.NodePoolSize == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "nodePoolSize"))
 	}
@@ -128,9 +128,9 @@ func (ut *cluterPostBody) Validate() (err error) {
 	return
 }
 
-// Publicize creates CluterPostBody from cluterPostBody
-func (ut *cluterPostBody) Publicize() *CluterPostBody {
-	var pub CluterPostBody
+// Publicize creates ClusterPostBody from clusterPostBody
+func (ut *clusterPostBody) Publicize() *ClusterPostBody {
+	var pub ClusterPostBody
 	if ut.NamespaceID != nil {
 		pub.NamespaceID = *ut.NamespaceID
 	}
@@ -140,16 +140,16 @@ func (ut *cluterPostBody) Publicize() *CluterPostBody {
 	return &pub
 }
 
-// CluterPostBody user type.
-type CluterPostBody struct {
+// ClusterPostBody user type.
+type ClusterPostBody struct {
 	// The related namespace's generated unique id, not the namespace's name
 	NamespaceID string `form:"namespace_id" json:"namespace_id" xml:"namespace_id"`
 	// The number of worker nodes in the projects resource pool
 	NodePoolSize int `form:"nodePoolSize" json:"nodePoolSize" xml:"nodePoolSize"`
 }
 
-// Validate validates the CluterPostBody type instance.
-func (ut *CluterPostBody) Validate() (err error) {
+// Validate validates the ClusterPostBody type instance.
+func (ut *ClusterPostBody) Validate() (err error) {
 
 	if ut.NamespaceID == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace_id"))

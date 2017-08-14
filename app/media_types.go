@@ -198,7 +198,7 @@ func (mt *ClusterRef) Validate() (err error) {
 //
 // Identifier: application/namespace+json; view=default
 type Namespace struct {
-	// applications assoicated with namespace
+	// applications associated with namespace
 	Applications ApplicationRefCollection `form:"applications" json:"applications" xml:"applications"`
 	// Date of creation
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
@@ -206,7 +206,7 @@ type Namespace struct {
 	ID string `form:"id" json:"id" xml:"id"`
 	// system wide unique namespace name
 	Name string `form:"name" json:"name" xml:"name"`
-	// cluster resource assoicated with namespace
+	// cluster resource associated with namespace
 	Resources *ClusterRef `form:"resources" json:"resources" xml:"resources"`
 	// constant: object type
 	Type string `form:"type" json:"type" xml:"type"`
@@ -309,7 +309,7 @@ type Project struct {
 	ID string `form:"id" json:"id" xml:"id"`
 	// name of project
 	Name string `form:"name" json:"name" xml:"name"`
-	// namespace assoications for this project
+	// namespace associations for this project
 	Namespaces NamespaceRefCollection `form:"namespaces" json:"namespaces" xml:"namespaces"`
 	// constant: object type
 	Type string `form:"type" json:"type" xml:"type"`

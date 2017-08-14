@@ -69,13 +69,14 @@ type (
 	// DeleteClusterCommand is the command line data structure for the delete action of cluster
 	DeleteClusterCommand struct {
 		Projectid   string
+		ResourceID  string
 		PrettyPrint bool
 	}
 
 	// GetClusterCommand is the command line data structure for the get action of cluster
 	GetClusterCommand struct {
 		Projectid   string
-		Resourceid  string
+		ResourceID  string
 		PrettyPrint bool
 	}
 
@@ -235,7 +236,7 @@ Payload example:
 	command.AddCommand(sub)
 	tmp6 := new(DeleteClusterCommand)
 	sub = &cobra.Command{
-		Use:   `cluster ["/v1/projects/PROJECTID/cluster"]`,
+		Use:   `cluster ["/v1/projects/PROJECTID/cluster/RESOURCE_ID"]`,
 		Short: `Manage {create, delete}, and get cluster resources`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp6.Run(c, args) },
 	}
@@ -276,7 +277,7 @@ Payload example:
 	command.AddCommand(sub)
 	tmp10 := new(GetClusterCommand)
 	sub = &cobra.Command{
-		Use:   `cluster ["/v1/projects/PROJECTID/cluster/RESOURCEID"]`,
+		Use:   `cluster ["/v1/projects/PROJECTID/cluster/RESOURCE_ID"]`,
 		Short: `Manage {create, delete}, and get cluster resources`,
 		RunE:  func(cmd *cobra.Command, args []string) error { return tmp10.Run(c, args) },
 	}
@@ -729,7 +730,7 @@ func (cmd *CreateClusterCommand) Run(c *client.Client, args []string) error {
 	} else {
 		path = fmt.Sprintf("/v1/projects/%v/cluster", url.QueryEscape(cmd.Projectid))
 	}
-	var payload client.CluterPostBody
+	var payload client.ClusterPostBody
 	if cmd.Payload != "" {
 		err := json.Unmarshal([]byte(cmd.Payload), &payload)
 		if err != nil {
@@ -762,7 +763,7 @@ func (cmd *DeleteClusterCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/cluster", url.QueryEscape(cmd.Projectid))
+		path = fmt.Sprintf("/v1/projects/%v/cluster/%v", url.QueryEscape(cmd.Projectid), url.QueryEscape(cmd.ResourceID))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -780,6 +781,8 @@ func (cmd *DeleteClusterCommand) Run(c *client.Client, args []string) error {
 func (cmd *DeleteClusterCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var projectid string
 	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
+	var resourceID string
+	cc.Flags().StringVar(&cmd.ResourceID, "resource_id", resourceID, ``)
 }
 
 // Run makes the HTTP request corresponding to the GetClusterCommand command.
@@ -788,7 +791,7 @@ func (cmd *GetClusterCommand) Run(c *client.Client, args []string) error {
 	if len(args) > 0 {
 		path = args[0]
 	} else {
-		path = fmt.Sprintf("/v1/projects/%v/cluster/%v", url.QueryEscape(cmd.Projectid), url.QueryEscape(cmd.Resourceid))
+		path = fmt.Sprintf("/v1/projects/%v/cluster/%v", url.QueryEscape(cmd.Projectid), url.QueryEscape(cmd.ResourceID))
 	}
 	logger := goa.NewLogger(log.New(os.Stderr, "", log.LstdFlags))
 	ctx := goa.WithLogger(context.Background(), logger)
@@ -806,8 +809,8 @@ func (cmd *GetClusterCommand) Run(c *client.Client, args []string) error {
 func (cmd *GetClusterCommand) RegisterFlags(cc *cobra.Command, c *client.Client) {
 	var projectid string
 	cc.Flags().StringVar(&cmd.Projectid, "projectid", projectid, ``)
-	var resourceid string
-	cc.Flags().StringVar(&cmd.Resourceid, "resourceid", resourceid, ``)
+	var resourceID string
+	cc.Flags().StringVar(&cmd.ResourceID, "resource_id", resourceID, ``)
 }
 
 // Run makes the HTTP request corresponding to the HealthHealthCommand command.

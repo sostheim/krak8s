@@ -239,27 +239,7 @@ definitions:
     - namespace_id
     title: 'Mediatype identifier: application/cluster+json; view=default'
     type: object
-  ClusterRef:
-    description: An cluster reesources object reference by object id (oid), and url
-      (default view)
-    example:
-      oid: de2760b1
-      url: /v1/project/30299bea/cluster
-    properties:
-      oid:
-        description: The cluster resources resource unique oid
-        example: de2760b1
-        type: string
-      url:
-        description: url of the collection that contains this object
-        example: /v1/project/30299bea/cluster
-        type: string
-    required:
-    - oid
-    - url
-    title: 'Mediatype identifier: application/cluster.ref+json; view=default'
-    type: object
-  CluterPostBody:
+  ClusterPostBody:
     example:
       namespace_id: da9871c7
       nodePoolSize: 7
@@ -279,7 +259,27 @@ definitions:
     required:
     - nodePoolSize
     - namespace_id
-    title: CluterPostBody
+    title: ClusterPostBody
+    type: object
+  ClusterRef:
+    description: An cluster reesources object reference by object id (oid), and url
+      (default view)
+    example:
+      oid: de2760b1
+      url: /v1/project/30299bea/cluster
+    properties:
+      oid:
+        description: The cluster resources resource unique oid
+        example: de2760b1
+        type: string
+      url:
+        description: url of the collection that contains this object
+        example: /v1/project/30299bea/cluster
+        type: string
+    required:
+    - oid
+    - url
+    title: 'Mediatype identifier: application/cluster.ref+json; view=default'
     type: object
   CreateNamespacePayload:
     example:
@@ -842,30 +842,6 @@ paths:
       tags:
       - application
   /v1/projects/{projectid}/cluster:
-    delete:
-      description: Delete the cluster resources from the project/namespace
-      operationId: cluster#delete
-      parameters:
-      - in: path
-        name: projectid
-        required: true
-        type: string
-      produces:
-      - application/vnd.goa.error
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/error'
-        "404":
-          description: Not Found
-      schemes:
-      - http
-      summary: delete cluster
-      tags:
-      - cluster
     post:
       description: Request the creation of the cluster resources in the project/namespace
       operationId: cluster#create
@@ -878,7 +854,7 @@ paths:
         name: payload
         required: true
         schema:
-          $ref: '#/definitions/CluterPostBody'
+          $ref: '#/definitions/ClusterPostBody'
       produces:
       - application/cluster+json
       - application/vnd.goa.error
@@ -902,7 +878,35 @@ paths:
       summary: create cluster
       tags:
       - cluster
-  /v1/projects/{projectid}/cluster/{resourceid}:
+  /v1/projects/{projectid}/cluster/{resource_id}:
+    delete:
+      description: Delete the cluster resources from the project/namespace
+      operationId: cluster#delete
+      parameters:
+      - in: path
+        name: projectid
+        required: true
+        type: string
+      - in: path
+        name: resource_id
+        required: true
+        type: string
+      produces:
+      - application/vnd.goa.error
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error'
+        "404":
+          description: Not Found
+      schemes:
+      - http
+      summary: delete cluster
+      tags:
+      - cluster
     get:
       description: Get the status of the cluster resources in the project/namespace
       operationId: cluster#get
@@ -912,7 +916,7 @@ paths:
         required: true
         type: string
       - in: path
-        name: resourceid
+        name: resource_id
         required: true
         type: string
       produces:

@@ -6,7 +6,7 @@ import (
 )
 
 // ClusterPostBody is the HTTP Post request body type to create a cluster resource
-var ClusterPostBody = Type("CluterPostBody", func() {
+var ClusterPostBody = Type("ClusterPostBody", func() {
 	Attribute("nodePoolSize", Integer, func() {
 		Description("The number of worker nodes in the projects resource pool")
 		Minimum(3)

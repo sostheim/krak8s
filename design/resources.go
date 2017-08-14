@@ -161,14 +161,14 @@ var _ = Resource("cluster", func() {
 	})
 
 	Action("get", func() {
-		Routing(GET("/:resourceid"))
+		Routing(GET("/:resource_id"))
 		Description("Get the status of the cluster resources in the project/namespace")
 		Response(OK, Cluster)
 		Response(NotFound)
 	})
 
 	Action("delete", func() {
-		Routing(DELETE(""))
+		Routing(DELETE("/:resource_id"))
 		Description("Delete the cluster resources from the project/namespace")
 		Response(NoContent)
 		Response(NotFound)

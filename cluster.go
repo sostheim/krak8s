@@ -54,7 +54,7 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	url := APIVersion + APIProjects + ctx.Projectid + APICluster + res.OID
 	ns.Resources = &ObjectLink{OID: res.OID, URL: url}
 
-	AddProjectRequest(proj.Name, ns.Name, res.NodePoolSize)
+	ProjectRequest(AddProject, proj.Name, ns.Name, res.NodePoolSize)
 
 	return ctx.Accepted(MarshalResourcesObject(res))
 	// ClusterController_Create: end_implement
@@ -63,10 +63,21 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 // Delete runs the delete action.
 func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 	// ClusterController_Delete: start_implement
-	_, ok := c.ds.Resource(ctx.Projectid)
+	proj, ok := c.ds.Project(ctx.Projectid)
 	if !ok {
 		return ctx.NotFound()
 	}
+	res, ok := c.ds.Resource(ctx.ResourceID)
+	if !ok {
+		return ctx.NotFound()
+	}
+	ns, ok := c.ds.Namespace(res.NamespaceID)
+	if !ok {
+		return ctx.NotFound() // TODO: Should be InternalServerError()
+	}
+
+	ProjectRequest(RemoveProject, proj.Name, ns.Name, res.NodePoolSize)
+
 	c.ds.DeleteResource(ctx.Projectid)
 	return ctx.NoContent()
 	// ClusterController_Delete: end_implement
@@ -75,10 +86,26 @@ func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 // Get runs the get action.
 func (c *ClusterController) Get(ctx *app.GetClusterContext) error {
 	// ClusterController_Get: start_implement
-	resource, ok := c.ds.Resource(ctx.Resourceid)
+	proj, ok := c.ds.Project(ctx.Projectid)
 	if !ok {
 		return ctx.NotFound()
 	}
+	resource, ok := c.ds.Resource(ctx.ResourceID)
+	if !ok {
+		return ctx.NotFound()
+	}
+	ns, ok := c.ds.Namespace(resource.NamespaceID)
+	if !ok {
+		return ctx.NotFound() // TODO: Should be InternalServerError()
+	}
+
+	switch status := ProjectStatus(proj.Name, ns.Name); status {
+	case Waiting:
+		resource.State = "starting"
+	case Processing:
+		resource.State = "starting"
+	}
+
 	res := MarshalResourcesObject(resource)
 	return ctx.OK(res)
 	// ClusterController_Get: end_implement
