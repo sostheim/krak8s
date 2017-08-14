@@ -17,7 +17,11 @@ limitations under the License.
 package main
 
 import (
+	"krak8s/kraken"
 	"krak8s/queue"
+	"sync"
+
+	"github.com/golang/glog"
 )
 
 // Run back end tasks with queue semantics
@@ -28,10 +32,16 @@ type RequestType int
 const (
 	// AddProject request
 	AddProject RequestType = iota
+	// RunningAddProject request
+	RunningAddProject
 	// UpdateProject request
 	UpdateProject
+	// RunningUpdateProject request
+	RunningUpdateProject
 	// RemoveProject request
 	RemoveProject
+	// RunningRemoveProject request
+	RunningRemoveProject
 	// AddChart request
 	AddChart
 	// UpdateChart request
@@ -58,40 +68,151 @@ const (
 
 // Request - task to run
 type Request struct {
-	task      *queue.Task
-	request   RequestType
-	name      string // either a project or chart name
-	namespace string
-	nodes     int
-	version   string
-	registry  string
-	config    string
+	task        *queue.Task
+	requestType RequestType
+	name        string // either a project or chart name
+	namespace   string
+	nodes       int
+	version     string
+	registry    string
+	config      string
 }
 
 // NewRequest creates an request for processing
 func NewRequest(req RequestType) *Request {
 	return &Request{
-		task:    queue.NewTask(),
-		request: req,
+		task:        queue.NewTask(),
+		requestType: req,
 	}
 }
 
-var pendingRequests []*Request
+// Runner for request from API server to backend
+type Runner struct {
+	index           int
+	pendingRequests map[int]*Request
+	mutex           *sync.Mutex
+	sync            chan int
+}
+
+// NewRunner creates a request runner
+func NewRunner() *Runner {
+	return &Runner{
+		index:           0,
+		pendingRequests: make(map[int]*Request),
+		mutex:           &sync.Mutex{},
+		sync:            make(chan int),
+	}
+}
+
+// ProcessRequests - runner's main loop for request processing
+func (r *Runner) ProcessRequests() {
+	for {
+		request := <-r.sync
+		if request < 0 {
+			return
+		}
+		r.handle(request)
+	}
+}
+
+func (r *Runner) handle(index int) {
+	done := false
+	request := r.pendingRequests[index]
+	if request.requestType >= AddProject && request.requestType <= RemoveProject {
+		done = r.handleProjects(request)
+	} else if request.requestType >= AddChart && request.requestType <= RemoveChart {
+		done = r.handleCharts(request)
+	}
+	if done {
+		r.DeleteRequest(index)
+	}
+}
+
+func (r *Runner) handleProjects(request *Request) bool {
+
+	// Check to see if the request is already (still) running
+	if request.requestType == RunningAddProject ||
+		request.requestType == RunningUpdateProject ||
+		request.requestType == RunningRemoveProject {
+		// Decrement the request type back to it's original value
+		request.requestType--
+		return true
+	}
+
+	cfg := kraken.NewProjectConfig(request.name, request.nodes, request.namespace)
+	cfg.KeyPair = *krak8sCfg.keyPairName
+	cfg.KubeConfigName = *krak8sCfg.krakenKubeConfig
+	commandArgs := []string{
+		kraken.SubCmdCluster,
+		kraken.ClusterArgUpdate,
+	}
+	if request.requestType == AddProject {
+		err := kraken.AddProjectTemplate(cfg, "config.yaml")
+		if err != nil {
+			glog.Errorf("Discarding add: configuration update failure: %v", err)
+		}
+		commandArgs = append(commandArgs, kraken.UpdateArgAddNodePools)
+	} else {
+		err := kraken.DeleteProject(cfg, "config.yaml")
+		if err != nil {
+			glog.Errorf("Discarding remove: configuration update failure: %v", err)
+		}
+		commandArgs = append(commandArgs, kraken.UpdateArgRemoveNodePools)
+	}
+	commandArgs = append(commandArgs, request.name+"Nodes")
+	kraken.Execute(kraken.K2CLICommand, commandArgs)
+	return true
+}
+
+func (r *Runner) handleCharts(request *Request) bool {
+	return true
+}
+
+// DeleteRequest - remove request from processing pipeline
+func (r *Runner) DeleteRequest(index int) {
+	request, ok := r.pendingRequests[index]
+	if !ok {
+		return
+	}
+
+	// If the queued task is already (or still) running, it can't be deleted yet.
+	status := queue.Delete(request.task.ID)
+	if status == queue.Running {
+		// Increment the request type indicate that it's running
+		request.requestType--
+		r.sync <- index
+		return
+	}
+
+	// ork to remove the request from the pending map
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	delete(r.pendingRequests, index)
+
+	return
+}
 
 // ProjectRequest - submit project add request for processing.
-func ProjectRequest(action RequestType, name, namespace string, nodes int) RequestStatus {
+func (r *Runner) ProjectRequest(action RequestType, name, namespace string, nodes int) RequestStatus {
 	req := NewRequest(AddProject)
 	req.name = name
 	req.namespace = namespace
 	req.nodes = nodes
 	queue.Submit(req.task)
-	pendingRequests = append(pendingRequests, req)
+
+	// add the request to the pending map
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	r.index++
+	r.pendingRequests[r.index] = req
+	r.sync <- r.index
+
 	return Waiting
 }
 
 // ProjectStatus - search for a request and, if found, return status
-func ProjectStatus(name, namespace string) RequestStatus {
-	for _, req := range pendingRequests {
+func (r *Runner) ProjectStatus(name, namespace string) RequestStatus {
+	for _, req := range r.pendingRequests {
 		if req.name == name && req.namespace == namespace {
 			switch status := queue.Status(req.task.ID); status {
 			case queue.Queued:

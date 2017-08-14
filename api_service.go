@@ -46,7 +46,7 @@ type apiServer struct {
 	ds        *DataStore
 }
 
-func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
+func newAPIServer(clientset *kubernetes.Clientset, cfg *config, backend *Runner) *apiServer {
 	// Create and start the http router
 
 	// create api server controller struct
@@ -79,7 +79,7 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config) *apiServer {
 	application := NewApplicationController(as.server, as.ds)
 	app.MountApplicationController(as.server, application)
 
-	cluster := NewClusterController(as.server, as.ds)
+	cluster := NewClusterController(as.server, as.ds, backend)
 	app.MountClusterController(as.server, cluster)
 
 	health := NewHealthController(as.server)

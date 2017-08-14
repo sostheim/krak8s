@@ -9,14 +9,16 @@ import (
 // ClusterController implements the cluster resource.
 type ClusterController struct {
 	*goa.Controller
-	ds *DataStore
+	ds      *DataStore
+	backend *Runner
 }
 
 // NewClusterController creates a cluster controller.
-func NewClusterController(service *goa.Service, store *DataStore) *ClusterController {
+func NewClusterController(service *goa.Service, store *DataStore, backend *Runner) *ClusterController {
 	return &ClusterController{
 		Controller: service.NewController("ClusterController"),
 		ds:         store,
+		backend:    backend,
 	}
 }
 
@@ -54,7 +56,7 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	url := APIVersion + APIProjects + ctx.Projectid + APICluster + res.OID
 	ns.Resources = &ObjectLink{OID: res.OID, URL: url}
 
-	ProjectRequest(AddProject, proj.Name, ns.Name, res.NodePoolSize)
+	c.backend.ProjectRequest(AddProject, proj.Name, ns.Name, res.NodePoolSize)
 
 	return ctx.Accepted(MarshalResourcesObject(res))
 	// ClusterController_Create: end_implement
@@ -76,7 +78,7 @@ func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 		return ctx.NotFound() // TODO: Should be InternalServerError()
 	}
 
-	ProjectRequest(RemoveProject, proj.Name, ns.Name, res.NodePoolSize)
+	c.backend.ProjectRequest(RemoveProject, proj.Name, ns.Name, res.NodePoolSize)
 
 	c.ds.DeleteResource(ctx.Projectid)
 	return ctx.NoContent()
@@ -99,9 +101,9 @@ func (c *ClusterController) Get(ctx *app.GetClusterContext) error {
 		return ctx.NotFound() // TODO: Should be InternalServerError()
 	}
 
-	switch status := ProjectStatus(proj.Name, ns.Name); status {
+	switch status := c.backend.ProjectStatus(proj.Name, ns.Name); status {
 	case Waiting:
-		resource.State = "starting"
+		resource.State = "create_requested"
 	case Processing:
 		resource.State = "starting"
 	}

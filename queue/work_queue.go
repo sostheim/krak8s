@@ -27,12 +27,12 @@ import (
 // the queue data is local in scope thereby forcing the use of the methods
 // below. All of this could very easily be converted to a type with methods.
 
-// RequestStatus - requested tasks status
-type RequestStatus int
+// TaskStatus - tasks status
+type TaskStatus int
 
 const (
 	// NotFound status
-	NotFound RequestStatus = iota
+	NotFound TaskStatus = iota
 	// Queued status - waiting for processing
 	Queued
 	// Running status - task is being processed
@@ -92,7 +92,7 @@ func Submit(task *Task) int {
 }
 
 // Status - return the status of the task associated with id, or NotFound
-func Status(id uint) RequestStatus {
+func Status(id uint) TaskStatus {
 	for _, t := range workQueue {
 		if id == t.ID {
 			if t.timeUp.IsZero() {
@@ -116,7 +116,7 @@ func queueDelete(index int) {
 // Delete - remove a task from the work queue if, and only if, it has not yet
 // been started.  Once the task has been started, it has to run to completion.
 // Deleting a task from the work queue does not update duration times.
-func Delete(id uint) RequestStatus {
+func Delete(id uint) TaskStatus {
 	for i, t := range workQueue {
 		if id == t.ID {
 			if t.timeUp.IsZero() {
