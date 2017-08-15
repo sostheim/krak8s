@@ -18,7 +18,7 @@ package main
 
 import (
 	"fmt"
-	"krak8s/kraken"
+	"krak8s/commands"
 	"os"
 	"strings"
 
@@ -46,10 +46,10 @@ func newConfig() *config {
 		serviceName:      flag.String("service-name", "", "API Service name"),
 		version:          flag.Bool("version", false, "display version info and exit"),
 		healthCheck:      flag.Bool("health-check", false, "enable health checking for API service"),
-		krakenConfigFile: flag.String("kraken-config-file", kraken.DefaultConfigFile, "kraken configuration yaml file name"),
-		krakenConfigDir:  flag.String("kraken-config-dir", kraken.DefaultConfigDir, "kraken configuration yaml directory path"),
-		krakenKeyPair:    flag.String("kraken-nodepool-keypair", kraken.DefaultKeyPair, "kraken configuration yaml: deployment.clusters[0].nodePools.keyPair"),
-		krakenKubeConfig: flag.String("kraken-kubeconfig", kraken.DefaultKubeConfig, "kraken configuration yaml: deployment.clusters[0].nodePools.kubeConfig"),
+		krakenConfigFile: flag.String("kraken-config-file", commands.DefaultConfigFile, "kraken configuration yaml file name"),
+		krakenConfigDir:  flag.String("kraken-config-dir", commands.DefaultConfigDir, "kraken configuration yaml directory path"),
+		krakenKeyPair:    flag.String("kraken-nodepool-keypair", commands.DefaultKeyPair, "kraken configuration yaml: deployment.clusters[0].nodePools.keyPair"),
+		krakenKubeConfig: flag.String("kraken-kubeconfig", commands.DefaultKubeConfig, "kraken configuration yaml: deployment.clusters[0].nodePools.kubeConfig"),
 	}
 }
 

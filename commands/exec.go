@@ -1,4 +1,20 @@
-package kraken
+/*
+Copyright 2017 Samsung SDSA CNCT
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+package commands
 
 import (
 	"bytes"
@@ -7,26 +23,7 @@ import (
 	"github.com/golang/glog"
 )
 
-const (
-	// K2CLICommand - kraken cli command name
-	K2CLICommand = "k2cli"
-	// SubCmdCluster - k2cli subcommand
-	SubCmdCluster = "cluster"
-	// ClusterArgUp - cluster subcommand argment "up"
-	ClusterArgUp = "up"
-	// ClusterArgDown - cluster subcommand argment "down"
-	ClusterArgDown = "down"
-	// ClusterArgUpdate - cluster subcommand argment "update"
-	ClusterArgUpdate = "update"
-	// UpdateArgAddNodePools - cluster subcommand update argment to add node pool
-	UpdateArgAddNodePools = "--add-nodepools"
-	// UpdateArgUpdateNodePools - cluster subcommand update argment to update node pool
-	UpdateArgUpdateNodePools = "--update-nodepools"
-	// UpdateArgRemoveNodePools - cluster subcommand update argment to remove node pool
-	UpdateArgRemoveNodePools = "--rm-nodepools"
-)
-
-// Execute the command "k2cli" with the specified arguments and returns either;
+// Execute the "command" with the specified arguments and return either;
 // on success: the resultant byte array containing stdout, error = nil
 // on failure: the resultant byte array containing stderr, error is set
 func Execute(command string, commandString []string) ([]byte, error) {

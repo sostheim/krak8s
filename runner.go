@@ -17,7 +17,7 @@ limitations under the License.
 package main
 
 import (
-	"krak8s/kraken"
+	"krak8s/commands"
 	"krak8s/queue"
 	"path"
 	"sync"
@@ -164,32 +164,32 @@ func (r *Runner) handleProjects(request *Request) bool {
 		return true
 	}
 
-	cfg := kraken.NewProjectConfig(request.name, request.nodes, request.namespace)
+	cfg := commands.NewProjectConfig(request.name, request.nodes, request.namespace)
 	cfg.KeyPair = *krak8sCfg.krakenKeyPair
 	cfg.KubeConfigName = *krak8sCfg.krakenKubeConfig
 	commandArgs := []string{
-		kraken.SubCmdCluster,
-		kraken.ClusterArgUpdate,
+		commands.K2CLICluster,
+		commands.K2CLIClusterUpdate,
 	}
 	configPath := path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile)
 	if request.requestType == AddProject {
-		err := kraken.AddProjectTemplate(cfg, configPath)
+		err := commands.AddProjectTemplate(cfg, configPath)
 		if err != nil {
 			glog.Errorf("Discarding add: configuration update failure: %v", err)
 			return true
 		}
-		commandArgs = append(commandArgs, kraken.UpdateArgAddNodePools)
+		commandArgs = append(commandArgs, commands.K2CLIAddNodePools)
 	} else {
-		err := kraken.DeleteProject(cfg, configPath)
+		err := commands.DeleteProject(cfg, configPath)
 		if err != nil {
 			glog.Errorf("Discarding remove: configuration update failure: %v", err)
 			return true
 		}
-		commandArgs = append(commandArgs, kraken.UpdateArgRemoveNodePools)
+		commandArgs = append(commandArgs, commands.K2CLIRemoveNodePools)
 	}
 	queue.Started()
 	commandArgs = append(commandArgs, request.name+"Nodes")
-	kraken.Execute(kraken.K2CLICommand, commandArgs)
+	commands.Execute(commands.K2CLI, commandArgs)
 	queue.Done()
 	return true
 }
