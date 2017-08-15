@@ -32,7 +32,7 @@ const (
 	serviceNameSuffix  = "-mongodb"
 	servicesMarker     = "# |--> SERVICES_MARKER <--|"
 	nodePoolTmplName   = "node_pool.tmpl"
-	nodePoolTmplLines  = 11
+	nodePoolTmplLines  = 12
 	nodePoolNameSuffix = "Nodes"
 	nodePoolMarker     = "# |--> NODE_POOL_MARKER <--|"
 )
@@ -135,11 +135,11 @@ func AddProjectTemplate(config ProjectConfig, filename string) error {
 		return err
 	}
 
-	svcConfig, err := templateServices(config)
+	/* svcConfig, err := templateServices(config)
 	if err != nil {
 		glog.Warning("failed to template services config stanza")
 		return err
-	}
+	}*/
 
 	err = copyConfigFileBackup(filename)
 	if err != nil {
@@ -165,9 +165,9 @@ func AddProjectTemplate(config ProjectConfig, filename string) error {
 		outputFileLines = append(outputFileLines, line)
 		if strings.Contains(line, nodePoolMarker) {
 			outputFileLines = append(outputFileLines, nodeConfig)
-		} else if strings.Contains(line, servicesMarker) {
+		} /* else if strings.Contains(line, servicesMarker) {
 			outputFileLines = append(outputFileLines, svcConfig)
-		}
+		} */
 	}
 
 	outputFileData := strings.Join(outputFileLines, "\n")

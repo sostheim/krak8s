@@ -51,6 +51,20 @@ const (
 	RemoveChart
 )
 
+func (req RequestType) String() string {
+	return []string{
+		"AddProject",
+		"RunningAddProject",
+		"UpdateProject",
+		"RunningUpdateProject",
+		"RemoveProject",
+		"RunningRemoveProject",
+		"AddChart",
+		"UpdateChart",
+		"RemoveChart",
+	}[req]
+}
+
 // RequestStatus - request statuses
 type RequestStatus int
 
@@ -66,6 +80,16 @@ const (
 	// Absent - request could not be found, it may have already finished or be deleted
 	Absent
 )
+
+func (req RequestStatus) String() string {
+	return []string{
+		"Waiting",
+		"Processing",
+		"Deleting",
+		"Finished",
+		"Absent",
+	}[req]
+}
 
 // Request - task to run
 type Request struct {
@@ -190,8 +214,8 @@ func (r *Runner) DeleteRequest(index int) {
 		return
 	}
 
-	glog.Infof("Queued task delted: type: %v, name: %s, namespace: %s, queueing duration: %s, running duration %s",
-		request.requestType, request.name, request.namespace, queue.QueuedDuration().String(), queue.RunningDuration().String())
+	glog.Infof("Queued task delted: type: %s, name: %s, namespace: %s, queueing duration: %s, running duration %s",
+		request.requestType.String(), request.name, request.namespace, queue.QueuedDuration().String(), queue.RunningDuration().String())
 
 	// ok to remove the request from the pending map
 	r.mutex.Lock()

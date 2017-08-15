@@ -3,9 +3,10 @@
           kubeConfig: *{{.KubeConfigName}}
           containerConfig: *defaultDocker
           osConfig: *defaultCoreOs
-          nodeConfig: *defaultAwsClusterNode
-          taints:
-            - key: node-role.kubernetes.io/{{.Name}}
-              values: ""
-              effect: NoSchedule
+          nodeConfig: 
+            << : *defaultAwsClusterNode
+            taints:
+              - key: node-role.kubernetes.io/{{.Name}}
+                value: {{.Name}}
+                effect: NoSchedule
           keyPair: *{{.KeyPair}}
