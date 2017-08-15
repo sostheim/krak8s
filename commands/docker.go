@@ -42,3 +42,17 @@ const (
 	// DockerArgFormatJSON - generate JSON output from command
 	DockerArgFormatJSON = `--format "{{json .}}"`
 )
+
+// DockerRunCmd - return the common docker run command
+func DockerRunCmd() []string {
+	return []string{
+		Docker, DockerRun,
+	}
+}
+
+// DockerRunIT - docker run command with -it args
+func DockerRunIT() []string {
+	return []string{
+		Docker, DockerRun, DockerArgIT,
+	}
+}

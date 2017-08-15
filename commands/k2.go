@@ -17,14 +17,16 @@ limitations under the License.
 package commands
 
 const (
-	// K2 - kraken  command name
+	// K2 - kraken command name
 	K2 = "k2"
-	// K2ClusterUp - cluster "up"
-	K2ClusterUp = "./bin/up.sh"
-	// K2ClusterDown - cluster "down"
-	K2ClusterDown = "./bin/down.sh"
-	// K2ClusterUpdate - cluster "update"
-	K2ClusterUpdate = "./bin/update.sh"
+	// K2Image - kraken container image
+	K2Image = "quay.io/samsung_cnct/k2:latest"
+	// K2Up -  "up"
+	K2Up = "./bin/up.sh"
+	// K2Down -  "down"
+	K2Down = "./bin/down.sh"
+	// K2Update -  "update"
+	K2Update = "./bin/update.sh"
 	// K2ENVKraken - KRAKEN environment variable
 	K2ENVKraken = "KRAKEN"
 	// K2ENVKrakenDefault - KRAKEN environment variable default value
@@ -57,18 +59,42 @@ const (
 	K2ENVK2Opts = "K2OPTS"
 	// K2ENVK2OptsDefault - KRAKEN environment variable default value
 	K2ENVK2OptsDefault = "-v ${KRAKEN}:${KRAKEN} -v ${SSH_ROOT}:${SSH_ROOT} -v ${AWS_ROOT}:${AWS_ROOT} -e HOME=${HOME} --rm=true -it"
+	// K2ENVK2OptsExpansion - K2OPTS environment variable expansion
+	K2ENVK2OptsExpansion = "${K2OPTS}"
 )
 
-// UpdateAdd - build a command string to call "./bin/update.sh"
-func UpdateAdd() []string {
+// Up - build a command string to call "./bin/upsh"
+func Up(docker bool, config string) []string {
+	if docker {
+		cmd := DockerRunCmd()
+		cmd = append(cmd, K2ENVK2OptsDefault, K2Image, K2Up, config)
+		return cmd
+	}
 	return []string{
-		K2ClusterUpdate,
+		K2Update, config,
 	}
 }
 
-// UpdateRemove - build a command string to call "./bin/update.sh"
-func UpdateRemove() []string {
+// Update - build a command string to call "./bin/update.sh"
+func Update(docker bool, config string) []string {
+	if docker {
+		cmd := DockerRunCmd()
+		cmd = append(cmd, K2ENVK2OptsDefault, K2Image, K2Update, config)
+		return cmd
+	}
 	return []string{
-		K2ClusterUpdate,
+		K2Update, config,
+	}
+}
+
+// Down - build a command string to call "./bin/down.sh"
+func Down(docker bool, config string) []string {
+	if docker {
+		cmd := DockerRunCmd()
+		cmd = append(cmd, K2ENVK2OptsExpansion, K2Image, K2Down, config)
+		return cmd
+	}
+	return []string{
+		K2Update, config,
 	}
 }

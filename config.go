@@ -38,6 +38,7 @@ type config struct {
 	krakenKeyPair    *string
 	krakenKubeConfig *string
 	krakenCommand    *string
+	dryrun           *bool
 }
 
 func newConfig() *config {
@@ -51,7 +52,8 @@ func newConfig() *config {
 		krakenConfigDir:  flag.String("kraken-config-dir", commands.DefaultConfigDir, "kraken configuration yaml directory path"),
 		krakenKeyPair:    flag.String("kraken-nodepool-keypair", commands.DefaultKeyPair, "kraken configuration yaml: deployment.clusters[0].nodePools.keyPair"),
 		krakenKubeConfig: flag.String("kraken-kubeconfig", commands.DefaultKubeConfig, "kraken confiuration yaml: deployment.clusters[0].nodePools.kubeConfig"),
-		krakenCommand:    flag.String("kraken-command", commands.K2CLI, "command to run to executte kraken operations, either `k2`, or `k2cli` only"),
+		krakenCommand:    flag.String("kraken-command", commands.K2, "command to run to executte kraken operations, either `k2`, or `k2cli` only"),
+		dryrun:           flag.Bool("dry-run", false, "don't actually execute backend commands"),
 	}
 }
 

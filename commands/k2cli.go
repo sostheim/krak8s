@@ -38,13 +38,13 @@ const (
 // ClusterUpdateAdd - build a command string to call "cluster update --add-nodepools"
 func ClusterUpdateAdd(name string) []string {
 	return []string{
-		K2CLICluster, K2CLIClusterUpdate, K2CLIAddNodePools, name + "Nodes",
+		K2CLI, K2CLICluster, K2CLIClusterUpdate, K2CLIAddNodePools, name + "Nodes",
 	}
 }
 
 // ClusterUpdateRemove - build a command string to call "cluster update --rm-nodepools"
 func ClusterUpdateRemove(name string) []string {
 	return []string{
-		K2CLICluster, K2CLIClusterUpdate, K2CLIRemoveNodePools, name + "Nodes",
+		K2CLI, K2CLICluster, K2CLIClusterUpdate, K2CLIRemoveNodePools, name + "Nodes",
 	}
 }

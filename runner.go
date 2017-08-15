@@ -167,7 +167,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 	cfg := commands.NewProjectConfig(request.name, request.nodes, request.namespace)
 	cfg.KeyPair = *krak8sCfg.krakenKeyPair
 	cfg.KubeConfigName = *krak8sCfg.krakenKubeConfig
-	var commandArgs []string
+	var command []string
 	configPath := path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile)
 	if request.requestType == AddProject {
 		err := commands.AddProjectTemplate(cfg, configPath)
@@ -176,9 +176,9 @@ func (r *Runner) handleProjects(request *Request) bool {
 			return true
 		}
 		if *krak8sCfg.krakenCommand == commands.K2 {
-			commandArgs = commands.UpdateAdd()
+			command = commands.Update(true, path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile))
 		} else {
-			commandArgs = commands.ClusterUpdateAdd(request.name)
+			command = commands.ClusterUpdateAdd(request.name)
 		}
 	} else if request.requestType == RemoveProject {
 		err := commands.DeleteProject(cfg, configPath)
@@ -187,9 +187,9 @@ func (r *Runner) handleProjects(request *Request) bool {
 			return true
 		}
 		if *krak8sCfg.krakenCommand == commands.K2 {
-			commandArgs = commands.UpdateRemove()
+			command = commands.Update(true, path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile))
 		} else {
-			commandArgs = commands.ClusterUpdateAdd(request.name)
+			command = commands.ClusterUpdateAdd(request.name)
 		}
 	} else {
 		return true
@@ -197,7 +197,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 
 	// Block the command state in the queue and run the command to completion.
 	queue.Started()
-	commands.Execute(*krak8sCfg.krakenCommand, commandArgs)
+	commands.Execute(command[0], command[1:], *krak8sCfg.dryrun)
 	queue.Done()
 
 	return true
