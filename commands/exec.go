@@ -26,7 +26,10 @@ import (
 
 // check all command arguments to see if they are environment variables
 func envCheck(args []string) []string {
-	expanded := args
+
+	expanded := make([]string, len(args))
+	copy(expanded, args)
+
 	done := false
 	i := 4 // maximum depth of expansions incase of circular or recursive definition
 	for !done && i > 0 {
