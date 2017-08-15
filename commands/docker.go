@@ -39,4 +39,6 @@ const (
 	DockerArgIT = "-it"
 	// DockerArgRM - Automatically remove the container when it exits
 	DockerArgRM = "-rm"
+	// DockerArgFormatJSON - generate JSON output from command
+	DockerArgFormatJSON = `--format "{{json .}}"`
 )

@@ -33,12 +33,12 @@ func Execute(command string, commandString []string) ([]byte, error) {
 	cmd.Stdout = stdoutBuf
 	cmd.Stderr = stderrBuf
 
-	glog.Infof("k2cli.Execute(): cmd:  %s, args: %s", command, commandString)
+	glog.Infof("run cmd:  %s, args: %s", command, commandString)
 
 	if err := cmd.Run(); err != nil {
-		glog.Warningf("k2cli.Execute(): cmd:  %s, args: %s returned error: %v", command, commandString, err)
-		glog.Warningf("k2cli.Execute(): cmd:  %s, stderr: %s", command, string(stderrBuf.Bytes()))
-		glog.Warningf("k2cli.Execute(): cmd:  %s, stdout: %v", command, string(stdoutBuf.Bytes()))
+		glog.Warningf("cmd:  %s, args: %s returned error: %v", command, commandString, err)
+		glog.Warningf("cmd:  %s, stderr: %s", command, string(stderrBuf.Bytes()))
+		glog.Warningf("cmd:  %s, stdout: %v", command, string(stdoutBuf.Bytes()))
 		return stderrBuf.Bytes(), err
 	}
 	return stdoutBuf.Bytes(), nil

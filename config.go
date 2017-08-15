@@ -37,6 +37,7 @@ type config struct {
 	krakenConfigDir  *string
 	krakenKeyPair    *string
 	krakenKubeConfig *string
+	krakenCommand    *string
 }
 
 func newConfig() *config {
@@ -49,7 +50,8 @@ func newConfig() *config {
 		krakenConfigFile: flag.String("kraken-config-file", commands.DefaultConfigFile, "kraken configuration yaml file name"),
 		krakenConfigDir:  flag.String("kraken-config-dir", commands.DefaultConfigDir, "kraken configuration yaml directory path"),
 		krakenKeyPair:    flag.String("kraken-nodepool-keypair", commands.DefaultKeyPair, "kraken configuration yaml: deployment.clusters[0].nodePools.keyPair"),
-		krakenKubeConfig: flag.String("kraken-kubeconfig", commands.DefaultKubeConfig, "kraken configuration yaml: deployment.clusters[0].nodePools.kubeConfig"),
+		krakenKubeConfig: flag.String("kraken-kubeconfig", commands.DefaultKubeConfig, "kraken confiuration yaml: deployment.clusters[0].nodePools.kubeConfig"),
+		krakenCommand:    flag.String("kraken-command", commands.K2CLI, "command to run to executte kraken operations, either `k2`, or `k2cli` only"),
 	}
 }
 

@@ -167,10 +167,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 	cfg := commands.NewProjectConfig(request.name, request.nodes, request.namespace)
 	cfg.KeyPair = *krak8sCfg.krakenKeyPair
 	cfg.KubeConfigName = *krak8sCfg.krakenKubeConfig
-	commandArgs := []string{
-		commands.K2CLICluster,
-		commands.K2CLIClusterUpdate,
-	}
+	var commandArgs []string
 	configPath := path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile)
 	if request.requestType == AddProject {
 		err := commands.AddProjectTemplate(cfg, configPath)
@@ -178,19 +175,31 @@ func (r *Runner) handleProjects(request *Request) bool {
 			glog.Errorf("Discarding add: configuration update failure: %v", err)
 			return true
 		}
-		commandArgs = append(commandArgs, commands.K2CLIAddNodePools)
-	} else {
+		if *krak8sCfg.krakenCommand == commands.K2 {
+			commandArgs = commands.UpdateAdd()
+		} else {
+			commandArgs = commands.ClusterUpdateAdd(request.name)
+		}
+	} else if request.requestType == RemoveProject {
 		err := commands.DeleteProject(cfg, configPath)
 		if err != nil {
 			glog.Errorf("Discarding remove: configuration update failure: %v", err)
 			return true
 		}
-		commandArgs = append(commandArgs, commands.K2CLIRemoveNodePools)
+		if *krak8sCfg.krakenCommand == commands.K2 {
+			commandArgs = commands.UpdateRemove()
+		} else {
+			commandArgs = commands.ClusterUpdateAdd(request.name)
+		}
+	} else {
+		return true
 	}
+
+	// Block the command state in the queue and run the command to completion.
 	queue.Started()
-	commandArgs = append(commandArgs, request.name+"Nodes")
-	commands.Execute(commands.K2CLI, commandArgs)
+	commands.Execute(*krak8sCfg.krakenCommand, commandArgs)
 	queue.Done()
+
 	return true
 }
 

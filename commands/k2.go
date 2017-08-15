@@ -58,3 +58,17 @@ const (
 	// K2ENVK2OptsDefault - KRAKEN environment variable default value
 	K2ENVK2OptsDefault = "-v ${KRAKEN}:${KRAKEN} -v ${SSH_ROOT}:${SSH_ROOT} -v ${AWS_ROOT}:${AWS_ROOT} -e HOME=${HOME} --rm=true -it"
 )
+
+// UpdateAdd - build a command string to call "./bin/update.sh"
+func UpdateAdd() []string {
+	return []string{
+		K2ClusterUpdate,
+	}
+}
+
+// UpdateRemove - build a command string to call "./bin/update.sh"
+func UpdateRemove() []string {
+	return []string{
+		K2ClusterUpdate,
+	}
+}
