@@ -56,7 +56,7 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	url := APIVersion + APIProjects + ctx.Projectid + APICluster + res.OID
 	ns.Resources = &ObjectLink{OID: res.OID, URL: url}
 
-	c.backend.ProjectRequest(AddProject, proj.Name, ns.Name, res.NodePoolSize)
+	c.backend.ProjectRequest(AddProject, c.ds, proj, ns, res)
 
 	return ctx.Accepted(MarshalResourcesObject(res))
 	// ClusterController_Create: end_implement
@@ -78,7 +78,7 @@ func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 		return ctx.NotFound() // TODO: Should be InternalServerError()
 	}
 
-	c.backend.ProjectRequest(RemoveProject, proj.Name, ns.Name, res.NodePoolSize)
+	c.backend.ProjectRequest(RemoveProject, c.ds, proj, ns, res)
 
 	c.ds.DeleteResource(ctx.Projectid)
 	return ctx.NoContent()

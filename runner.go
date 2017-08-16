@@ -95,13 +95,12 @@ func (req RequestStatus) String() string {
 type Request struct {
 	task        *queue.Task
 	requestType RequestType
-	name        string // either a project or chart name
-	namespace   string
-	nodes       int
-	version     string
-	registry    string
-	config      string
-	retry       int
+	dataStore   *DataStore
+	projObj     *ProjectObject
+	nsObj       *NamespaceObject
+	resObj      *ResourceObject
+	appObj      *ApplicationObject
+	retryCount  int
 }
 
 var configFile string
@@ -114,10 +113,14 @@ func RunnerSetup() {
 	}
 }
 
-// NewRequest creates an request for processing
-func NewRequest(req RequestType) *Request {
+// NewResourceRequest creates an request for processing
+func NewResourceRequest(req RequestType, ds *DataStore, proj *ProjectObject, ns *NamespaceObject, obj *ResourceObject) *Request {
 	return &Request{
 		task:        queue.NewTask(),
+		dataStore:   ds,
+		projObj:     proj,
+		nsObj:       ns,
+		resObj:      obj,
 		requestType: req,
 	}
 }
@@ -175,7 +178,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 		return true
 	}
 
-	cfg := commands.NewProjectConfig(request.name, request.nodes, request.namespace)
+	cfg := commands.NewProjectConfig(request.projObj.Name, request.resObj.NodePoolSize, request.nsObj.Name)
 	cfg.KeyPair = *krak8sCfg.krakenKeyPair
 	cfg.KubeConfigName = *krak8sCfg.krakenKubeConfig
 	var command []string
@@ -187,9 +190,9 @@ func (r *Runner) handleProjects(request *Request) bool {
 			return true
 		}
 		if *krak8sCfg.krakenCommand == commands.K2 {
-			command = commands.K2CmdUpdate(true, commands.K2ExtraVarsAddNodePools, *krak8sCfg.krakenConfigDir, configFile, request.name)
+			command = commands.K2CmdUpdate(true, commands.K2ExtraVarsAddNodePools, *krak8sCfg.krakenConfigDir, configFile, request.projObj.Name)
 		} else {
-			command = commands.ClusterUpdateAdd(request.name)
+			command = commands.ClusterUpdateAdd(request.projObj.Name)
 		}
 	} else if request.requestType == RemoveProject {
 		err := commands.DeleteProject(cfg, configPath)
@@ -198,9 +201,9 @@ func (r *Runner) handleProjects(request *Request) bool {
 			return true
 		}
 		if *krak8sCfg.krakenCommand == commands.K2 {
-			command = commands.K2CmdUpdate(true, commands.K2ExtraVarsRemoveNodePools, *krak8sCfg.krakenConfigDir, configFile, request.name)
+			command = commands.K2CmdUpdate(true, commands.K2ExtraVarsRemoveNodePools, *krak8sCfg.krakenConfigDir, configFile, request.projObj.Name)
 		} else {
-			command = commands.ClusterUpdateAdd(request.name)
+			command = commands.ClusterUpdateAdd(request.projObj.Name)
 		}
 	} else {
 		return true
@@ -209,13 +212,13 @@ func (r *Runner) handleProjects(request *Request) bool {
 	// Block the command state in the queue and run the command to completion.
 	queue.Started()
 	var err error
-	for err == nil && request.retry >= 0 {
+	for err == nil && request.retryCount >= 0 {
 		_, err = commands.Execute(command[0], command[1:])
 		if err != nil {
-			glog.Errorf("command execution retry count: %v", request.retry)
+			glog.Errorf("command execution retry count: %v", request.retryCount)
 			glog.Errorf("command execution failed on: %v", err)
 		}
-		request.retry--
+		request.retryCount--
 	}
 	queue.Done()
 
@@ -243,7 +246,7 @@ func (r *Runner) DeleteRequest(index int) {
 	}
 
 	glog.Infof("Queued task delted: type: %s, name: %s, namespace: %s, queueing duration: %s, running duration %s",
-		request.requestType.String(), request.name, request.namespace, queue.QueuedDuration().String(), queue.RunningDuration().String())
+		request.requestType.String(), request.projObj.Name, request.nsObj.Name, queue.QueuedDuration().String(), queue.RunningDuration().String())
 
 	// ok to remove the request from the pending map
 	r.mutex.Lock()
@@ -254,12 +257,9 @@ func (r *Runner) DeleteRequest(index int) {
 }
 
 // ProjectRequest - submit project add request for processing.
-func (r *Runner) ProjectRequest(action RequestType, name, namespace string, nodes int) RequestStatus {
-	req := NewRequest(action)
-	req.name = name
-	req.namespace = namespace
-	req.nodes = nodes
-	req.retry = 1
+func (r *Runner) ProjectRequest(action RequestType, ds *DataStore, proj *ProjectObject, ns *NamespaceObject, res *ResourceObject) RequestStatus {
+	req := NewResourceRequest(action, ds, proj, ns, res)
+	req.retryCount = 1
 	queue.Submit(req.task)
 
 	// add the request to the pending map
@@ -275,7 +275,7 @@ func (r *Runner) ProjectRequest(action RequestType, name, namespace string, node
 // ProjectStatus - search for a request and, if found, return status
 func (r *Runner) ProjectStatus(name, namespace string) RequestStatus {
 	for _, req := range r.pendingRequests {
-		if req.name == name && req.namespace == namespace {
+		if req.projObj.Name == name && req.nsObj.Name == namespace {
 			switch status := queue.Status(req.task.ID); status {
 			case queue.Queued:
 				return Waiting
