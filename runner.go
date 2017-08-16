@@ -21,6 +21,7 @@ import (
 	"krak8s/queue"
 	"path"
 	"sync"
+	"time"
 
 	"github.com/golang/glog"
 )
@@ -183,54 +184,69 @@ func (r *Runner) handleProjects(request *Request) bool {
 
 	configPath := path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile)
 	if request.requestType == AddProject {
+
 		err := commands.AddProjectTemplate(cfg, configPath)
 		if err != nil {
 			glog.Errorf("Discarding add: configuration update failure: %v", err)
 			return true
 		}
+
 		if *krak8sCfg.krakenCommand == commands.K2 {
 			command = commands.K2CmdUpdate(true, commands.K2ExtraVarsAddNodePools, *krak8sCfg.krakenConfigDir, configFile, request.projObj.Name)
 		} else {
 			command = commands.ClusterUpdateAdd(request.projObj.Name)
 		}
+
 		request.resObj.State = ResourceStarting
+		request.resObj.UpdatedAt = time.Now()
+
 	} else if request.requestType == RemoveProject {
+
 		err := commands.DeleteProject(cfg, configPath)
 		if err != nil {
 			glog.Errorf("Discarding remove: configuration update failure: %v", err)
 			return true
 		}
+
 		if *krak8sCfg.krakenCommand == commands.K2 {
 			command = commands.K2CmdUpdate(true, commands.K2ExtraVarsRemoveNodePools, *krak8sCfg.krakenConfigDir, configFile, request.projObj.Name)
 		} else {
 			command = commands.ClusterUpdateAdd(request.projObj.Name)
 		}
+
 		request.resObj.State = ResourceDeleting
+		request.resObj.UpdatedAt = time.Now()
+
 	} else {
 		return true
 	}
 
 	// Block the command state in the queue and run the command to completion.
 	queue.Started()
-	var err error
-	for err == nil && request.retryCount >= 0 {
-		_, err = commands.Execute(command[0], command[1:])
+	tries := request.retryCount
+	for tries >= 0 {
+		out, err := commands.Execute(command[0], command[1:])
 		if err != nil {
+			tries--
 			glog.Errorf("command execution retry count: %v", request.retryCount)
 			glog.Errorf("command execution failed on: %v", err)
-			if request.resObj.State == ResourceStarting {
+			if request.resObj.State == ResourceCreateRequested || request.resObj.State == ResourceStarting {
 				request.resObj.State = ResourceErrorStarting
-			} else {
+			} else if request.resObj.State == ResourceDeleteRequested || request.resObj.State == ResourceDeleting {
 				request.resObj.State = ResourceErrorDeleting
 			}
 		} else {
-			if request.resObj.State == ResourceStarting {
+			if *krak8sCfg.debug {
+				glog.Infof("command execution success, tries: %d: %v", tries, out)
+			}
+			tries = -1
+			if request.resObj.State == ResourceCreateRequested || request.resObj.State == ResourceStarting || request.resObj.State == ResourceErrorStarting {
 				request.resObj.State = ResourceActive
-			} else {
+			} else if request.resObj.State == ResourceDeleteRequested || request.resObj.State == ResourceDeleting || request.resObj.State == ResourceErrorDeleting {
 				request.resObj.State = ResourceDeleted
 			}
 		}
-		request.retryCount--
+		request.resObj.UpdatedAt = time.Now()
 	}
 	queue.Done()
 
