@@ -27,22 +27,26 @@ import (
 
 // Run back end tasks with queue semantics
 
+var configFile string
+
+// RunnerSetup - needs only be called once before execting ny funcitons below (note: this can't be func init()\)
+func RunnerSetup() {
+	if *krak8sCfg.krakenCommand == commands.K2 {
+		commands.K2SetupEnv()
+		configFile = path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile)
+	}
+}
+
 // RequestType - requested tasks available
 type RequestType int
 
 const (
 	// AddProject request
 	AddProject RequestType = iota
-	// RunningAddProject request
-	RunningAddProject
 	// UpdateProject request
 	UpdateProject
-	// RunningUpdateProject request
-	RunningUpdateProject
 	// RemoveProject request
 	RemoveProject
-	// RunningRemoveProject request
-	RunningRemoveProject
 	// AddChart request
 	AddChart
 	// UpdateChart request
@@ -103,16 +107,6 @@ type Request struct {
 	retryCount  int
 }
 
-var configFile string
-
-// RunnerSetup - needs only be called once before execting ny funcitons below (note: this can't be func init()\)
-func RunnerSetup() {
-	if *krak8sCfg.krakenCommand == commands.K2 {
-		commands.K2SetupEnv()
-		configFile = path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile)
-	}
-}
-
 // NewResourceRequest creates an request for processing
 func NewResourceRequest(req RequestType, ds *DataStore, proj *ProjectObject, ns *NamespaceObject, obj *ResourceObject) *Request {
 	return &Request{
@@ -121,6 +115,18 @@ func NewResourceRequest(req RequestType, ds *DataStore, proj *ProjectObject, ns 
 		projObj:     proj,
 		nsObj:       ns,
 		resObj:      obj,
+		requestType: req,
+	}
+}
+
+// NewChartRequest creates an request for processing
+func NewChartRequest(req RequestType, ds *DataStore, proj *ProjectObject, ns *NamespaceObject, app *ApplicationObject) *Request {
+	return &Request{
+		task:        queue.NewTask(),
+		dataStore:   ds,
+		projObj:     proj,
+		nsObj:       ns,
+		appObj:      app,
 		requestType: req,
 	}
 }
@@ -169,19 +175,12 @@ func (r *Runner) handle(index int) {
 
 func (r *Runner) handleProjects(request *Request) bool {
 
-	// Check to see if the request is already (still) running
-	if request.requestType == RunningAddProject ||
-		request.requestType == RunningUpdateProject ||
-		request.requestType == RunningRemoveProject {
-		// Decrement the request type back to it's original value
-		request.requestType--
-		return true
-	}
-
 	cfg := commands.NewProjectConfig(request.projObj.Name, request.resObj.NodePoolSize, request.nsObj.Name)
 	cfg.KeyPair = *krak8sCfg.krakenKeyPair
 	cfg.KubeConfigName = *krak8sCfg.krakenKubeConfig
+
 	var command []string
+
 	configPath := path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile)
 	if request.requestType == AddProject {
 		err := commands.AddProjectTemplate(cfg, configPath)
@@ -194,6 +193,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 		} else {
 			command = commands.ClusterUpdateAdd(request.projObj.Name)
 		}
+		request.resObj.State = ResourceStarting
 	} else if request.requestType == RemoveProject {
 		err := commands.DeleteProject(cfg, configPath)
 		if err != nil {
@@ -205,6 +205,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 		} else {
 			command = commands.ClusterUpdateAdd(request.projObj.Name)
 		}
+		request.resObj.State = ResourceDeleting
 	} else {
 		return true
 	}
@@ -217,6 +218,17 @@ func (r *Runner) handleProjects(request *Request) bool {
 		if err != nil {
 			glog.Errorf("command execution retry count: %v", request.retryCount)
 			glog.Errorf("command execution failed on: %v", err)
+			if request.resObj.State == ResourceStarting {
+				request.resObj.State = ResourceErrorStarting
+			} else {
+				request.resObj.State = ResourceErrorDeleting
+			}
+		} else {
+			if request.resObj.State == ResourceStarting {
+				request.resObj.State = ResourceActive
+			} else {
+				request.resObj.State = ResourceDeleted
+			}
 		}
 		request.retryCount--
 	}
@@ -272,17 +284,17 @@ func (r *Runner) ProjectRequest(action RequestType, ds *DataStore, proj *Project
 	return Waiting
 }
 
-// ProjectStatus - search for a request and, if found, return status
-func (r *Runner) ProjectStatus(name, namespace string) RequestStatus {
-	for _, req := range r.pendingRequests {
-		if req.projObj.Name == name && req.nsObj.Name == namespace {
-			switch status := queue.Status(req.task.ID); status {
-			case queue.Queued:
-				return Waiting
-			case queue.Running:
-				return Processing
-			}
-		}
-	}
-	return Absent
+// ChartRequest - submit project add request for processing.
+func (r *Runner) ChartRequest(action RequestType, ds *DataStore, proj *ProjectObject, ns *NamespaceObject, app *ApplicationObject) RequestStatus {
+	req := NewChartRequest(action, ds, proj, ns, app)
+	queue.Submit(req.task)
+
+	// add the request to the pending map
+	r.mutex.Lock()
+	defer r.mutex.Unlock()
+	r.index++
+	r.pendingRequests[r.index] = req
+	r.sync <- r.index
+
+	return Waiting
 }

@@ -76,7 +76,7 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config, backend *Runner)
 	ns := NewNamespaceController(as.server, as.ds)
 	app.MountNamespaceController(as.server, ns)
 
-	application := NewApplicationController(as.server, as.ds)
+	application := NewApplicationController(as.server, as.ds, backend)
 	app.MountApplicationController(as.server, application)
 
 	cluster := NewClusterController(as.server, as.ds, backend)

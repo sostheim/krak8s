@@ -66,7 +66,7 @@ type NamespaceObject struct {
 
 // ApplicationStatusObject State strings
 const (
-	// Note: that the use UPPERCASE is intentional
+	// Note: that the use UPPERCASE is intentional (it's a helm thing)
 
 	// ApplicationUnknown state string
 	ApplicationUnknown = "UNKNOWN"
@@ -110,12 +110,16 @@ const (
 	ResourceCreateRequested = "create_requested"
 	// ResourceStarting state string
 	ResourceStarting = "starting"
+	// ResourceErrorStarting state string
+	ResourceErrorStarting = "error_starting"
 	// ResourceActive state string
 	ResourceActive = "active"
 	// ResourceDeleteRequested state string
 	ResourceDeleteRequested = "delete_requested"
 	// ResourceDeleting state string
 	ResourceDeleting = "deleting"
+	// ResourceErrorDeleting state string
+	ResourceErrorDeleting = "error_deleting"
 	// ResourceDeleted state string
 	ResourceDeleted = "deleted"
 )

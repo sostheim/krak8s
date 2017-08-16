@@ -78,6 +78,7 @@ func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 		return ctx.NotFound() // TODO: Should be InternalServerError()
 	}
 
+	res.State = ResourceDeleteRequested
 	c.backend.ProjectRequest(RemoveProject, c.ds, proj, ns, res)
 
 	c.ds.DeleteResource(ctx.Projectid)
@@ -88,26 +89,10 @@ func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 // Get runs the get action.
 func (c *ClusterController) Get(ctx *app.GetClusterContext) error {
 	// ClusterController_Get: start_implement
-	proj, ok := c.ds.Project(ctx.Projectid)
-	if !ok {
-		return ctx.NotFound()
-	}
 	resource, ok := c.ds.Resource(ctx.ResourceID)
 	if !ok {
 		return ctx.NotFound()
 	}
-	ns, ok := c.ds.Namespace(resource.NamespaceID)
-	if !ok {
-		return ctx.NotFound() // TODO: Should be InternalServerError()
-	}
-
-	switch status := c.backend.ProjectStatus(proj.Name, ns.Name); status {
-	case Waiting:
-		resource.State = "create_requested"
-	case Processing:
-		resource.State = "starting"
-	}
-
 	res := MarshalResourcesObject(resource)
 	return ctx.OK(res)
 	// ClusterController_Get: end_implement

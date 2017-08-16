@@ -9,14 +9,16 @@ import (
 // ApplicationController implements the application resource.
 type ApplicationController struct {
 	*goa.Controller
-	ds *DataStore
+	ds      *DataStore
+	backend *Runner
 }
 
 // NewApplicationController creates a application controller.
-func NewApplicationController(service *goa.Service, store *DataStore) *ApplicationController {
+func NewApplicationController(service *goa.Service, store *DataStore, backend *Runner) *ApplicationController {
 	return &ApplicationController{
 		Controller: service.NewController("ApplicationController"),
 		ds:         store,
+		backend:    backend,
 	}
 }
 
@@ -35,7 +37,7 @@ func MarshalApplicationObject(obj *ApplicationObject) *app.Application {
 // Create runs the create action.
 func (c *ApplicationController) Create(ctx *app.CreateApplicationContext) error {
 	// ApplicationController_Create: start_implement
-	_, ok := c.ds.Project(ctx.Projectid)
+	proj, ok := c.ds.Project(ctx.Projectid)
 	if !ok {
 		return ctx.NotFound()
 	}
@@ -56,6 +58,8 @@ func (c *ApplicationController) Create(ctx *app.CreateApplicationContext) error 
 	url := APIVersion + APIProjects + ctx.Projectid + APIApplications + app.OID
 	ns.Applications = append(ns.Applications, &ObjectLink{OID: app.OID, URL: url})
 
+	c.backend.ChartRequest(AddChart, c.ds, proj, ns, app)
+
 	return ctx.Accepted(MarshalApplicationObject(app))
 	// ApplicationController_Create: end_implement
 }
@@ -67,8 +71,20 @@ func (c *ApplicationController) Delete(ctx *app.DeleteApplicationContext) error 
 	if !ok {
 		return ctx.NotFound()
 	}
+	proj, ok := c.ds.Project(ctx.Projectid)
+	if !ok {
+		return ctx.NotFound()
+	}
+	ns, ok := c.ds.Namespace(app.NamespaceID)
+	if !ok {
+		return ctx.NotFound() // TODO: Should be InternalServerError()
+	}
+
+	c.backend.ChartRequest(RemoveChart, c.ds, proj, ns, app)
+
 	c.ds.DeleteApplication(app)
 	return ctx.NoContent()
+
 	// ApplicationController_Delete: end_implement
 }
 
@@ -80,7 +96,6 @@ func (c *ApplicationController) Get(ctx *app.GetApplicationContext) error {
 		return ctx.NotFound()
 	}
 	res := MarshalApplicationObject(app)
-
 	return ctx.OK(res)
 	// ApplicationController_Get: end_implement
 }
