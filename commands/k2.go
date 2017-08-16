@@ -38,7 +38,7 @@ const (
 	// K2UpdateNodePools - udpate node pool(s)
 	K2UpdateNodePools = "--nodepools"
 	// K2RemoveNodePools - remove node pool(s)
-	K2RemoveNodePools = "--removenodepools"
+	K2RemoveNodePools = "--rmnodepools"
 	// K2ENVKraken - KRAKEN environment variable
 	K2ENVKraken = "KRAKEN"
 	// K2ENVKrakenDefault - KRAKEN environment variable default value
@@ -105,10 +105,46 @@ func K2SetupEnv() {
 	if env := os.Getenv(K2ENVSSHRoot); len(env) == 0 {
 		os.Setenv(K2ENVSSHRoot, K2ENVSSHRootDefault)
 	}
+	if env := os.Getenv(K2ENVSSHKey); len(env) == 0 {
+		os.Setenv(K2ENVSSHKey, K2ENVSSHKeyDefault)
+	}
+	if env := os.Getenv(K2ENVSSHPub); len(env) == 0 {
+		os.Setenv(K2ENVSSHPub, K2ENVSSHPubDefault)
+	}
 	if env := os.Getenv(K2ENVAWSRoot); len(env) == 0 {
 		os.Setenv(K2ENVAWSRoot, K2ENVAWSRootDefault)
 	}
+	if env := os.Getenv(K2ENVAWSConfig); len(env) == 0 {
+		os.Setenv(K2ENVAWSConfig, K2ENVAWSConfigDefault)
+	}
+	if env := os.Getenv(K2ENVAWSCredentials); len(env) == 0 {
+		os.Setenv(K2ENVAWSCredentials, K2ENVAWSCredentialsDefault)
+	}
 	return
+}
+
+// K2EnvString - print environment variables
+func K2EnvString() string {
+	return K2ENVKraken + "=" + os.Getenv(K2ENVKraken) + ", " +
+		K2ENVSSHRoot + "=" + os.Getenv(K2ENVSSHRoot) + ", " +
+		K2ENVSSHPub + "=" + os.Getenv(K2ENVSSHPub) + ", " +
+		K2ENVSSHKey + "=" + os.Getenv(K2ENVSSHKey) + ", " +
+		K2ENVAWSRoot + "=" + os.Getenv(K2ENVAWSRoot) + ", " +
+		K2ENVAWSConfig + "=" + os.Getenv(K2ENVAWSConfig) + ", " +
+		K2ENVAWSCredentials + "=" + os.Getenv(K2ENVAWSCredentials)
+}
+
+// K2EnvExport - environment variables to export (-e) in docker
+func K2EnvExport() []string {
+	// TODO: reduce this list to a minimal set of required vars
+	return []string{"-e " + K2ENVKraken + "=" + os.Getenv(K2ENVKraken),
+		"-e " + K2ENVSSHRoot + "=" + os.Getenv(K2ENVSSHRoot),
+		"-e " + K2ENVSSHPub + "=" + os.Getenv(K2ENVSSHPub),
+		"-e " + K2ENVSSHKey + "=" + os.Getenv(K2ENVSSHKey),
+		"-e " + K2ENVAWSRoot + "=" + os.Getenv(K2ENVAWSRoot),
+		"-e " + K2ENVAWSConfig + "=" + os.Getenv(K2ENVAWSConfig),
+		"-e " + K2ENVAWSCredentials + "=" + os.Getenv(K2ENVAWSCredentials),
+	}
 }
 
 // K2CmdUp - build a command string to call "./bin/upsh"

@@ -53,9 +53,12 @@ func DockerRunCmd() []string {
 // DockerRunK2 - docker run command with args set for K2
 // common prefix: docker run $K2OPTS quay.io/samsung_cnct/k2:latest
 func DockerRunK2() []string {
-	return []string{
-		Docker, DockerRun, DockerArgRM, K2VolKraken, K2VolAWSRoot, K2VolSSHRoot, K2EnvHome, K2Image,
+	run := []string{
+		Docker, DockerRun, DockerArgRM, K2VolKraken, K2VolAWSRoot, K2VolSSHRoot, K2EnvHome,
 	}
+	run = append(run, K2EnvExport()...)
+	run = append(run, K2Image)
+	return run
 }
 
 // DockerRunIT - docker run command with -it args

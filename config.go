@@ -39,6 +39,7 @@ type config struct {
 	krakenKubeConfig *string
 	krakenCommand    *string
 	dryrun           *bool
+	debug            *bool
 }
 
 func newConfig() *config {
@@ -54,6 +55,7 @@ func newConfig() *config {
 		krakenKubeConfig: flag.String("kraken-kubeconfig", commands.DefaultKubeConfig, "kraken confiuration yaml: deployment.clusters[0].nodePools.kubeConfig"),
 		krakenCommand:    flag.String("kraken-command", commands.K2, "command to run to executte kraken operations, either `k2`, or `k2cli` only"),
 		dryrun:           flag.Bool("dry-run", false, "don't actually execute backend commands"),
+		debug:            flag.Bool("debug", false, "enable debug output"),
 	}
 }
 

@@ -19,6 +19,7 @@ package main
 import (
 	goflag "flag"
 	"fmt"
+	"krak8s/commands"
 	"time"
 
 	"github.com/blang/semver"
@@ -106,6 +107,8 @@ func main() {
 	glog.Infof("main(): env expanded configuration: %v", krak8sCfg.String())
 
 	RunnerSetup()
+	commands.SetDebug(*krak8sCfg.debug)
+	commands.SetDryrun(*krak8sCfg.dryrun)
 
 	// creates the config, in preference order, for:
 	// 1 - the proxy URL, if present as an argument

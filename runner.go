@@ -101,6 +101,7 @@ type Request struct {
 	version     string
 	registry    string
 	config      string
+	retry       int
 }
 
 var configFile string
@@ -207,7 +208,15 @@ func (r *Runner) handleProjects(request *Request) bool {
 
 	// Block the command state in the queue and run the command to completion.
 	queue.Started()
-	commands.Execute(command[0], command[1:], *krak8sCfg.dryrun)
+	var err error
+	for err == nil && request.retry >= 0 {
+		_, err = commands.Execute(command[0], command[1:])
+		if err != nil {
+			glog.Errorf("command execution retry count: %v", request.retry)
+			glog.Errorf("command execution failed on: %v", err)
+		}
+		request.retry--
+	}
 	queue.Done()
 
 	return true
@@ -250,6 +259,7 @@ func (r *Runner) ProjectRequest(action RequestType, name, namespace string, node
 	req.name = name
 	req.namespace = namespace
 	req.nodes = nodes
+	req.retry = 1
 	queue.Submit(req.task)
 
 	// add the request to the pending map

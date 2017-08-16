@@ -24,6 +24,21 @@ import (
 	"github.com/golang/glog"
 )
 
+var (
+	debug  bool
+	dryrun bool
+)
+
+// SetDebug enable true/false debugging output
+func SetDebug(enable bool) {
+	debug = enable
+}
+
+// SetDryrun enable true/false dryrun behavior
+func SetDryrun(enable bool) {
+	dryrun = enable
+}
+
 // EnvExpansion - check all members of a string slice to see if any are
 // environment variables than can be expanded.  The function will expand, at
 // most, 4 levels of environment variable expansion before stopping.
@@ -51,7 +66,7 @@ func EnvExpansion(args []string) []string {
 // Execute the "command" with the specified arguments and return either;
 // on success: the resultant byte array containing stdout, error = nil
 // on failure: the resultant byte array containing stderr, error is set
-func Execute(command string, arguments []string, dryrun bool) ([]byte, error) {
+func Execute(command string, arguments []string) ([]byte, error) {
 	expandedArguments := EnvExpansion(arguments)
 
 	cmd := exec.Command(command, expandedArguments...)
@@ -60,10 +75,12 @@ func Execute(command string, arguments []string, dryrun bool) ([]byte, error) {
 	cmd.Stdout = stdoutBuf
 	cmd.Stderr = stderrBuf
 
-	glog.Infof("run cmd:  %s, args: %s", command, arguments)
-	glog.Infof("run cmd:  %s, env ${args}: %s", command, expandedArguments)
-	glog.Infof("run cmd:  %s, env: %s: %s", command, K2ENVExtraVars, os.Getenv(K2ENVExtraVars))
-
+	if debug {
+		glog.Infof("run cmd:  %s, args: %s", command, arguments)
+		glog.Infof("run cmd:  %s, env ${args}: %s", command, expandedArguments)
+		glog.Infof("run cmd:  %s, env: %s: %s", command, K2ENVExtraVars, os.Getenv(K2ENVExtraVars))
+		glog.Infof("run cmd:  %s, kraken env vars: %s", command, K2EnvString())
+	}
 	if dryrun {
 		return stdoutBuf.Bytes(), nil
 	}
