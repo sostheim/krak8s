@@ -38,7 +38,7 @@ const (
 	// DockerArgIT - argment for console (i - Keep STDIN open even if not attached) (t - Allocate a pseudo-tty)
 	DockerArgIT = "-it"
 	// DockerArgRM - Automatically remove the container when it exits
-	DockerArgRM = "-rm"
+	DockerArgRM = "--rm"
 	// DockerArgFormatJSON - generate JSON output from command
 	DockerArgFormatJSON = `--format "{{json .}}"`
 )
@@ -50,9 +50,31 @@ func DockerRunCmd() []string {
 	}
 }
 
+// DockerRunK2 - docker run command with args set for K2
+// common prefix: docker run $K2OPTS quay.io/samsung_cnct/k2:latest
+func DockerRunK2() []string {
+	return []string{
+		Docker, DockerRun, DockerArgRM, K2VolKraken, K2VolAWSRoot, K2VolSSHRoot, K2EnvHome, K2Image,
+	}
+}
+
 // DockerRunIT - docker run command with -it args
 func DockerRunIT() []string {
 	return []string{
 		Docker, DockerRun, DockerArgIT,
+	}
+}
+
+// DockerRunITRM - docker run command with -it -rm args
+func DockerRunITRM() []string {
+	return []string{
+		Docker, DockerRun, DockerArgRM,
+	}
+}
+
+// DockerRunRM - docker run command with -rm args
+func DockerRunRM() []string {
+	return []string{
+		Docker, DockerRun, DockerArgRM,
 	}
 }

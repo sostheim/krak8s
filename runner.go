@@ -103,6 +103,8 @@ type Request struct {
 	config      string
 }
 
+var configFile string
+
 // NewRequest creates an request for processing
 func NewRequest(req RequestType) *Request {
 	return &Request{
@@ -176,7 +178,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 			return true
 		}
 		if *krak8sCfg.krakenCommand == commands.K2 {
-			command = commands.Update(true, path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile))
+			command = commands.K2CmdUpdate(true, commands.K2ExtraVarsAddNodePools, *krak8sCfg.krakenConfigDir, configFile, request.name)
 		} else {
 			command = commands.ClusterUpdateAdd(request.name)
 		}
@@ -187,7 +189,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 			return true
 		}
 		if *krak8sCfg.krakenCommand == commands.K2 {
-			command = commands.Update(true, path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile))
+			command = commands.K2CmdUpdate(true, commands.K2ExtraVarsRemoveNodePools, *krak8sCfg.krakenConfigDir, configFile, request.name)
 		} else {
 			command = commands.ClusterUpdateAdd(request.name)
 		}
