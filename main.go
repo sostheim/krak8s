@@ -92,13 +92,20 @@ func main() {
 	flag.Parse()
 
 	krak8sCfg.flagSet = flag.CommandLine
-	krak8sCfg.envParse()
 
 	// check for version flag, if present print veriosn and exit
 	if *krak8sCfg.version {
 		displayVersion()
 		return
 	}
+
+	glog.Infof("main(): initial configuration: %v", krak8sCfg.String())
+	krak8sCfg.envParse()
+	glog.Infof("main(): env override configuration: %v", krak8sCfg.String())
+	krak8sCfg.envExpand()
+	glog.Infof("main(): env expanded configuration: %v", krak8sCfg.String())
+
+	RunnerSetup()
 
 	// creates the config, in preference order, for:
 	// 1 - the proxy URL, if present as an argument

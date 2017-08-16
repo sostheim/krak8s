@@ -35,7 +35,7 @@ const (
 	// DefaultConfigFile - default configuration file name
 	DefaultConfigFile = "config.yaml"
 	// DefaultConfigDir - default configuration directory
-	DefaultConfigDir = "~/.kraken"
+	DefaultConfigDir = "${HOME}/.kraken"
 	// DefaultKubeConfig - default kubeConfig
 	DefaultKubeConfig = "defaultKube"
 	// DefaultKeyPair - default keyPair name

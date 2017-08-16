@@ -105,6 +105,14 @@ type Request struct {
 
 var configFile string
 
+// RunnerSetup - needs only be called once before execting ny funcitons below (note: this can't be func init()\)
+func RunnerSetup() {
+	if *krak8sCfg.krakenCommand == commands.K2 {
+		commands.K2SetupEnv()
+		configFile = path.Join(*krak8sCfg.krakenConfigDir, *krak8sCfg.krakenConfigFile)
+	}
+}
+
 // NewRequest creates an request for processing
 func NewRequest(req RequestType) *Request {
 	return &Request{

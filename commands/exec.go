@@ -24,8 +24,10 @@ import (
 	"github.com/golang/glog"
 )
 
-// check all command arguments to see if they are environment variables
-func envCheck(args []string) []string {
+// EnvExpansion - check all members of a string slice to see if any are
+// environment variables than can be expanded.  The function will expand, at
+// most, 4 levels of environment variable expansion before stopping.
+func EnvExpansion(args []string) []string {
 
 	expanded := make([]string, len(args))
 	copy(expanded, args)
@@ -50,7 +52,7 @@ func envCheck(args []string) []string {
 // on success: the resultant byte array containing stdout, error = nil
 // on failure: the resultant byte array containing stderr, error is set
 func Execute(command string, arguments []string, dryrun bool) ([]byte, error) {
-	expandedArguments := envCheck(arguments)
+	expandedArguments := EnvExpansion(arguments)
 
 	cmd := exec.Command(command, expandedArguments...)
 	stdoutBuf := &bytes.Buffer{}
@@ -60,13 +62,14 @@ func Execute(command string, arguments []string, dryrun bool) ([]byte, error) {
 
 	glog.Infof("run cmd:  %s, args: %s", command, arguments)
 	glog.Infof("run cmd:  %s, env ${args}: %s", command, expandedArguments)
+	glog.Infof("run cmd:  %s, env: %s: %s", command, K2ENVExtraVars, os.Getenv(K2ENVExtraVars))
 
 	if dryrun {
 		return stdoutBuf.Bytes(), nil
 	}
 
 	if err := cmd.Run(); err != nil {
-		glog.Warningf("cmd:  %s, args: %s returned error: %v", command, arguments, err)
+		glog.Warningf("cmd:  %s, args: %s returned error: %v", command, expandedArguments, err)
 		glog.Warningf("cmd:  %s, stderr: %s", command, string(stderrBuf.Bytes()))
 		glog.Warningf("cmd:  %s, stdout: %v", command, string(stdoutBuf.Bytes()))
 		return stderrBuf.Bytes(), err

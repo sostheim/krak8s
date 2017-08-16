@@ -58,8 +58,24 @@ func newConfig() *config {
 }
 
 func (cfg *config) String() string {
-	return fmt.Sprintf("kubeconfig: %s, proxy: %s, service-name: %s, health-check: %t, version: %t",
-		*cfg.kubeconfig, *cfg.proxy, *cfg.serviceName, *cfg.healthCheck, *cfg.version)
+	return fmt.Sprintf("Configuration Data: kubeconfig: %s, proxy: %s, "+
+		"service-name: %s, health-check: %t, version: %t, kraken-config-file: %s, "+
+		"kraken-config-dir: %s, kraken-nodepool-keypair: %s, kraken-kubeconfig: %s, "+
+		"kraken-command: %s, dry-run: %t",
+		*cfg.kubeconfig, *cfg.proxy, *cfg.serviceName, *cfg.healthCheck,
+		*cfg.version, *cfg.krakenConfigFile, *cfg.krakenConfigDir,
+		*cfg.krakenKeyPair, *cfg.krakenKubeConfig, *cfg.krakenCommand, *cfg.dryrun)
+}
+
+// For any configuration members that contain enviroment variables as values, expand them.
+func (cfg *config) envExpand() {
+	*cfg.kubeconfig = os.ExpandEnv(*cfg.kubeconfig)
+	*cfg.serviceName = os.ExpandEnv(*cfg.serviceName)
+	*cfg.krakenConfigFile = os.ExpandEnv(*cfg.krakenConfigFile)
+	*cfg.krakenConfigDir = os.ExpandEnv(*cfg.krakenConfigDir)
+	*cfg.krakenKeyPair = os.ExpandEnv(*cfg.krakenKeyPair)
+	*cfg.krakenKubeConfig = os.ExpandEnv(*cfg.krakenKubeConfig)
+	*cfg.krakenCommand = os.ExpandEnv(*cfg.krakenCommand)
 }
 
 var envSupport = map[string]bool{
@@ -72,6 +88,8 @@ var envSupport = map[string]bool{
 	"kraken-config-dir":       true,
 	"kraken-nodepool-keypair": true,
 	"kraken-kubeconfig":       true,
+	"kraken-command":          true,
+	"dry-run":                 true,
 }
 
 func variableName(name string) string {
