@@ -17,15 +17,16 @@ limitations under the License.
 package commands
 
 import (
-	"text/template"
-	"os"
-	"log"
-	"io/ioutil"
 	"bytes"
+	"io/ioutil"
+	"log"
+	"os"
 	"os/exec"
+	"text/template"
 )
 
-const(
+const (
+	// ReactionTemplate - reaction chart template
 	ReactionTemplate = `image: {{.Image}}
 imageTag: {{.ImageTag}}
 imagePullSecret: {{.ImagePullSecret}}
@@ -61,24 +62,22 @@ resources:
 )
 
 type ReactionDriver struct {
-
 	DeploymentName string
-	ChartLocation string
-	Namespace string
+	ChartLocation  string
+	Namespace      string
 
-	Image string
-	ImageTag string
+	Image           string
+	ImageTag        string
 	ImagePullSecret string
 	DefaultHostName string
-	MainHostName string
-	RootHostName string
-	CustomerName string
+	MainHostName    string
+	RootHostName    string
+	CustomerName    string
 
 	Username string
 	Password string
 
 	Template string
-
 }
 
 func (r ReactionDriver) install() {
@@ -115,7 +114,6 @@ func (r ReactionDriver) install() {
 
 }
 
-
 func (r ReactionDriver) upgrade() {
 	templ, err := template.New("mongoTemplate").Parse(r.Template)
 	if err != nil {
@@ -127,7 +125,6 @@ func (r ReactionDriver) upgrade() {
 	defer os.Remove(file.Name())
 
 	err = templ.Execute(file, r)
-
 
 	// Login
 	arguments := []string{"registry",
