@@ -16,13 +16,13 @@
 # Dockerfile - External LoadBalancer (lbex).
 #
 
-FROM ubuntu:xenial
+FROM quay.io/samsung_cnct/k2:latest
 MAINTAINER Rick Sostheim
 LABEL vendor="Samsung CNCT"
 
 # for troubleshooting, can be removed for production deployment
-RUN apt update
-RUN apt install netcat-openbsd net-tools iproute2 -y
+RUN apk update
+RUN apk add net-tools iproute2
 
 COPY build/linux_amd64/krak8s /
 COPY swagger /
