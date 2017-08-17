@@ -211,3 +211,202 @@ $ curl http://localhost:8080/v1/projects/d1226f6a/namespaces/20b5bac8
 	"type": "namespace"
 }
 ```
+
+## A Longer Example
+
+The following example also uses `curl` commands to create and retrieve objects from the API.  This example doesn't try to demonstrate all of the functionality of various endpoints.  Rather, the goal here is to illustrate what **might** be a typical workflow for creating a couple of projects, their related resources, an application, and then taking down some (or all) of those resources.
+
+Using a cluster named "Meteor", we'll create some constellation related projects.
+
+1. There are three preparatory steps shown first
+    1. Create the project `neptune`  
+	2. Create a namespace for the project, `neptune-test`
+	3. Create the cluster resources associated with this project/namespaces.
+```
+$ curl - X POST - H "Content-Type: application/json" - d '{"name":"neptune"}' http: //localhost:8080/v1/projects
+	{
+		"created_at": "2017-08-16T09:43:46.888464975-07:00",
+		"id": "a901c92b",
+		"name": "neptune",
+		"namespaces": null,
+		"type": "project"
+	}
+$ curl - X POST - H "Content-Type: application/json" - d '{"name":"neptune-test"}' http: //localhost:8080/v1/projects/a901c92b/namespaces
+	{
+		"applications": null,
+		"created_at": "2017-08-16T09:44:12.07355244-07:00",
+		"id": "70271bbf",
+		"name": "neptune-test",
+		"resources": null,
+		"type": "namespace"
+	}
+$ curl - X POST - H "Content-Type: application/json" - d '{"namespace_id":"70271bbf", "nodePoolSize": 3}' http: //localhost:8080/v1/projects/a901c92b/cluster
+	{
+		"created_at": "2017-08-16T09:44:40.20165339-07:00",
+		"id": "e74f17d7",
+		"namespace_id": "70271bbf",
+		"nodePoolSize": 3,
+		"state": "create_requested",
+		"type": "Resource",
+		"updated_at": "0001-01-01T00:00:00Z"
+	}
+```
+2. This final step can take a significant amount of time.  It's not unusual for this to take anywhere from 5 to 15 minutes, sometimes less, almost never more.  As such, it is necessary to poll the newly created endpoint periodically to see it make the transition from either `"state": "create_requested"` or `"state": "starting"` to the desired ready `"state": "active"` - shown below.
+```
+$ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+	{
+		"created_at": "2017-08-16T09:44:40.20165339-07:00",
+		"id": "e74f17d7",
+		"namespace_id": "70271bbf",
+		"nodePoolSize": 3,
+		"state": "active",
+		"type": "Resource",
+		"updated_at": "2017-08-16T09:50:11.049940314-07:00"
+	}
+```
+
+From the API servers log output we see that this operation took just over 5 minutes to complete, also noted in the difference between the crated and updated timestamps in the object itself.
+```
+I0816 09:50:11.049953   15111 runner.go:274] Queued task deleted: type: AddProject, name: neptune, namespace: neptune-test, queueing duration: 5m30.848282467s, running duration 5m30.846522554s
+```
+Everytime a physical change to the infrastructure of the cluster is requested, the persistent state of the cluster is reflected in both the clusters `config.yaml` file and the terraform manifest associated with the cluster.  For example, after running the sequence above successfully, the config file shows the delta between the current and backup versions of the file.
+```
+$ diff config.yaml config.yaml.1502901880 
+530,541d529
+<         - name: neptuneNodes
+<           count: 3
+<           kubeConfig: *meteorKube
+<           containerConfig: *defaultDocker
+<           osConfig: *defaultCoreOs
+<           nodeConfig: 
+<             << : *defaultAwsClusterNode
+<             taints:
+<               - key: node-role.kubernetes.io/neptune
+<                 value: neptune
+<                 effect: NoSchedule
+<           keyPair: *meteorKeyPair
+```
+
+3. Another constellation is added to the cluster in similar fashion.
+```
+$ curl - X POST - H "Content-Type: application/json" - d '{"name":"mars"}'
+http: //localhost:8080/v1/projects
+	{
+		"created_at": "2017-08-16T10:00:20.092785526-07:00",
+		"id": "ca57d654",
+		"name": "mars",
+		"namespaces": null,
+		"type": "project"
+	}
+$ curl - X POST - H "Content-Type: application/json" - d '{"name":"mars-production"}'
+http: //localhost:8080/v1/projects/ca57d654/namespaces
+	{
+		"applications": null,
+		"created_at": "2017-08-16T10:01:02.179474746-07:00",
+		"id": "84f70e67",
+		"name": "mars-production",
+		"resources": null,
+		"type": "namespace"
+	}
+$ curl - X POST - H "Content-Type: application/json" - d '{"namespace_id":"84f70e67", "nodePoolSize": 3}'
+http: //localhost:8080/v1/projects/ca57d654/cluster
+	{
+		"created_at": "2017-08-16T10:01:28.436890214-07:00",
+		"id": "55a9bd4e",
+		"namespace_id": "84f70e67",
+		"nodePoolSize": 3,
+		"state": "create_requested",
+		"type": "Resource",
+		"updated_at": "0001-01-01T00:00:00Z"
+	}
+$ curl http: //localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
+	{
+		"created_at": "2017-08-16T10:01:28.436890214-07:00",
+		"id": "55a9bd4e",
+		"namespace_id": "84f70e67",
+		"nodePoolSize": 3,
+		"state": "starting",
+		"type": "Resource",
+		"updated_at": "2017-08-16T10:01:28.437887418-07:00"
+	}
+$ curl http: //localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
+	{
+		"created_at": "2017-08-16T10:01:28.436890214-07:00",
+		"id": "55a9bd4e",
+		"namespace_id": "84f70e67",
+		"nodePoolSize": 3,
+		"state": "starting",
+		"type": "Resource",
+		"updated_at": "2017-08-16T10:01:28.437887418-07:00"
+	}
+$ curl http: //localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
+	{
+		"created_at": "2017-08-16T10:01:28.436890214-07:00",
+		"id": "55a9bd4e",
+		"namespace_id": "84f70e67",
+		"nodePoolSize": 3,
+		"state": "active",
+		"type": "Resource",
+		"updated_at": "2017-08-16T10:14:03.033979445-07:00"
+	}
+```
+The last 4 curl commands show the resource's complete transition from `"create_requested"` to `"starting"` (repeated poll twice), and finally to `"active"`.
+
+4. Bring up a MongoDB Application using the new Mars Production cluster resources.
+```
+curl - X POST - H "Content-Type: application/json" - d '{ "name": "mongodb-replicaset", "registry": "quay.io/samsung_cnct", "set": "", "version": "", "namespace_id": "84f70e67"}'
+http: //localhost:8080/v1/projects/ca57d654/applications
+	{
+		"created_at": "2017-08-16T10:14:03.033981237-07:00",
+		"id": "9f0d9890",
+		"name": "mongodb-replicaset",
+		"namespace_id": "84f70e67",
+		"status": null,
+		"type": "application",
+		"updated_at": "0001-01-01T00:00:00Z",
+		"version": ""
+	}
+```
+5. As it appears that the Neptune Test resources are not actually getting used, remove them from the cluster.
+```
+$ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+	{
+		"created_at": "2017-08-16T09:44:40.20165339-07:00",
+		"id": "e74f17d7",
+		"namespace_id": "70271bbf",
+		"nodePoolSize": 3,
+		"state": "active",
+		"type": "Resource",
+		"updated_at": "2017-08-16T09:50:11.049940314-07:00"
+	}
+$ curl - X DELETE http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+	$ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+	{
+		"created_at": "2017-08-16T09:44:40.20165339-07:00",
+		"id": "e74f17d7",
+		"namespace_id": "70271bbf",
+		"nodePoolSize": 3,
+		"state": "deleting",
+		"type": "Resource",
+		"updated_at": "2017-08-16T10:17:58.923457293-07:00"
+	}
+$ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+	{
+		"created_at": "2017-08-16T09:44:40.20165339-07:00",
+		"id": "e74f17d7",
+		"namespace_id": "70271bbf",
+		"nodePoolSize": 3,
+		"state": "deleted",
+		"type": "Resource",
+		"updated_at": "2017-08-16T10:21:58.712095513-07:00"
+	}
+```
+Much as the resource creation process has state transitions, so does releasing resources.  As shown above, the resources goes from `"active"` to `"deleting"` and finally to `"deleted"`.
+
+At this point, the API record of the resource remains in place so that it can be queried to collect the final state, and possibly the timestamps, should that information be of interest.
+
+To permanently remove the record, we delete the enclosing namespace.  
+```
+$ curl - X DELETE http://localhost:8080/v1/projects/f0fc2c78/namespaces/70271bbf
+```
+If there was no future need for the root project, the same effect can be achieved by deleting the base object, the project, if desired.  There is no need to delete all the associated elements first. 
