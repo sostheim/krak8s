@@ -63,6 +63,17 @@ container:
 	./...
 	docker build --rm --pull --tag $(IMAGE):$(TAG) .
 
+containerprep: deps
+	go get github.com/spf13/cobra
+	go get
+	$(GODEP) gox -ldflags "-X main.MajorMinorPatch=$(VERSION) \
+		-X main.ReleaseType=$(TYPE) \
+		-X main.GitCommit=$(COMMIT) -w" \
+	-osarch="linux/amd64" \
+	-output "build/{{.OS}}_{{.Arch}}/$(NAME)" \
+	./...
+
+
 tag: container
 	docker tag $(IMAGE):$(TAG) $(IMAGE):$(COMMIT)
 
