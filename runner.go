@@ -225,7 +225,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 	queue.Started()
 	tries := request.retryCount
 	for tries >= 0 {
-		out, err := commands.Execute(command[0], command[1:])
+		_, err := commands.Execute(command[0], command[1:])
 		if err != nil {
 			tries--
 			glog.Errorf("command execution retry count: %v", request.retryCount)
@@ -237,7 +237,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 			}
 		} else {
 			if *krak8sCfg.debug {
-				glog.Infof("command execution success, tries: %d: %v", tries, out)
+				glog.Infof("command execution success, tries: %d", tries)
 			}
 			tries = -1
 			if request.resObj.State == ResourceCreateRequested || request.resObj.State == ResourceStarting || request.resObj.State == ResourceErrorStarting {
@@ -254,6 +254,144 @@ func (r *Runner) handleProjects(request *Request) bool {
 }
 
 func (r *Runner) handleCharts(request *Request) bool {
+	if request.appObj.Name == "mongodb-replicaset" {
+		return r.handleMongoChart(request)
+	} else {
+		return r.handleGenericChart(request)
+	}
+	return true
+}
+
+func (r *Runner) handleMongoChart(request *Request) bool {
+
+	mongo := commands.MongoReplicasetDriver{
+		DeploymentName: request.projObj.Name + "-mongodb",
+		ChartLocation:  request.appObj.Registry + "/" + request.appObj.Name,
+		Namespace:      request.nsObj.Name,
+		CustomerName:   request.projObj.Name,
+		Template:       commands.MongoReplicasetTemplate,
+	}
+	if request.requestType == AddChart {
+		request.appObj.Status.State = ApplicationUnknown
+		request.appObj.UpdatedAt = time.Now()
+		// Block the command state in the queue and run the command to completion.
+		queue.Started()
+		tries := request.retryCount
+		for tries >= 0 {
+			_, err := mongo.Install()
+			if err != nil {
+				tries--
+				glog.Errorf("install retry count: %v", request.retryCount)
+				glog.Errorf("install failed on: %v", err)
+				request.appObj.Status.State = ApplicationFailed
+			} else {
+				if *krak8sCfg.debug {
+					glog.Infof("command execution success, tries: %d", tries)
+				}
+				tries = -1
+				request.appObj.Status.State = ApplicationDeployed
+				request.appObj.Status.DeployedAt = time.Now()
+			}
+			request.appObj.UpdatedAt = time.Now()
+		}
+		queue.Done()
+	} else if request.requestType == RemoveChart {
+		request.appObj.Status.State = ApplicationDeleting
+		request.appObj.UpdatedAt = time.Now()
+		// Block the command state in the queue and run the command to completion.
+		queue.Started()
+		tries := request.retryCount
+		for tries >= 0 {
+			_, err := mongo.Remove()
+			if err != nil {
+				tries--
+				glog.Errorf("remove retry count: %v", request.retryCount)
+				glog.Errorf("remove failed on: %v", err)
+				request.appObj.Status.State = ApplicationFailed
+			} else {
+				if *krak8sCfg.debug {
+					glog.Infof("command execution success, tries: %d", tries)
+				}
+				tries = -1
+				request.appObj.Status.State = ApplicationDeleted
+				request.appObj.Status.DeployedAt = time.Now()
+			}
+			request.appObj.UpdatedAt = time.Now()
+		}
+		queue.Done()
+	}
+
+	return true
+}
+
+func (r *Runner) handleGenericChart(request *Request) bool {
+
+	chart := commands.GenericDriver{
+		DeploymentName:  request.projObj.Name + "-chart",
+		ChartLocation:   request.appObj.Registry + "/" + request.appObj.Name,
+		Namespace:       request.nsObj.Name,
+		Image:           "projectbase/chartname",
+		ImageTag:        "latest",
+		ImagePullSecret: "",
+		DefaultHostName: "",
+		MainHostName:    "",
+		RootHostName:    "",
+		CustomerName:    request.projObj.Name,
+		Username:        "",
+		Password:        "",
+		Template:        commands.GenericTemplate,
+	}
+
+	if request.requestType == AddChart {
+		request.appObj.Status.State = ApplicationUnknown
+		request.appObj.UpdatedAt = time.Now()
+		// Block the command state in the queue and run the command to completion.
+		queue.Started()
+		tries := request.retryCount
+		for tries >= 0 {
+			_, err := chart.Install()
+			if err != nil {
+				tries--
+				glog.Errorf("install retry count: %v", request.retryCount)
+				glog.Errorf("install failed on: %v", err)
+				request.appObj.Status.State = ApplicationFailed
+			} else {
+				if *krak8sCfg.debug {
+					glog.Infof("command execution success, tries: %d", tries)
+				}
+				tries = -1
+				request.appObj.Status.State = ApplicationDeployed
+				request.appObj.Status.DeployedAt = time.Now()
+			}
+			request.appObj.UpdatedAt = time.Now()
+		}
+		queue.Done()
+	} else if request.requestType == RemoveChart {
+		request.appObj.Status.State = ApplicationDeleting
+		request.appObj.UpdatedAt = time.Now()
+		// Block the command state in the queue and run the command to completion.
+		queue.Started()
+		tries := request.retryCount
+		for tries >= 0 {
+			_, err := chart.Remove()
+			if err != nil {
+				tries--
+				glog.Errorf("remove retry count: %v", request.retryCount)
+				glog.Errorf("remove failed on: %v", err)
+				request.appObj.Status.State = ApplicationFailed
+			} else {
+				if *krak8sCfg.debug {
+					glog.Infof("command execution success, tries: %d", tries)
+				}
+				tries = -1
+				request.appObj.Status.State = ApplicationDeleted
+				request.appObj.Status.DeployedAt = time.Now()
+			}
+			request.appObj.UpdatedAt = time.Now()
+		}
+		queue.Done()
+	}
+
 	return true
 }
 

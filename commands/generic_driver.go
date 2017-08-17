@@ -26,8 +26,8 @@ import (
 )
 
 const (
-	// ReactionTemplate - reaction chart template
-	ReactionTemplate = `image: {{.Image}}
+	// GenericTemplate - chart template
+	GenericTemplate = `image: {{.Image}}
 imageTag: {{.ImageTag}}
 imagePullSecret: {{.ImagePullSecret}}
 ingress:
@@ -61,7 +61,8 @@ resources:
     memory: 1536Mi`
 )
 
-type ReactionDriver struct {
+// GenericDriver - control structure for deploying a generic chart.
+type GenericDriver struct {
 	DeploymentName string
 	ChartLocation  string
 	Namespace      string
@@ -80,7 +81,8 @@ type ReactionDriver struct {
 	Template string
 }
 
-func (r ReactionDriver) install() {
+// Install - isntall the chart.
+func (r GenericDriver) Install() ([]byte, error) {
 	templ, err := template.New("mongoTemplate").Parse(r.Template)
 	if err != nil {
 		log.Fatalf("execution failed: %s", err)
@@ -110,11 +112,12 @@ func (r ReactionDriver) install() {
 		"--values " + file.Name(),
 		"--version 0.1.0",
 	}
-	r.execute("/usr/local/bin/helm", arguments)
+	return r.execute("/usr/local/bin/helm", arguments)
 
 }
 
-func (r ReactionDriver) upgrade() {
+// Upgrade - upgrade the chart.
+func (r GenericDriver) Upgrade() ([]byte, error) {
 	templ, err := template.New("mongoTemplate").Parse(r.Template)
 	if err != nil {
 		log.Fatalf("execution failed: %s", err)
@@ -142,19 +145,20 @@ func (r ReactionDriver) upgrade() {
 		r.DeploymentName,
 		"--values " + file.Name(),
 	}
-	r.execute("/usr/local/bin/helm", arguments)
+	return r.execute("/usr/local/bin/helm", arguments)
 }
 
-func (r ReactionDriver) remove() {
+// Remove - remove the chart.
+func (r GenericDriver) Remove() ([]byte, error) {
 	arguments := []string{"delete",
 		"--purge",
 		r.DeploymentName,
 	}
 
-	r.execute("/usr/local/bin/helm", arguments)
+	return r.execute("/usr/local/bin/helm", arguments)
 }
 
-func (r ReactionDriver) execute(command string, arguments []string) ([]byte, error) {
+func (r GenericDriver) execute(command string, arguments []string) ([]byte, error) {
 	cmd := exec.Command(command, arguments...)
 	stdoutBuf := &bytes.Buffer{}
 	stderrBuf := &bytes.Buffer{}
@@ -170,28 +174,3 @@ func (r ReactionDriver) execute(command string, arguments []string) ([]byte, err
 	return stdoutBuf.Bytes(), nil
 
 }
-
-/*
-func main () {
-
-	reaction := ReactionDriver{ DeploymentName: "test",
-		ChartLocation: "quay.io/reactioncommerce/reactioncommerce",
-		Namespace: "test",
-		Image: "reactioncommerce/reaction",
-		ImageTag: "latest",
-		ImagePullSecret: "",
-		DefaultHostName: "test.getreaction.io",
-		MainHostName: "www.test.io",
-		RootHostName: "www.test.io",
-		CustomerName: "joe",
-		Username: "reactioncommerce+reactioncommercero",
-		Password: "somethingsomething",
-		Template: ReactionTemplate,
-	}
-
-	reaction.install()
-	//reaction.upgrade()
-	//reaction.remove()
-}
-
-*/

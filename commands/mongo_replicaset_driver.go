@@ -17,15 +17,16 @@ limitations under the License.
 package commands
 
 import (
-	"text/template"
-	"os"
-	"log"
-	"io/ioutil"
 	"bytes"
+	"io/ioutil"
+	"log"
+	"os"
 	"os/exec"
+	"text/template"
 )
 
-const(
+const (
+	// MongoReplicasetTemplate - template for mongo replica set.
 	MongoReplicasetTemplate = `scheduling:
   affinity:
     node:
@@ -55,19 +56,19 @@ resources:
     memory: 512Mi`
 )
 
+// MongoReplicasetDriver - control structure for deploying mongo replica set.
 type MongoReplicasetDriver struct {
-
 	DeploymentName string
-	ChartLocation string
-	Namespace string
+	ChartLocation  string
+	Namespace      string
 
 	CustomerName string
 
 	Template string
-
 }
 
-func (m MongoReplicasetDriver) install() {
+// Install - upgrade the mongo replicaset chart.
+func (m MongoReplicasetDriver) Install() ([]byte, error) {
 	templ, err := template.New("mongoTemplate").Parse(m.Template)
 	if err != nil {
 		log.Fatalf("execution failed: %s", err)
@@ -88,12 +89,12 @@ func (m MongoReplicasetDriver) install() {
 		"--version 1.2.0-0",
 	}
 
-	m.execute("/usr/local/bin/helm", arguments)
+	return m.execute("/usr/local/bin/helm", arguments)
 
 }
 
-
-func (m MongoReplicasetDriver) upgrade() {
+// Upgrade - upgrade the mongo replicaset chart.
+func (m MongoReplicasetDriver) Upgrade() ([]byte, error) {
 	templ, err := template.New("mongoTemplate").Parse(m.Template)
 	if err != nil {
 		log.Fatalf("execution failed: %s", err)
@@ -105,7 +106,6 @@ func (m MongoReplicasetDriver) upgrade() {
 
 	err = templ.Execute(file, m)
 
-
 	arguments := []string{"registry",
 		"upgrade",
 		m.ChartLocation + "@1.2.0-0",
@@ -113,16 +113,17 @@ func (m MongoReplicasetDriver) upgrade() {
 		"--values " + file.Name(),
 	}
 
-	m.execute("/usr/local/bin/helm", arguments)
+	return m.execute("/usr/local/bin/helm", arguments)
 }
 
-func (m MongoReplicasetDriver) remove() {
+// Remove - remove the mongo replicaset chart.
+func (m MongoReplicasetDriver) Remove() ([]byte, error) {
 	arguments := []string{"delete",
 		"--purge",
 		m.DeploymentName,
 	}
 
-	m.execute("/usr/local/bin/helm", arguments)
+	return m.execute("/usr/local/bin/helm", arguments)
 }
 
 func (m MongoReplicasetDriver) execute(command string, arguments []string) ([]byte, error) {
@@ -141,20 +142,3 @@ func (m MongoReplicasetDriver) execute(command string, arguments []string) ([]by
 	return stdoutBuf.Bytes(), nil
 
 }
-
-/*
-func main () {
-
-	mongo := MongoReplicasetDriver{ DeploymentName: "test",
-		ChartLocation: "quay.io/samsung_cnct/mongodb-replicaset",
-		Namespace: "test",
-		CustomerName: "joe",
-		Template: MongoReplicasetTemplate,
-	}
-
-	//mongo.install()
-	//mongo.upgrade
-	//mongo.remove()
-
-}
-*/
