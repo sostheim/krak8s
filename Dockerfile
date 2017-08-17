@@ -20,11 +20,8 @@ FROM quay.io/samsung_cnct/k2:latest
 MAINTAINER Rick Sostheim
 LABEL vendor="Samsung CNCT"
 
-# for troubleshooting, can be removed for production deployment
-RUN apk update
-RUN apk add net-tools iproute2
-
 COPY build/linux_amd64/krak8s /
+COPY commands/node_pool.tmpl commands/node_pool.tmpl /
 COPY swagger /
 
 ENTRYPOINT ["/krak8s"]
