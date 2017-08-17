@@ -12,7 +12,7 @@ variables:
 build:
   stage: build
   script:
-  - docker run --rm=true -v $PWD:/usr/src/krak8s golang:1.8 bash -c "cd /go/src/krak8s; make containerprep"
+  - docker run --rm=true -v $PWD:/go/src/krak8s golang:1.8 bash -c "cd /go/src/krak8s; make containerprep"
   - docker build -t quay.io/dummy:${CI_COMMIT_SHA} .
   - docker rmi quay.io/dummy:${CI_COMMIT_SHA}
 
