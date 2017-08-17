@@ -68,7 +68,8 @@ containerprep: deps
 	go get
 	$(GODEP) gox -ldflags "-X main.MajorMinorPatch=$(VERSION) \
 		-X main.ReleaseType=$(TYPE) \
-		-X main.GitCommit=$(COMMIT) -w" \
+		-X main.GitCommit=$(COMMIT) -w \
+		-linkmode external -extldflags -static" \
 	-osarch="linux/amd64" \
 	-output "build/{{.OS}}_{{.Arch}}/$(NAME)" \
 	./...
