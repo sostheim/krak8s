@@ -1,0 +1,19 @@
+image: docker:latest
+
+services:
+  - docker:dind
+
+before_script:
+  - docker info
+
+variables:
+  DOCKER_HOST: tcp://localhost:2375  
+
+build:
+  stage: build
+  script:
+  - docker run --rm=true -it -v $PWD:/usr/src/krak8s golang:1.8 bash -c "cd /go/src/krak8s; make containerprep"
+  - docker build -t quay.io/dummy:${CI_COMMIT_SHA} .
+  - docker rmi quay.io/dummy:${CI_COMMIT_SHA}
+
+
