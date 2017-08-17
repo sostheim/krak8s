@@ -1,5 +1,5 @@
 NAME      := krak8s
-VERSION   := 0.2.85
+VERSION   := 0.2.86
 TYPE      := alpha
 COMMIT    := $(shell git rev-parse HEAD)
 IMAGE     := quay.io/samsung_cnct/krak8s
@@ -64,8 +64,6 @@ container:
 	docker build --rm --pull --tag $(IMAGE):$(TAG) .
 
 containerprep: deps
-	go get github.com/spf13/cobra
-	go get
 	$(GODEP) gox -ldflags "-X main.MajorMinorPatch=$(VERSION) \
 		-X main.ReleaseType=$(TYPE) \
 		-X main.GitCommit=$(COMMIT) -w \
@@ -73,7 +71,6 @@ containerprep: deps
 	-osarch="linux/amd64" \
 	-output "build/{{.OS}}_{{.Arch}}/$(NAME)" \
 	./...
-
 
 tag: container
 	docker tag $(IMAGE):$(TAG) $(IMAGE):$(COMMIT)
