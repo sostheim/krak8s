@@ -255,6 +255,7 @@ func (ds *DataStore) NewProject(name string) *ProjectObject {
 		return nil
 	}
 	obj.Name = name
+	ds.archive <- true
 	return obj
 }
 
@@ -284,6 +285,7 @@ func (ds *DataStore) AddProject(obj ProjectObject) {
 	ds.Lock()
 	defer ds.Unlock()
 	ds.data.Projects[obj.OID] = &obj
+	ds.archive <- true
 }
 
 // DeleteProject removes the project and all subordinate objects.
@@ -295,6 +297,7 @@ func (ds *DataStore) DeleteProject(obj *ProjectObject) {
 	ds.Lock()
 	defer ds.Unlock()
 	delete(ds.data.Projects, obj.OID)
+	ds.archive <- true
 }
 
 // NewNamespaceObject creates aa default NamespaceObject with a valid unique
@@ -323,6 +326,7 @@ func (ds *DataStore) NewNamespace(name string) *NamespaceObject {
 		return nil
 	}
 	obj.Name = name
+	ds.archive <- true
 	return obj
 }
 
@@ -357,6 +361,7 @@ func (ds *DataStore) AddNamespace(obj NamespaceObject) {
 	ds.Lock()
 	defer ds.Unlock()
 	ds.data.Namespaces[obj.OID] = &obj
+	ds.archive <- true
 }
 
 // DeleteNamespace removes the Namespace and all subordinate objects.
@@ -369,6 +374,7 @@ func (ds *DataStore) DeleteNamespace(obj *NamespaceObject) {
 	ds.Lock()
 	defer ds.Unlock()
 	delete(ds.data.Namespaces, obj.OID)
+	ds.archive <- true
 }
 
 // NewApplicationObject creates aa default ApplicationObject with a valid
