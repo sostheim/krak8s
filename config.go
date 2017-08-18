@@ -46,7 +46,6 @@ func newConfig() *config {
 	return &config{
 		kubeconfig:       flag.String("kubeconfig", "", "absolute path to the kubeconfig file"),
 		proxy:            flag.String("proxy", "", "kubctl proxy server running at the given url"),
-		serviceName:      flag.String("service-name", "", "API Service name"),
 		version:          flag.Bool("version", false, "display version info and exit"),
 		healthCheck:      flag.Bool("health-check", false, "enable health checking for API service"),
 		krakenConfigFile: flag.String("kraken-config-file", commands.DefaultConfigFile, "kraken configuration yaml file name"),
@@ -64,15 +63,14 @@ func (cfg *config) String() string {
 		"service-name: %s, health-check: %t, version: %t, kraken-config-file: %s, "+
 		"kraken-config-dir: %s, kraken-nodepool-keypair: %s, kraken-kubeconfig: %s, "+
 		"kraken-command: %s, dry-run: %t",
-		*cfg.kubeconfig, *cfg.proxy, *cfg.serviceName, *cfg.healthCheck,
-		*cfg.version, *cfg.krakenConfigFile, *cfg.krakenConfigDir,
-		*cfg.krakenKeyPair, *cfg.krakenKubeConfig, *cfg.krakenCommand, *cfg.dryrun)
+		*cfg.kubeconfig, *cfg.proxy, *cfg.healthCheck, *cfg.version, *cfg.krakenConfigFile,
+		*cfg.krakenConfigDir, *cfg.krakenKeyPair, *cfg.krakenKubeConfig, *cfg.krakenCommand,
+		*cfg.dryrun)
 }
 
-// For any configuration members that contain enviroment variables as values, expand them.
+// For any configuration members that contain environment variables as values, expand them.
 func (cfg *config) envExpand() {
 	*cfg.kubeconfig = os.ExpandEnv(*cfg.kubeconfig)
-	*cfg.serviceName = os.ExpandEnv(*cfg.serviceName)
 	*cfg.krakenConfigFile = os.ExpandEnv(*cfg.krakenConfigFile)
 	*cfg.krakenConfigDir = os.ExpandEnv(*cfg.krakenConfigDir)
 	*cfg.krakenKeyPair = os.ExpandEnv(*cfg.krakenKeyPair)
@@ -83,7 +81,6 @@ func (cfg *config) envExpand() {
 var envSupport = map[string]bool{
 	"kubeconfig":              true,
 	"proxy":                   true,
-	"service-name":            true,
 	"version":                 false,
 	"health-check":            true,
 	"kraken-config-file":      true,
@@ -91,7 +88,8 @@ var envSupport = map[string]bool{
 	"kraken-nodepool-keypair": true,
 	"kraken-kubeconfig":       true,
 	"kraken-command":          true,
-	"dry-run":                 true,
+	"dry-run":                 false,
+	"debug":                   false,
 }
 
 func variableName(name string) string {

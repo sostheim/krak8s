@@ -17,12 +17,12 @@ limitations under the License.
 package commands
 
 import (
-	"bytes"
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"text/template"
+
+	"github.com/golang/glog"
 )
 
 const (
@@ -93,6 +93,10 @@ func (r GenericDriver) Install() ([]byte, error) {
 	defer os.Remove(file.Name())
 
 	err = templ.Execute(file, r)
+	if err != nil {
+		glog.Warningf("failed to parse chart template: %v", err)
+		return nil, err
+	}
 
 	// Login
 	arguments := []string{"registry",
@@ -101,7 +105,7 @@ func (r GenericDriver) Install() ([]byte, error) {
 		"-p " + r.Password,
 		"quay.io",
 	}
-	r.execute("/usr/local/bin/helm", arguments)
+	r.execute(arguments)
 
 	// Do the install
 	arguments = []string{"registry",
@@ -112,7 +116,7 @@ func (r GenericDriver) Install() ([]byte, error) {
 		"--values " + file.Name(),
 		"--version 0.1.0",
 	}
-	return r.execute("/usr/local/bin/helm", arguments)
+	return r.execute(arguments)
 
 }
 
@@ -128,6 +132,10 @@ func (r GenericDriver) Upgrade() ([]byte, error) {
 	defer os.Remove(file.Name())
 
 	err = templ.Execute(file, r)
+	if err != nil {
+		glog.Warningf("failed to parse chart template: %v", err)
+		return nil, err
+	}
 
 	// Login
 	arguments := []string{"registry",
@@ -136,7 +144,7 @@ func (r GenericDriver) Upgrade() ([]byte, error) {
 		"-p " + r.Password,
 		"quay.io",
 	}
-	r.execute("/usr/local/bin/helm", arguments)
+	r.execute(arguments)
 
 	// Do the upgrade
 	arguments = []string{"registry",
@@ -145,7 +153,7 @@ func (r GenericDriver) Upgrade() ([]byte, error) {
 		r.DeploymentName,
 		"--values " + file.Name(),
 	}
-	return r.execute("/usr/local/bin/helm", arguments)
+	return r.execute(arguments)
 }
 
 // Remove - remove the chart.
@@ -155,22 +163,9 @@ func (r GenericDriver) Remove() ([]byte, error) {
 		r.DeploymentName,
 	}
 
-	return r.execute("/usr/local/bin/helm", arguments)
+	return r.execute(arguments)
 }
 
-func (r GenericDriver) execute(command string, arguments []string) ([]byte, error) {
-	cmd := exec.Command(command, arguments...)
-	stdoutBuf := &bytes.Buffer{}
-	stderrBuf := &bytes.Buffer{}
-	cmd.Stdout = stdoutBuf
-	cmd.Stderr = stderrBuf
-
-	if err := cmd.Run(); err != nil {
-		log.Printf("k2cli.Execute(): cmd:  %s, args: %s returned error: %v", command, arguments, err)
-		log.Printf("k2cli.Execute(): cmd:  %s, stderr: %s", command, string(stderrBuf.Bytes()))
-		log.Printf("k2cli.Execute(): cmd:  %s, stdout: %v", command, string(stdoutBuf.Bytes()))
-		return stderrBuf.Bytes(), err
-	}
-	return stdoutBuf.Bytes(), nil
-
+func (r GenericDriver) execute(arguments []string) ([]byte, error) {
+	return Execute("helm", arguments)
 }

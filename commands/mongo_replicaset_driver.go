@@ -17,12 +17,12 @@ limitations under the License.
 package commands
 
 import (
-	"bytes"
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"text/template"
+
+	"github.com/golang/glog"
 )
 
 const (
@@ -79,6 +79,10 @@ func (m MongoReplicasetDriver) Install() ([]byte, error) {
 	defer os.Remove(file.Name())
 
 	err = templ.Execute(file, m)
+	if err != nil {
+		glog.Warningf("failed to parse mongo template: %v", err)
+		return nil, err
+	}
 
 	arguments := []string{"registry",
 		"install",
@@ -89,8 +93,7 @@ func (m MongoReplicasetDriver) Install() ([]byte, error) {
 		"--version 1.2.0-0",
 	}
 
-	return m.execute("/usr/local/bin/helm", arguments)
-
+	return m.execute(arguments)
 }
 
 // Upgrade - upgrade the mongo replicaset chart.
@@ -105,6 +108,10 @@ func (m MongoReplicasetDriver) Upgrade() ([]byte, error) {
 	defer os.Remove(file.Name())
 
 	err = templ.Execute(file, m)
+	if err != nil {
+		glog.Warningf("failed to parse mongo template: %v", err)
+		return nil, err
+	}
 
 	arguments := []string{"registry",
 		"upgrade",
@@ -113,7 +120,7 @@ func (m MongoReplicasetDriver) Upgrade() ([]byte, error) {
 		"--values " + file.Name(),
 	}
 
-	return m.execute("/usr/local/bin/helm", arguments)
+	return m.execute(arguments)
 }
 
 // Remove - remove the mongo replicaset chart.
@@ -123,22 +130,9 @@ func (m MongoReplicasetDriver) Remove() ([]byte, error) {
 		m.DeploymentName,
 	}
 
-	return m.execute("/usr/local/bin/helm", arguments)
+	return m.execute(arguments)
 }
 
-func (m MongoReplicasetDriver) execute(command string, arguments []string) ([]byte, error) {
-	cmd := exec.Command("helm", arguments...)
-	stdoutBuf := &bytes.Buffer{}
-	stderrBuf := &bytes.Buffer{}
-	cmd.Stdout = stdoutBuf
-	cmd.Stderr = stderrBuf
-
-	if err := cmd.Run(); err != nil {
-		log.Printf("k2cli.Execute(): cmd:  %s, args: %s returned error: %v", command, arguments, err)
-		log.Printf("k2cli.Execute(): cmd:  %s, stderr: %s", command, string(stderrBuf.Bytes()))
-		log.Printf("k2cli.Execute(): cmd:  %s, stdout: %v", command, string(stdoutBuf.Bytes()))
-		return stderrBuf.Bytes(), err
-	}
-	return stdoutBuf.Bytes(), nil
-
+func (m MongoReplicasetDriver) execute(arguments []string) ([]byte, error) {
+	return Execute("helm", arguments)
 }

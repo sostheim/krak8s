@@ -30,7 +30,7 @@ import (
 
 var configFile string
 
-// RunnerSetup - needs only be called once before execting ny funcitons below (note: this can't be func init()\)
+// RunnerSetup - needs only be called once before execting ny functions below (note: this can't be func init()\)
 func RunnerSetup() {
 	if *krak8sCfg.krakenCommand == commands.K2 {
 		commands.K2SetupEnv()
@@ -256,10 +256,8 @@ func (r *Runner) handleProjects(request *Request) bool {
 func (r *Runner) handleCharts(request *Request) bool {
 	if request.appObj.Name == "mongodb-replicaset" {
 		return r.handleMongoChart(request)
-	} else {
-		return r.handleGenericChart(request)
 	}
-	return true
+	return r.handleGenericChart(request)
 }
 
 func (r *Runner) handleMongoChart(request *Request) bool {
