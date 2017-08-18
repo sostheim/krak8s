@@ -10,6 +10,11 @@ TIMESTAMP    := $(shell date +"%s")
 # GOAGEN_FILES := $(shell find . -maxdepth 1 -name "goa_*.go")
 GOAGEN_FILES := openapi.go swagger.go project.go namespace.go application.go cluster.go health.go
 
+build:
+	go build -ldflags "-X main.MajorMinorPatch=$(VERSION) \
+		-X main.ReleaseType=$(TYPE) \
+		-X main.GitCommit=$(COMMIT)"
+
 design: # Execute goagen to rebuild API, save existing impl files
 	@echo "Backing up previous generated soruces with timestamp: $(TIMESTAMP)"
 	@for f in $(GOAGEN_FILES); do \
@@ -19,11 +24,6 @@ design: # Execute goagen to rebuild API, save existing impl files
 		fi; \
 	done
 	@goagen bootstrap -d krak8s/design
-
-build:
-	go build -ldflags "-X main.MajorMinorPatch=$(VERSION) \
-		-X main.ReleaseType=$(TYPE) \
-		-X main.GitCommit=$(COMMIT)"
 
 compile: deps
 	@rm -rf build/
@@ -87,4 +87,4 @@ release: dist push
 	github-release samsung-cnct/$(NAME) $(VERSION) "$$(git rev-parse --abbrev-ref HEAD)" "**Changelog**<br/>$$changelog" 'dist/*'; \
 	git pull
 
-.PHONY: design build compile install deps dist release push tag container
+.PHONY: design build compile install deps dist release push tag container containerprep
