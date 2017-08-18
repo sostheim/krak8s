@@ -221,6 +221,12 @@ func (r *Runner) handleProjects(request *Request) bool {
 		return true
 	}
 
+	runProjectRequestWithRetries(request, command)
+
+	return true
+}
+
+func runProjectRequestWithRetries(request *Request, command []string) {
 	// Block the command state in the queue and run the command to completion.
 	queue.Started()
 	tries := request.retryCount
@@ -249,8 +255,6 @@ func (r *Runner) handleProjects(request *Request) bool {
 		request.resObj.UpdatedAt = time.Now()
 	}
 	queue.Done()
-
-	return true
 }
 
 func (r *Runner) handleCharts(request *Request) bool {

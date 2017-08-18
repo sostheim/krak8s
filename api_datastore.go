@@ -182,7 +182,6 @@ func NewDataStore(filepath string) (ds *DataStore) {
 		}
 		glog.Warningf("Unmarshal of JSON initialization data from backup persistence file: %s, error: %v", filepath, err)
 	}
-
 	ds = &DataStore{archive: make(chan bool, 1), persist: filepath}
 	ds.data.Reset()
 	return ds
@@ -205,6 +204,9 @@ func (ds *DataStore) Archiver() {
 				// intentinoally continue through to back up data even w/o backup.
 			}
 			err = ioutil.WriteFile(ds.persist, archive, 0644)
+			if err != nil {
+				glog.Warningf("failed to API persistence backup file, error: %v", err)
+			}
 		}
 	}
 }
