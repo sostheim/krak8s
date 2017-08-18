@@ -2,6 +2,7 @@ package main
 
 import (
 	"krak8s/app"
+	"time"
 
 	"github.com/goadesign/goa"
 )
@@ -31,6 +32,15 @@ func MarshalApplicationObject(obj *ApplicationObject) *app.Application {
 		Version:     obj.Version,
 		NamespaceID: obj.NamespaceID,
 		CreatedAt:   obj.CreatedAt,
+		Status: &struct {
+			DeployedAt time.Time `form:"deployed_at" json:"deployed_at" xml:"deployed_at"`
+			Notes      *string   `form:"notes,omitempty" json:"notes,omitempty" xml:"notes,omitempty"`
+			State      string    `form:"state" json:"state" xml:"state"`
+		}{
+			obj.Status.DeployedAt,
+			nil,
+			obj.Status.State,
+		},
 	}
 }
 
