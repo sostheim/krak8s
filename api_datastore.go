@@ -17,8 +17,16 @@ limitations under the License.
 package main
 
 import (
+	"encoding/json"
+	"io"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
+
+	"github.com/golang/glog"
 )
 
 const (
@@ -40,28 +48,28 @@ const (
 
 // ObjectLink nested resource type
 type ObjectLink struct {
-	OID string
-	URL string
+	OID string `json:"oid,omitempty"`
+	URL string `json:"url,omitempty"`
 }
 
 // ProjectObject base resource type
 type ProjectObject struct {
-	OID        string
-	ObjType    string
-	Name       string
-	CreatedAt  time.Time
-	UpdatedAt  time.Time
-	Namespaces []*ObjectLink
+	OID        string        `json:"oid,omitempty"`
+	ObjType    string        `json:"objType,omitempty"`
+	Name       string        `json:"name,omitempty"`
+	CreatedAt  time.Time     `json:"createdAt,omitempty"`
+	UpdatedAt  time.Time     `json:"updatedAt,omitempty"`
+	Namespaces []*ObjectLink `json:"namespaces,omitempty"`
 }
 
 // NamespaceObject resource type
 type NamespaceObject struct {
-	OID          string
-	ObjType      string
-	Name         string
-	CreatedAt    time.Time
-	Resources    *ObjectLink
-	Applications []*ObjectLink
+	OID          string        `json:"oid,omitempty"`
+	ObjType      string        `json:"objType,omitempty"`
+	Name         string        `json:"name,omitempty"`
+	CreatedAt    time.Time     `json:"createdAt,omitempty"`
+	Resources    *ObjectLink   `json:"resources,omitempty"`
+	Applications []*ObjectLink `json:"applications,omitempty"`
 }
 
 // ApplicationStatusObject State strings
@@ -84,22 +92,23 @@ const (
 
 // ApplicationStatusObject nested object type
 type ApplicationStatusObject struct {
-	DeployedAt time.Time
-	State      string
+	DeployedAt time.Time `json:"deployedAt,omitempty"`
+	Notes      string    `json:"notes,omitempty"`
+	State      string    `json:"state,omitempty"`
 }
 
 // ApplicationObject base resource type
 type ApplicationObject struct {
-	OID         string
-	ObjType     string
-	Name        string
-	Version     string
-	Config      string
-	Registry    string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	Status      *ApplicationStatusObject
-	NamespaceID string
+	OID         string                   `json:"oid,omitempty"`
+	ObjType     string                   `json:"objType,omitempty"`
+	Name        string                   `json:"name,omitempty"`
+	Version     string                   `json:"version,omitempty"`
+	Config      string                   `json:"config,omitempty"`
+	Registry    string                   `json:"registry,omitempty"`
+	CreatedAt   time.Time                `json:"createdAt,omitempty"`
+	UpdatedAt   time.Time                `json:"updatedAt,omitempty"`
+	Status      *ApplicationStatusObject `json:"status,omitempty"`
+	NamespaceID string                   `json:"namespaceId,omitempty"`
 }
 
 // ResourceObject State strings
@@ -126,37 +135,78 @@ const (
 
 // ResourceObject base resource type
 type ResourceObject struct {
-	OID          string
-	ObjType      string
-	NodePoolSize int
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
-	State        string
-	NamespaceID  string
+	OID          string    `json:"oid,omitempty"`
+	ObjType      string    `json:"objType,omitempty"`
+	NodePoolSize int       `json:"nodePoolSize,omitempty"`
+	CreatedAt    time.Time `json:"createdAt,omitempty"`
+	UpdatedAt    time.Time `json:"updatedAt,omitempty"`
+	State        string    `json:"state,omitempty"`
+	NamespaceID  string    `json:"namespaceId,omitempty"`
+}
+
+// DataModel the actual structure for the API's data.
+type DataModel struct {
+	Projects     map[string]*ProjectObject     `json:"projects,omitempty"`
+	Namespaces   map[string]*NamespaceObject   `json:"namespaces,omitempty"`
+	Resources    map[string]*ResourceObject    `json:"resources,omitempty"`
+	Applications map[string]*ApplicationObject `json:"applications,omitempty"`
+}
+
+// Reset removes all entries from the database. Mainly intended for tests.
+func (data *DataModel) Reset() {
+	data.Projects = make(map[string]*ProjectObject)
+	data.Namespaces = make(map[string]*NamespaceObject)
+	data.Applications = make(map[string]*ApplicationObject)
+	data.Resources = make(map[string]*ResourceObject)
 }
 
 // DataStore in-memory data synchronization structure for API data.
 type DataStore struct {
 	sync.Mutex
-	projects     map[string]*ProjectObject
-	namespaces   map[string]*NamespaceObject
-	resources    map[string]*ResourceObject
-	applications map[string]*ApplicationObject
+	archive chan bool
+	data    DataModel
+	persist string
 }
 
 // NewDataStore initializes a new "DataStore"
-func NewDataStore() *DataStore {
-	ds := &DataStore{projects: nil, namespaces: nil, applications: nil, resources: nil}
-	ds.Reset()
+func NewDataStore(filepath string) (ds *DataStore) {
+	backup, err := openDataStoreFileBackup(filepath)
+	if err == nil && len(backup) > 0 {
+		var dm DataModel
+		if err = json.Unmarshal(backup, &dm); err == nil {
+			return &DataStore{
+				archive: make(chan bool, 1),
+				persist: filepath,
+				data:    dm,
+			}
+		}
+		glog.Warningf("Unmarshal of JSON initialization data from backup persistence file: %s, error: %v", filepath, err)
+	}
+
+	ds = &DataStore{archive: make(chan bool, 1), persist: filepath}
+	ds.data.Reset()
 	return ds
 }
 
-// Reset removes all entries from the database. Mainly intended for tests.
-func (ds *DataStore) Reset() {
-	ds.projects = make(map[string]*ProjectObject)
-	ds.namespaces = make(map[string]*NamespaceObject)
-	ds.applications = make(map[string]*ApplicationObject)
-	ds.resources = make(map[string]*ResourceObject)
+// Archiver - archiver's main loop
+func (ds *DataStore) Archiver() {
+	for {
+		<-ds.archive
+
+		ds.Lock()
+		archive, err := json.Marshal(ds.data)
+		ds.Unlock()
+		if err != nil {
+			glog.Warningf("JSON marshalling error: %v", err)
+		} else {
+			err := copyDataStoreFileBackup(ds.persist)
+			if err != nil {
+				glog.Warningf("failed to make backup copy of persistence file, error: %v", err)
+				// intentinoally continue through to back up data even w/o backup.
+			}
+			err = ioutil.WriteFile(ds.persist, archive, 0644)
+		}
+	}
 }
 
 // CheckedRandomHexString - generate a random hex string, and validate
@@ -165,10 +215,10 @@ func (ds *DataStore) CheckedRandomHexString() string {
 	i := 9
 	for i > 0 {
 		tmp := RandHexString(OIDLength)
-		if _, ok := ds.projects[tmp]; !ok {
-			if _, ok := ds.namespaces[tmp]; !ok {
-				if _, ok := ds.applications[tmp]; !ok {
-					if _, ok := ds.resources[tmp]; !ok {
+		if _, ok := ds.data.Projects[tmp]; !ok {
+			if _, ok := ds.data.Namespaces[tmp]; !ok {
+				if _, ok := ds.data.Applications[tmp]; !ok {
+					if _, ok := ds.data.Resources[tmp]; !ok {
 						return tmp
 					}
 				}
@@ -192,7 +242,7 @@ func (ds *DataStore) NewProjectObject() *ProjectObject {
 	}
 	ds.Lock()
 	defer ds.Unlock()
-	ds.projects[obj.OID] = &obj
+	ds.data.Projects[obj.OID] = &obj
 	return &obj
 }
 
@@ -211,8 +261,8 @@ func (ds *DataStore) ProjectsCollection() []*ProjectObject {
 	ds.Lock()
 	defer ds.Unlock()
 	i := 0
-	collection := make([]*ProjectObject, len(ds.projects))
-	for _, proj := range ds.projects {
+	collection := make([]*ProjectObject, len(ds.data.Projects))
+	for _, proj := range ds.data.Projects {
 		collection[i] = proj
 		i++
 	}
@@ -223,7 +273,7 @@ func (ds *DataStore) ProjectsCollection() []*ProjectObject {
 func (ds *DataStore) Project(oid string) (*ProjectObject, bool) {
 	ds.Lock()
 	defer ds.Unlock()
-	proj, ok := ds.projects[oid]
+	proj, ok := ds.data.Projects[oid]
 	return proj, ok
 }
 
@@ -231,19 +281,18 @@ func (ds *DataStore) Project(oid string) (*ProjectObject, bool) {
 func (ds *DataStore) AddProject(obj ProjectObject) {
 	ds.Lock()
 	defer ds.Unlock()
-	ds.projects[obj.OID] = &obj
+	ds.data.Projects[obj.OID] = &obj
 }
 
 // DeleteProject removes the project and all subordinate objects.
 func (ds *DataStore) DeleteProject(obj *ProjectObject) {
-	for _, link := range ds.projects[obj.OID].Namespaces {
-		ds.DeleteNamespace(ds.namespaces[link.OID])
+	for _, link := range ds.data.Projects[obj.OID].Namespaces {
+		ds.DeleteNamespace(ds.data.Namespaces[link.OID])
 	}
 
 	ds.Lock()
 	defer ds.Unlock()
-
-	delete(ds.projects, obj.OID)
+	delete(ds.data.Projects, obj.OID)
 }
 
 // NewNamespaceObject creates aa default NamespaceObject with a valid unique
@@ -261,7 +310,7 @@ func (ds *DataStore) NewNamespaceObject() *NamespaceObject {
 	}
 	ds.Lock()
 	defer ds.Unlock()
-	ds.namespaces[obj.OID] = &obj
+	ds.data.Namespaces[obj.OID] = &obj
 	return &obj
 }
 
@@ -277,7 +326,7 @@ func (ds *DataStore) NewNamespace(name string) *NamespaceObject {
 
 // NamespacesCollection returns all Namespaces for a project
 func (ds *DataStore) NamespacesCollection(projectOID string) []*NamespaceObject {
-	proj, ok := ds.projects[projectOID]
+	proj, ok := ds.data.Projects[projectOID]
 	if !ok {
 		return nil
 	}
@@ -287,7 +336,7 @@ func (ds *DataStore) NamespacesCollection(projectOID string) []*NamespaceObject 
 	i := 0
 	collection := make([]*NamespaceObject, len(proj.Namespaces))
 	for _, link := range proj.Namespaces {
-		collection[i] = ds.namespaces[link.OID]
+		collection[i] = ds.data.Namespaces[link.OID]
 		i++
 	}
 	return collection
@@ -297,7 +346,7 @@ func (ds *DataStore) NamespacesCollection(projectOID string) []*NamespaceObject 
 func (ds *DataStore) Namespace(oid string) (*NamespaceObject, bool) {
 	ds.Lock()
 	defer ds.Unlock()
-	ns, ok := ds.namespaces[oid]
+	ns, ok := ds.data.Namespaces[oid]
 	return ns, ok
 }
 
@@ -305,19 +354,19 @@ func (ds *DataStore) Namespace(oid string) (*NamespaceObject, bool) {
 func (ds *DataStore) AddNamespace(obj NamespaceObject) {
 	ds.Lock()
 	defer ds.Unlock()
-	ds.namespaces[obj.OID] = &obj
+	ds.data.Namespaces[obj.OID] = &obj
 }
 
 // DeleteNamespace removes the Namespace and all subordinate objects.
 func (ds *DataStore) DeleteNamespace(obj *NamespaceObject) {
-	for _, link := range ds.namespaces[obj.OID].Applications {
-		ds.DeleteApplication(ds.applications[link.OID])
+	for _, link := range ds.data.Namespaces[obj.OID].Applications {
+		ds.DeleteApplication(ds.data.Applications[link.OID])
 	}
-	ds.DeleteResource(ds.namespaces[obj.OID].Resources.OID)
+	ds.DeleteResource(ds.data.Namespaces[obj.OID].Resources.OID)
 
 	ds.Lock()
 	defer ds.Unlock()
-	delete(ds.namespaces, obj.OID)
+	delete(ds.data.Namespaces, obj.OID)
 }
 
 // NewApplicationObject creates aa default ApplicationObject with a valid
@@ -336,7 +385,7 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 	obj.UpdatedAt = obj.CreatedAt
 	ds.Lock()
 	defer ds.Unlock()
-	ds.applications[obj.OID] = &obj
+	ds.data.Applications[obj.OID] = &obj
 	return &obj
 }
 
@@ -355,6 +404,7 @@ func (ds *DataStore) NewApplication(namespace, name, version string, config, reg
 	if registry != nil {
 		obj.Registry = *registry
 	}
+	ds.archive <- true
 	return obj
 }
 
@@ -362,13 +412,13 @@ func (ds *DataStore) NewApplication(namespace, name, version string, config, reg
 func (ds *DataStore) Application(oid string) (*ApplicationObject, bool) {
 	ds.Lock()
 	defer ds.Unlock()
-	app, ok := ds.applications[oid]
+	app, ok := ds.data.Applications[oid]
 	return app, ok
 }
 
 // ApplicationsCollection return the collection of applications from the indicated namespace.
 func (ds *DataStore) ApplicationsCollection(nsOID string) []*ApplicationObject {
-	namespace, ok := ds.namespaces[nsOID]
+	namespace, ok := ds.data.Namespaces[nsOID]
 	if !ok {
 		return nil
 	}
@@ -388,14 +438,16 @@ func (ds *DataStore) ApplicationsCollection(nsOID string) []*ApplicationObject {
 func (ds *DataStore) AddApplication(obj ApplicationObject) {
 	ds.Lock()
 	defer ds.Unlock()
-	ds.applications[obj.OID] = &obj
+	ds.data.Applications[obj.OID] = &obj
+	ds.archive <- true
 }
 
 // DeleteApplication deletes specified application
 func (ds *DataStore) DeleteApplication(obj *ApplicationObject) {
 	ds.Lock()
 	defer ds.Unlock()
-	delete(ds.applications, obj.OID)
+	delete(ds.data.Applications, obj.OID)
+	ds.archive <- true
 }
 
 // NewResourceObject creates a default ResourceObject with a valid unique id,
@@ -413,7 +465,7 @@ func (ds *DataStore) NewResourceObject(nsOID string) *ResourceObject {
 	}
 	ds.Lock()
 	defer ds.Unlock()
-	ds.resources[obj.OID] = &obj
+	ds.data.Resources[obj.OID] = &obj
 	return &obj
 }
 
@@ -424,6 +476,7 @@ func (ds *DataStore) NewResource(namespace string, nodes int) *ResourceObject {
 		return nil
 	}
 	obj.NodePoolSize = nodes
+	ds.archive <- true
 	return obj
 }
 
@@ -431,13 +484,13 @@ func (ds *DataStore) NewResource(namespace string, nodes int) *ResourceObject {
 func (ds *DataStore) Resource(oid string) (*ResourceObject, bool) {
 	ds.Lock()
 	defer ds.Unlock()
-	res, ok := ds.resources[oid]
+	res, ok := ds.data.Resources[oid]
 	return res, ok
 }
 
 // ResourceObject return the resource object from the indicated namespace.
 func (ds *DataStore) ResourceObject(nsOID string) (*ResourceObject, bool) {
-	ns, ok := ds.namespaces[nsOID]
+	ns, ok := ds.data.Namespaces[nsOID]
 	if !ok {
 		return nil, false
 	}
@@ -450,12 +503,62 @@ func (ds *DataStore) ResourceObject(nsOID string) (*ResourceObject, bool) {
 func (ds *DataStore) AddResource(obj *ResourceObject) {
 	ds.Lock()
 	defer ds.Unlock()
-	ds.resources[obj.OID] = obj
+	ds.data.Resources[obj.OID] = obj
+	ds.archive <- true
 }
 
 // DeleteResource deletes specified application
 func (ds *DataStore) DeleteResource(resOID string) {
 	ds.Lock()
 	defer ds.Unlock()
-	delete(ds.resources, resOID)
+	delete(ds.data.Resources, resOID)
+	ds.archive <- true
+}
+
+// TODO - stick the next 3 functions in a utils package...
+func copyFile(dst, src string, perm os.FileMode) error {
+	in, err := os.Open(src)
+	if err != nil {
+		return err
+	}
+	defer in.Close()
+	tmp, err := ioutil.TempFile(filepath.Dir(dst), "")
+	if err != nil {
+		return err
+	}
+	_, err = io.Copy(tmp, in)
+	if err != nil {
+		tmp.Close()
+		os.Remove(tmp.Name())
+		return err
+	}
+	if err = tmp.Close(); err != nil {
+		os.Remove(tmp.Name())
+		return err
+	}
+	if err = os.Chmod(tmp.Name(), perm); err != nil {
+		os.Remove(tmp.Name())
+		return err
+	}
+	return os.Rename(tmp.Name(), dst)
+}
+
+func copyDataStoreFileBackup(path string) error {
+	src := path
+	dest := path + "." + strconv.FormatInt(time.Now().Unix(), 10)
+	if _, err := os.Stat(src); os.IsNotExist(err) {
+		return err
+	}
+	if err := copyFile(dest, src, os.FileMode(0644)); err != nil {
+		return err
+	}
+	return nil
+}
+
+func openDataStoreFileBackup(src string) ([]byte, error) {
+	if _, err := os.Stat(src); os.IsNotExist(err) {
+		os.OpenFile(src, os.O_RDONLY|os.O_CREATE, 0666)
+		return nil, nil
+	}
+	return ioutil.ReadFile(src)
 }

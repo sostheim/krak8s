@@ -17,6 +17,8 @@ limitations under the License.
 package main
 
 import (
+	"path"
+
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/goadesign/goa"
@@ -49,13 +51,16 @@ type apiServer struct {
 func newAPIServer(clientset *kubernetes.Clientset, cfg *config, backend *Runner) *apiServer {
 	// Create and start the http router
 
+	dataStore := path.Join(*krak8sCfg.krakenConfigDir, "datastore.json")
+
 	// create api server controller struct
 	as := apiServer{
 		clientset: clientset,
 		cfg:       cfg,
 		server:    goa.New("krak8s"),
-		ds:        NewDataStore(),
+		ds:        NewDataStore(dataStore),
 	}
+	go as.ds.Archiver()
 
 	// Mount middleware
 	as.server.Use(middleware.RequestID())
