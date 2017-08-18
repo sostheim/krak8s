@@ -60,12 +60,12 @@ func newConfig() *config {
 
 func (cfg *config) String() string {
 	return fmt.Sprintf("Configuration Data: kubeconfig: %s, proxy: %s, "+
-		"service-name: %s, health-check: %t, version: %t, kraken-config-file: %s, "+
-		"kraken-config-dir: %s, kraken-nodepool-keypair: %s, kraken-kubeconfig: %s, "+
-		"kraken-command: %s, dry-run: %t",
-		*cfg.kubeconfig, *cfg.proxy, *cfg.healthCheck, *cfg.version, *cfg.krakenConfigFile,
-		*cfg.krakenConfigDir, *cfg.krakenKeyPair, *cfg.krakenKubeConfig, *cfg.krakenCommand,
-		*cfg.dryrun)
+		"health-check: %t, version: %t, kraken-config-file: %s, "+
+		"kraken-config-dir: %s, kraken-nodepool-keypair: %s, "+
+		"kraken-kubeconfig: %s, kraken-command: %s, dry-run: %t",
+		*cfg.kubeconfig, *cfg.proxy, *cfg.healthCheck, *cfg.version,
+		*cfg.krakenConfigFile, *cfg.krakenConfigDir, *cfg.krakenKeyPair,
+		*cfg.krakenKubeConfig, *cfg.krakenCommand, *cfg.dryrun)
 }
 
 // For any configuration members that contain environment variables as values, expand them.
