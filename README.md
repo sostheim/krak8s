@@ -150,7 +150,7 @@ In the example above, several of the default values are specified on the command
 **NOTE:** In this example, we have supplied both the `--debug` and `--dry-run` flags.  This is solely for the purpose of development and integration testing.  These flags **must** be removed to run the API service in a production environment where real changes to an active Kubernetes cluster are going to be performed.  As noted above in the description of the [Configuration Flags](#configuration-flags), the presence of the debug and dry run flags allow additional output to be generated, and allows the API to be exercised without affecting the live cluster.
 
 ## Building and Running the Project Container - MacOS
-As before, the following steps also assume that you have a working Golang development environment on your local machine or in a container that you use for the same purpose.
+The following steps assume that you have a working Golang development environment on your local `macos` machine.
 
 1. Project Make Target: Push
 
