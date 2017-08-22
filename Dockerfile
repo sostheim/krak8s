@@ -20,6 +20,10 @@ FROM quay.io/samsung_cnct/k2:latest
 MAINTAINER Rick Sostheim
 LABEL vendor="Samsung CNCT"
 
+RUN apk update && \
+    apk add git && \
+    apk add logrotate
+
 COPY build/linux_amd64/krak8s /
 COPY commands/node_pool.tmpl commands/node_pool.tmpl /
 COPY swagger /

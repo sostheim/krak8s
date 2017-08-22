@@ -36,8 +36,8 @@ compile: deps
 	-output "build/{{.OS}}_{{.Arch}}/$(NAME)" \
 	./...
 
-install:
-	godep go install -ldflags "-X main.MajorMinorPatch=$(VERSION) \
+install: deps
+	$(GODEP) go install -ldflags "-X main.MajorMinorPatch=$(VERSION) \
 		-X main.ReleaseType=$(TYPE) \
 		-X main.GitCommit=$(COMMIT) -w"
 
@@ -54,7 +54,7 @@ dist: compile
 		echo $$f; \
 	done
 
-container:
+container: deps
 	$(GODEP) gox -ldflags "-X main.MajorMinorPatch=$(VERSION) \
 		-X main.ReleaseType=$(TYPE) \
 		-X main.GitCommit=$(COMMIT) -w" \
@@ -62,6 +62,13 @@ container:
 	-output "build/{{.OS}}_{{.Arch}}/$(NAME)" \
 	./...
 	docker build --rm --pull --tag $(IMAGE):$(TAG) .
+
+tag: container
+	docker tag $(IMAGE):$(TAG) $(IMAGE):$(COMMIT)
+
+push: tag
+	docker push $(IMAGE):$(COMMIT)
+	docker push $(IMAGE):$(TAG)
 
 containerprep: deps
 	$(GODEP) gox -ldflags "-X main.MajorMinorPatch=$(VERSION) \
@@ -72,10 +79,10 @@ containerprep: deps
 	-output "build/{{.OS}}_{{.Arch}}/$(NAME)" \
 	./...
 
-tag: container
+tagprep: containerprep
 	docker tag $(IMAGE):$(TAG) $(IMAGE):$(COMMIT)
 
-push: tag
+push_static: tagprep
 	docker push $(IMAGE):$(COMMIT)
 	docker push $(IMAGE):$(TAG)
 
