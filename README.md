@@ -121,7 +121,7 @@ The tools necessary to build and deploy the project are all bundled in the Makef
 
   1. Make Dependencies
 
-  The project has only two dependencies to build and run (cutting a release is discussed separately below).  The are the [Gox](https://github.com/mitchellh/gox) Go Cross Compiler, and the [Godep](https://github.com/tools/godep) dependency tool for go.
+  The project has only two dependencies to build and run (cutting a release is discussed separately below).  These are the [Gox](https://github.com/mitchellh/gox) Go Cross Compiler, and the [Godep](https://github.com/tools/godep) dependency tool for go.
   ```
   $ make deps
   go get github.com/mitchellh/gox
