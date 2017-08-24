@@ -1,5 +1,5 @@
 NAME      := krak8s
-VERSION   := 0.2.91
+VERSION   := 0.2.96
 TYPE      := alpha
 COMMIT    := $(shell git rev-parse HEAD)
 IMAGE     := quay.io/samsung_cnct/krak8s
@@ -11,7 +11,7 @@ TIMESTAMP    := $(shell date +"%s")
 GOAGEN_FILES := openapi.go swagger.go project.go namespace.go application.go cluster.go health.go
 
 build:
-	go build -ldflags "-X main.MajorMinorPatch=$(VERSION) \
+	@go build -ldflags "-X main.MajorMinorPatch=$(VERSION) \
 		-X main.ReleaseType=$(TYPE) \
 		-X main.GitCommit=$(COMMIT)"
 

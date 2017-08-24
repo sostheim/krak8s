@@ -5,53 +5,83 @@ consumes:
 - application/x-gob
 definitions:
   Application:
-    description: Application representation type (default view)
+    description: Application deployment representation type (default view)
     example:
-      created_at: 2007-12-31T06:53:54-08:00
+      channel: Nam ut incidunt.
+      config: Quos nobis placeat iusto itaque.
+      created_at: 1982-04-22T08:06:03-08:00
+      deployment_name: Nemo veniam.
       id: e1ea1660
-      name: Nobis placeat iusto itaque tempora aliquam nemo.
+      json_values: Rerum dolore impedit iste beatae.
+      name: Et omnis et aperiam.
       namespace_id: da9871c7
+      registry: In hic.
+      server: Sed et voluptates quidem perspiciatis.
       status:
-        deployed_at: 2007-02-14T06:00:13-08:00
-        notes: Beatae odit.
-        state: DELETED
+        deployed_at: 1975-10-06T15:58:38-07:00
+        notes: Tempora molestiae eos non et quam consequatur.
+        state: DELETING
       type: application
-      updated_at: 1978-05-06T07:31:33-07:00
-      version: Aperiam dolores in hic qui sed et.
+      updated_at: 2002-06-03T21:06:43-07:00
+      version: Et libero qui facere est nostrum id.
     properties:
+      channel:
+        description: Application chart's channel
+        example: Nam ut incidunt.
+        type: string
+      config:
+        description: Application chart config --set argument string
+        example: Quos nobis placeat iusto itaque.
+        type: string
       created_at:
         description: Date of creation
-        example: 2007-12-31T06:53:54-08:00
+        example: 1982-04-22T08:06:03-08:00
         format: date-time
+        type: string
+      deployment_name:
+        description: Cluster application deployment name
+        example: Nemo veniam.
         type: string
       id:
         description: generated resource unique id (8 character hexadecimal value)
         example: e1ea1660
         type: string
+      json_values:
+        description: Application chart's json values stringr
+        example: Rerum dolore impedit iste beatae.
+        type: string
       name:
-        description: Application name
-        example: Nobis placeat iusto itaque tempora aliquam nemo.
+        description: Application chart name
+        example: Et omnis et aperiam.
         type: string
       namespace_id:
         description: The related namespace's generated unique id, not the namespace's
           name
         example: da9871c7
         type: string
+      registry:
+        description: Application registry identifier
+        example: In hic.
+        type: string
+      server:
+        description: Application chart registry host server
+        example: Sed et voluptates quidem perspiciatis.
+        type: string
       status:
         example:
-          deployed_at: 2007-02-14T06:00:13-08:00
-          notes: Beatae odit.
-          state: DELETED
+          deployed_at: 1975-10-06T15:58:38-07:00
+          notes: Tempora molestiae eos non et quam consequatur.
+          state: DELETING
         properties:
           deployed_at:
             description: Last deployment time
-            example: 2007-02-14T06:00:13-08:00
+            example: 1975-10-06T15:58:38-07:00
             format: date-time
             type: string
           notes:
             description: Application specific notification / statuses / notes (if
               any)
-            example: Beatae odit.
+            example: Tempora molestiae eos non et quam consequatur.
             type: string
           state:
             description: Deployment state
@@ -62,7 +92,7 @@ definitions:
             - SUPERSEDED
             - FAILED
             - DELETING
-            example: DELETED
+            example: DELETING
             type: string
         required:
         - deployed_at
@@ -74,20 +104,26 @@ definitions:
         type: string
       updated_at:
         description: Date of last update
-        example: 1978-05-06T07:31:33-07:00
+        example: 2002-06-03T21:06:43-07:00
         format: date-time
         type: string
       version:
-        description: Application version
-        example: Aperiam dolores in hic qui sed et.
+        description: Application chart version (tag) string
+        example: Et libero qui facere est nostrum id.
         type: string
     required:
     - id
     - type
+    - namespace_id
+    - deployment_name
+    - server
+    - registry
     - name
     - version
+    - channel
+    - config
+    - json_values
     - status
-    - namespace_id
     - created_at
     - updated_at
     title: 'Mediatype identifier: application/application+json; view=default'
@@ -96,32 +132,72 @@ definitions:
     description: ApplicationCollection is the media type for an array of Application
       (default view)
     example:
-    - created_at: 2007-12-31T06:53:54-08:00
+    - channel: Nam ut incidunt.
+      config: Quos nobis placeat iusto itaque.
+      created_at: 1982-04-22T08:06:03-08:00
+      deployment_name: Nemo veniam.
       id: e1ea1660
-      name: Nobis placeat iusto itaque tempora aliquam nemo.
+      json_values: Rerum dolore impedit iste beatae.
+      name: Et omnis et aperiam.
       namespace_id: da9871c7
+      registry: In hic.
+      server: Sed et voluptates quidem perspiciatis.
       status:
-        deployed_at: 2007-02-14T06:00:13-08:00
-        notes: Beatae odit.
-        state: DELETED
+        deployed_at: 1975-10-06T15:58:38-07:00
+        notes: Tempora molestiae eos non et quam consequatur.
+        state: DELETING
       type: application
-      updated_at: 1978-05-06T07:31:33-07:00
-      version: Aperiam dolores in hic qui sed et.
+      updated_at: 2002-06-03T21:06:43-07:00
+      version: Et libero qui facere est nostrum id.
+    - channel: Nam ut incidunt.
+      config: Quos nobis placeat iusto itaque.
+      created_at: 1982-04-22T08:06:03-08:00
+      deployment_name: Nemo veniam.
+      id: e1ea1660
+      json_values: Rerum dolore impedit iste beatae.
+      name: Et omnis et aperiam.
+      namespace_id: da9871c7
+      registry: In hic.
+      server: Sed et voluptates quidem perspiciatis.
+      status:
+        deployed_at: 1975-10-06T15:58:38-07:00
+        notes: Tempora molestiae eos non et quam consequatur.
+        state: DELETING
+      type: application
+      updated_at: 2002-06-03T21:06:43-07:00
+      version: Et libero qui facere est nostrum id.
     items:
       $ref: '#/definitions/Application'
     title: 'Mediatype identifier: application/application+json; type=collection; view=default'
     type: array
   ApplicationPostBody:
     example:
-      name: Libero qui facere est nostrum.
+      channel: stable
+      deployment_name: samsung-mongodb-replicaset
+      json_values: Autem et ea corporis.
+      name: mongodb-replicaset
       namespace_id: da9871c7
-      registry: Perferendis enim.
-      set: Non adipisci.
-      version: Iste voluptas debitis voluptatem illum.
+      registry: application/samsung_cnct
+      server: quay.io
+      set: Id saepe aut provident occaecati.
+      version: latest
     properties:
+      channel:
+        description: Application chart's channel
+        example: stable
+        type: string
+      deployment_name:
+        default: samsung-mongodb-replicaset
+        description: Cluster application deployment name
+        example: samsung-mongodb-replicaset
+        type: string
+      json_values:
+        description: Application chart's json values string
+        example: Autem et ea corporis.
+        type: string
       name:
-        description: Application name
-        example: Libero qui facere est nostrum.
+        description: Application chart name
+        example: mongodb-replicaset
         type: string
       namespace_id:
         description: The related namespace's generated unique id, not the namespace's
@@ -129,18 +205,26 @@ definitions:
         example: da9871c7
         type: string
       registry:
-        description: Application's registry
-        example: Perferendis enim.
+        default: application/samsung_cnct
+        description: Application chart's registry
+        example: application/samsung_cnct
+        type: string
+      server:
+        default: quay.io
+        description: Application chart registry host server
+        example: quay.io
         type: string
       set:
-        description: Application config --set argument string
-        example: Non adipisci.
+        description: Application chart config --set argument string
+        example: Id saepe aut provident occaecati.
         type: string
       version:
-        description: Application version string
-        example: Iste voluptas debitis voluptatem illum.
+        default: latest
+        description: Application chart version string
+        example: latest
         type: string
     required:
+    - deployment_name
     - name
     - version
     - namespace_id
@@ -182,17 +266,17 @@ definitions:
   Cluster:
     description: Cluster resource representation type (default view)
     example:
-      created_at: 1988-11-12T15:18:46-08:00
+      created_at: 2013-04-15T05:35:05-07:00
       id: de2760b1
       namespace_id: da9871c7
-      nodePoolSize: 1.7768362e+18
+      nodePoolSize: 3.0216616e+18
       state: create_requested
       type: cluster
-      updated_at: 1990-12-11T22:09:50-08:00
+      updated_at: 1997-06-03T18:04:25-07:00
     properties:
       created_at:
         description: Date of creation
-        example: 1988-11-12T15:18:46-08:00
+        example: 2013-04-15T05:35:05-07:00
         format: date-time
         type: string
       id:
@@ -206,7 +290,7 @@ definitions:
         type: string
       nodePoolSize:
         description: Requested node pool size
-        example: 1.7768362e+18
+        example: 3.0216616e+18
         format: int64
         type: integer
       state:
@@ -226,7 +310,7 @@ definitions:
         type: string
       updated_at:
         description: Date of last update
-        example: 1990-12-11T22:09:50-08:00
+        example: 1997-06-03T18:04:25-07:00
         format: date-time
         type: string
     required:
@@ -242,7 +326,7 @@ definitions:
   ClusterPostBody:
     example:
       namespace_id: da9871c7
-      nodePoolSize: 7
+      nodePoolSize: 3
     properties:
       namespace_id:
         description: The related namespace's generated unique id, not the namespace's
@@ -252,7 +336,7 @@ definitions:
       nodePoolSize:
         default: 3
         description: The number of worker nodes in the projects resource pool
-        example: 7
+        example: 3
         maximum: 11
         minimum: 3
         type: integer
@@ -283,10 +367,10 @@ definitions:
     type: object
   CreateNamespacePayload:
     example:
-      name: Corporis eaque id saepe.
+      name: Sint et.
     properties:
       name:
-        example: Corporis eaque id saepe.
+        example: Sint et.
         type: string
     required:
     - name
@@ -307,10 +391,10 @@ definitions:
     type: object
   ListApplicationPayload:
     example:
-      namespaceid: Corrupti omnis atque maxime autem.
+      namespaceid: Minima inventore et nam aut et soluta.
     properties:
       namespaceid:
-        example: Corrupti omnis atque maxime autem.
+        example: Minima inventore et nam aut et soluta.
         type: string
     required:
     - namespaceid
@@ -323,7 +407,7 @@ definitions:
       applications:
       - oid: e1ea1660
         url: /v1/project/30299bea/applications
-      created_at: 1994-10-14T20:16:57-07:00
+      created_at: 1991-12-23T19:04:20-08:00
       id: da9871c7
       name: newco-prod
       resources:
@@ -335,7 +419,7 @@ definitions:
         $ref: '#/definitions/ApplicationRefCollection'
       created_at:
         description: Date of creation
-        example: 1994-10-14T20:16:57-07:00
+        example: 1991-12-23T19:04:20-08:00
         format: date-time
         type: string
       id:
@@ -369,7 +453,7 @@ definitions:
     - applications:
       - oid: e1ea1660
         url: /v1/project/30299bea/applications
-      created_at: 1994-10-14T20:16:57-07:00
+      created_at: 1991-12-23T19:04:20-08:00
       id: da9871c7
       name: newco-prod
       resources:
@@ -379,7 +463,7 @@ definitions:
     - applications:
       - oid: e1ea1660
         url: /v1/project/30299bea/applications
-      created_at: 1994-10-14T20:16:57-07:00
+      created_at: 1991-12-23T19:04:20-08:00
       id: da9871c7
       name: newco-prod
       resources:
@@ -389,7 +473,7 @@ definitions:
     - applications:
       - oid: e1ea1660
         url: /v1/project/30299bea/applications
-      created_at: 1994-10-14T20:16:57-07:00
+      created_at: 1991-12-23T19:04:20-08:00
       id: da9871c7
       name: newco-prod
       resources:
@@ -426,6 +510,10 @@ definitions:
     example:
     - oid: da9871c7
       url: /v1/project/30299bea/namespaces
+    - oid: da9871c7
+      url: /v1/project/30299bea/namespaces
+    - oid: da9871c7
+      url: /v1/project/30299bea/namespaces
     items:
       $ref: '#/definitions/NamespaceRef'
     title: 'Mediatype identifier: application/namespace.ref+json; type=collection;
@@ -435,17 +523,21 @@ definitions:
     description: Users and tennants of the system are represented as the type Project
       (default view)
     example:
-      created_at: 1991-05-26T01:29:46-07:00
+      created_at: 1998-10-27T09:59:06-08:00
       id: 30299bea
       name: newco
       namespaces:
+      - oid: da9871c7
+        url: /v1/project/30299bea/namespaces
+      - oid: da9871c7
+        url: /v1/project/30299bea/namespaces
       - oid: da9871c7
         url: /v1/project/30299bea/namespaces
       type: project
     properties:
       created_at:
         description: Date of creation
-        example: 1991-05-26T01:29:46-07:00
+        example: 1998-10-27T09:59:06-08:00
         format: date-time
         type: string
       id:
@@ -475,24 +567,14 @@ definitions:
     description: ProjectCollection is the media type for an array of Project (default
       view)
     example:
-    - created_at: 1991-05-26T01:29:46-07:00
+    - created_at: 1998-10-27T09:59:06-08:00
       id: 30299bea
       name: newco
       namespaces:
       - oid: da9871c7
         url: /v1/project/30299bea/namespaces
-      type: project
-    - created_at: 1991-05-26T01:29:46-07:00
-      id: 30299bea
-      name: newco
-      namespaces:
       - oid: da9871c7
         url: /v1/project/30299bea/namespaces
-      type: project
-    - created_at: 1991-05-26T01:29:46-07:00
-      id: 30299bea
-      name: newco
-      namespaces:
       - oid: da9871c7
         url: /v1/project/30299bea/namespaces
       type: project

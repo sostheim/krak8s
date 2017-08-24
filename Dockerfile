@@ -21,11 +21,10 @@ MAINTAINER Rick Sostheim
 LABEL vendor="Samsung CNCT"
 
 RUN apk update && \
-    apk add git && \
-    apk add logrotate
+    apk add git 
 
 COPY build/linux_amd64/krak8s /
-COPY commands/node_pool.tmpl commands/node_pool.tmpl /
+COPY commands/node_pool.tmpl commands/services.tmpl /
 COPY swagger /
 
 ENTRYPOINT ["/krak8s"]

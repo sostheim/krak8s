@@ -160,11 +160,15 @@ func RegisterCommands(app *cobra.Command, c *client.Client) {
 Payload example:
 
 {
-   "name": "Libero qui facere est nostrum.",
+   "channel": "stable",
+   "deployment_name": "samsung-mongodb-replicaset",
+   "json_values": "Autem et ea corporis.",
+   "name": "mongodb-replicaset",
    "namespace_id": "da9871c7",
-   "registry": "Perferendis enim.",
-   "set": "Non adipisci.",
-   "version": "Iste voluptas debitis voluptatem illum."
+   "registry": "application/samsung_cnct",
+   "server": "quay.io",
+   "set": "Id saepe aut provident occaecati.",
+   "version": "latest"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
 	}
@@ -181,7 +185,7 @@ Payload example:
 
 {
    "namespace_id": "da9871c7",
-   "nodePoolSize": 7
+   "nodePoolSize": 3
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -197,7 +201,7 @@ Payload example:
 Payload example:
 
 {
-   "name": "Corporis eaque id saepe."
+   "name": "Sint et."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
@@ -330,7 +334,7 @@ Payload example:
 Payload example:
 
 {
-   "namespaceid": "Corrupti omnis atque maxime autem."
+   "namespaceid": "Minima inventore et nam aut et soluta."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp14.Run(c, args) },
 	}

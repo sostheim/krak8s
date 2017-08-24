@@ -16,20 +16,51 @@ import (
 
 // applicationPostBody user type.
 type applicationPostBody struct {
-	// Application name
+	// Application chart's channel
+	Channel *string `form:"channel,omitempty" json:"channel,omitempty" xml:"channel,omitempty"`
+	// Cluster application deployment name
+	DeploymentName *string `form:"deployment_name,omitempty" json:"deployment_name,omitempty" xml:"deployment_name,omitempty"`
+	// Application chart's json values string
+	JSONValues *string `form:"json_values,omitempty" json:"json_values,omitempty" xml:"json_values,omitempty"`
+	// Application chart name
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// The related namespace's generated unique id, not the namespace's name
 	NamespaceID *string `form:"namespace_id,omitempty" json:"namespace_id,omitempty" xml:"namespace_id,omitempty"`
-	// Application's registry
+	// Application chart's registry
 	Registry *string `form:"registry,omitempty" json:"registry,omitempty" xml:"registry,omitempty"`
-	// Application config --set argument string
+	// Application chart registry host server
+	Server *string `form:"server,omitempty" json:"server,omitempty" xml:"server,omitempty"`
+	// Application chart config --set argument string
 	Set *string `form:"set,omitempty" json:"set,omitempty" xml:"set,omitempty"`
-	// Application version string
+	// Application chart version string
 	Version *string `form:"version,omitempty" json:"version,omitempty" xml:"version,omitempty"`
+}
+
+// Finalize sets the default values for applicationPostBody type instance.
+func (ut *applicationPostBody) Finalize() {
+	var defaultDeploymentName = "samsung-mongodb-replicaset"
+	if ut.DeploymentName == nil {
+		ut.DeploymentName = &defaultDeploymentName
+	}
+	var defaultRegistry = "application/samsung_cnct"
+	if ut.Registry == nil {
+		ut.Registry = &defaultRegistry
+	}
+	var defaultServer = "quay.io"
+	if ut.Server == nil {
+		ut.Server = &defaultServer
+	}
+	var defaultVersion = "latest"
+	if ut.Version == nil {
+		ut.Version = &defaultVersion
+	}
 }
 
 // Validate validates the applicationPostBody type instance.
 func (ut *applicationPostBody) Validate() (err error) {
+	if ut.DeploymentName == nil {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "deployment_name"))
+	}
 	if ut.Name == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
@@ -45,6 +76,15 @@ func (ut *applicationPostBody) Validate() (err error) {
 // Publicize creates ApplicationPostBody from applicationPostBody
 func (ut *applicationPostBody) Publicize() *ApplicationPostBody {
 	var pub ApplicationPostBody
+	if ut.Channel != nil {
+		pub.Channel = ut.Channel
+	}
+	if ut.DeploymentName != nil {
+		pub.DeploymentName = *ut.DeploymentName
+	}
+	if ut.JSONValues != nil {
+		pub.JSONValues = ut.JSONValues
+	}
 	if ut.Name != nil {
 		pub.Name = *ut.Name
 	}
@@ -52,7 +92,10 @@ func (ut *applicationPostBody) Publicize() *ApplicationPostBody {
 		pub.NamespaceID = *ut.NamespaceID
 	}
 	if ut.Registry != nil {
-		pub.Registry = ut.Registry
+		pub.Registry = *ut.Registry
+	}
+	if ut.Server != nil {
+		pub.Server = *ut.Server
 	}
 	if ut.Set != nil {
 		pub.Set = ut.Set
@@ -65,20 +108,31 @@ func (ut *applicationPostBody) Publicize() *ApplicationPostBody {
 
 // ApplicationPostBody user type.
 type ApplicationPostBody struct {
-	// Application name
+	// Application chart's channel
+	Channel *string `form:"channel,omitempty" json:"channel,omitempty" xml:"channel,omitempty"`
+	// Cluster application deployment name
+	DeploymentName string `form:"deployment_name" json:"deployment_name" xml:"deployment_name"`
+	// Application chart's json values string
+	JSONValues *string `form:"json_values,omitempty" json:"json_values,omitempty" xml:"json_values,omitempty"`
+	// Application chart name
 	Name string `form:"name" json:"name" xml:"name"`
 	// The related namespace's generated unique id, not the namespace's name
 	NamespaceID string `form:"namespace_id" json:"namespace_id" xml:"namespace_id"`
-	// Application's registry
-	Registry *string `form:"registry,omitempty" json:"registry,omitempty" xml:"registry,omitempty"`
-	// Application config --set argument string
+	// Application chart's registry
+	Registry string `form:"registry" json:"registry" xml:"registry"`
+	// Application chart registry host server
+	Server string `form:"server" json:"server" xml:"server"`
+	// Application chart config --set argument string
 	Set *string `form:"set,omitempty" json:"set,omitempty" xml:"set,omitempty"`
-	// Application version string
+	// Application chart version string
 	Version string `form:"version" json:"version" xml:"version"`
 }
 
 // Validate validates the ApplicationPostBody type instance.
 func (ut *ApplicationPostBody) Validate() (err error) {
+	if ut.DeploymentName == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "deployment_name"))
+	}
 	if ut.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}

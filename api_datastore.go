@@ -99,16 +99,20 @@ type ApplicationStatusObject struct {
 
 // ApplicationObject base resource type
 type ApplicationObject struct {
-	OID         string                   `json:"oid,omitempty"`
-	ObjType     string                   `json:"objType,omitempty"`
-	Name        string                   `json:"name,omitempty"`
-	Version     string                   `json:"version,omitempty"`
-	Config      string                   `json:"config,omitempty"`
-	Registry    string                   `json:"registry,omitempty"`
-	CreatedAt   time.Time                `json:"createdAt,omitempty"`
-	UpdatedAt   time.Time                `json:"updatedAt,omitempty"`
-	Status      *ApplicationStatusObject `json:"status,omitempty"`
-	NamespaceID string                   `json:"namespaceId,omitempty"`
+	OID           string                   `json:"oid,omitempty"`
+	ObjType       string                   `json:"objType,omitempty"`
+	NamespaceID   string                   `json:"namespaceId,omitempty"`
+	Deployment    string                   `json:"deploymentName,omitempty"`
+	Server        string                   `json:"resgistryServer,omitempty"`
+	ChartRegistry string                   `json:"chartRegistry,omitempty"`
+	ChartName     string                   `json:"chartName,omitempty"`
+	ChartVersion  string                   `json:"chartVersion,omitempty"`
+	Channel       string                   `json:"channel,omitempty"`
+	Config        string                   `json:"config,omitempty"`
+	JSONValues    string                   `json:"jsonValues,omitempty"`
+	CreatedAt     time.Time                `json:"createdAt,omitempty"`
+	UpdatedAt     time.Time                `json:"updatedAt,omitempty"`
+	Status        *ApplicationStatusObject `json:"status,omitempty"`
 }
 
 // ResourceObject State strings
@@ -398,19 +402,26 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 }
 
 // NewApplication creates a new application resource.
-func (ds *DataStore) NewApplication(namespace, name, version string, config, registry *string) *ApplicationObject {
+func (ds *DataStore) NewApplication(namespace, deployment, server, registry, name, version string, channel,
+	config, jsonValues *string) *ApplicationObject {
 	obj := ds.NewApplicationObject(namespace)
 	if obj == nil {
 		return nil
 	}
-	obj.Name = name
-	obj.Version = version
+	obj.Deployment = deployment
+	obj.Server = server
+	obj.ChartRegistry = registry
+	obj.ChartName = name
+	obj.ChartVersion = version
+	if channel != nil {
+		obj.Channel = *channel
+	}
 	// Optional fields, may be unset (nil)
 	if config != nil {
 		obj.Config = *config
 	}
-	if registry != nil {
-		obj.Registry = *registry
+	if jsonValues != nil {
+		obj.JSONValues = *jsonValues
 	}
 	ds.archive <- true
 	return obj

@@ -18,83 +18,52 @@ package commands
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
-	"text/template"
 
+	"github.com/ghodss/yaml"
 	"github.com/golang/glog"
-)
-
-const (
-	// GenericTemplate - chart template
-	GenericTemplate = `image: {{.Image}}
-imageTag: {{.ImageTag}}
-imagePullSecret: {{.ImagePullSecret}}
-ingress:
-  defaultHost:
-    hostname: {{.DefaultHostName}}
-  mainHost:
-    hostname: {{.MainHostName}}
-rootURL: https://{{.RootHostName}}
-mongo:
-  application:
-    deploymentName: {{.CustomerName}}-mongo
-  opLog:
-    deploymentName: {{.CustomerName}}-mongo
-scheduling:
-  affinity:
-    node:
-      labels:
-        - key: customer
-          operator: In
-          values: [ "{{.CustomerName}}" ]
-  tolerations:
-    - key: customer
-      value: {{.CustomerName}}
-      effect: NoSchedule
-resources:
-  limits:
-    cpu: 800m
-    memory: 1536Mi
-  requests:
-    cpu: 800m
-    memory: 1536Mi`
 )
 
 // GenericDriver - control structure for deploying a generic chart.
 type GenericDriver struct {
 	DeploymentName string
 	ChartLocation  string
+	Version        string
+	Server         string
 	Namespace      string
+	SetConfig      string
+	JSONValues     string
+	YAMLValues     []byte
+	Username       string
+	Password       string
+}
 
-	Image           string
-	ImageTag        string
-	ImagePullSecret string
-	DefaultHostName string
-	MainHostName    string
-	RootHostName    string
-	CustomerName    string
-
-	Username string
-	Password string
-
-	Template string
+func (r GenericDriver) jsonToYaml() {
+	json := []byte(r.JSONValues)
+	yaml, err := yaml.JSONToYAML(json)
+	if err != nil {
+		glog.Infof("err: %v\n", err)
+		return
+	}
+	r.YAMLValues = yaml
 }
 
 // Install - isntall the chart.
 func (r GenericDriver) Install() ([]byte, error) {
-	templ, err := template.New("mongoTemplate").Parse(r.Template)
+	file, err := ioutil.TempFile(os.TempDir(), "chartvalues")
 	if err != nil {
-		log.Fatalf("execution failed: %s", err)
+		glog.Infof("err: %v\n", err)
+		return nil, err
 	}
-
-	file, err := ioutil.TempFile(os.TempDir(), "prefix")
-	log.Printf("Template file is %s", file.Name())
+	glog.Infof("temporary file is %s", file.Name())
 	defer os.Remove(file.Name())
 
-	err = templ.Execute(file, r)
-	if err != nil {
-		glog.Warningf("failed to parse chart template: %v", err)
+	if _, err := file.Write(r.YAMLValues); err != nil {
+		glog.Infof("err: %v\n", err)
+		return nil, err
+	}
+	if err := file.Close(); err != nil {
+		glog.Infof("err: %v\n", err)
 		return nil, err
 	}
 
@@ -114,7 +83,7 @@ func (r GenericDriver) Install() ([]byte, error) {
 		"--namespace " + r.Namespace,
 		"--name " + r.DeploymentName,
 		"--values " + file.Name(),
-		"--version 0.1.0",
+		"--version " + r.Version,
 	}
 	return r.execute(arguments)
 
@@ -122,18 +91,21 @@ func (r GenericDriver) Install() ([]byte, error) {
 
 // Upgrade - upgrade the chart.
 func (r GenericDriver) Upgrade() ([]byte, error) {
-	templ, err := template.New("mongoTemplate").Parse(r.Template)
+	file, err := ioutil.TempFile(os.TempDir(), "chartvalues")
 	if err != nil {
-		log.Fatalf("execution failed: %s", err)
+		glog.Infof("err: %v\n", err)
+		return nil, err
 	}
-
-	file, err := ioutil.TempFile(os.TempDir(), "prefix")
-	log.Printf("Template file is %s", file.Name())
+	glog.Infof("Template file is %s", file.Name())
 	defer os.Remove(file.Name())
 
-	err = templ.Execute(file, r)
-	if err != nil {
-		glog.Warningf("failed to parse chart template: %v", err)
+	if _, err := file.Write(r.YAMLValues); err != nil {
+		glog.Infof("err: %v\n", err)
+		return nil, err
+	}
+
+	if err := file.Close(); err != nil {
+		glog.Infof("err: %v\n", err)
 		return nil, err
 	}
 
@@ -142,7 +114,7 @@ func (r GenericDriver) Upgrade() ([]byte, error) {
 		"login",
 		"-u " + r.Username,
 		"-p " + r.Password,
-		"quay.io",
+		r.Server,
 	}
 	r.execute(arguments)
 

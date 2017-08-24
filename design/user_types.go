@@ -22,21 +22,43 @@ var ClusterPostBody = Type("ClusterPostBody", func() {
 
 // ApplicationPostBody is the HTTP POST Request body type.
 var ApplicationPostBody = Type("ApplicationPostBody", func() {
-	Attribute("name", String, func() {
-		Description("Application name")
-	})
-	Attribute("version", String, func() {
-		Description("Application version string")
-	})
-	Attribute("set", String, func() {
-		Description("Application config --set argument string")
-	})
-	Attribute("registry", String, func() {
-		Description("Application's registry")
-	})
 	Attribute("namespace_id", String, func() {
 		Description("The related namespace's generated unique id, not the namespace's name")
 		Example("da9871c7")
 	})
-	Required("name", "version", "namespace_id")
+	Attribute("deployment_name", String, func() {
+		Description("Cluster application deployment name")
+		Default("samsung-mongodb-replicaset")
+		Example("samsung-mongodb-replicaset")
+	})
+	Attribute("server", String, func() {
+		Description("Application chart registry host server")
+		Default("quay.io")
+		Example("quay.io")
+	})
+	Attribute("registry", String, func() {
+		Description("Application chart's registry")
+		Default("application/samsung_cnct")
+		Example("application/samsung_cnct")
+	})
+	Attribute("name", String, func() {
+		Description("Application chart name")
+		Example("mongodb-replicaset")
+	})
+	Attribute("version", String, func() {
+		Description("Application chart version string")
+		Default("latest")
+		Example("latest")
+	})
+	Attribute("channel", String, func() {
+		Description("Application chart's channel")
+		Example("stable")
+	})
+	Attribute("set", String, func() {
+		Description("Application chart config --set argument string")
+	})
+	Attribute("json_values", String, func() {
+		Description("Application chart's json values string")
+	})
+	Required("deployment_name", "name", "version", "namespace_id")
 })

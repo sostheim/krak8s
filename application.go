@@ -26,12 +26,19 @@ func NewApplicationController(service *goa.Service, store *DataStore, backend *R
 // MarshalApplicationObject to project media type
 func MarshalApplicationObject(obj *ApplicationObject) *app.Application {
 	return &app.Application{
-		ID:          obj.OID,
-		Type:        obj.ObjType,
-		Name:        obj.Name,
-		Version:     obj.Version,
-		NamespaceID: obj.NamespaceID,
-		CreatedAt:   obj.CreatedAt,
+		ID:             obj.OID,
+		Type:           obj.ObjType,
+		NamespaceID:    obj.NamespaceID,
+		DeploymentName: obj.Deployment,
+		Server:         obj.Server,
+		Registry:       obj.ChartRegistry,
+		Name:           obj.ChartName,
+		Version:        obj.ChartVersion,
+		Channel:        obj.Channel,
+		Config:         obj.Config,
+		JSONValues:     obj.JSONValues,
+		CreatedAt:      obj.CreatedAt,
+		UpdatedAt:      obj.UpdatedAt,
 		Status: &struct {
 			DeployedAt time.Time `form:"deployed_at" json:"deployed_at" xml:"deployed_at"`
 			Notes      *string   `form:"notes,omitempty" json:"notes,omitempty" xml:"notes,omitempty"`
@@ -58,10 +65,14 @@ func (c *ApplicationController) Create(ctx *app.CreateApplicationContext) error 
 	}
 	app := c.ds.NewApplication(
 		ctx.Payload.NamespaceID,
+		ctx.Payload.DeploymentName,
+		ctx.Payload.Server,
+		ctx.Payload.Registry,
 		ctx.Payload.Name,
 		ctx.Payload.Version,
+		ctx.Payload.Channel,
 		ctx.Payload.Set,
-		ctx.Payload.Registry)
+		ctx.Payload.JSONValues)
 	if app == nil {
 		return ctx.InternalServerError()
 	}

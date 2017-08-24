@@ -258,7 +258,7 @@ func runProjectRequestWithRetries(request *Request, command []string) {
 }
 
 func (r *Runner) handleCharts(request *Request) bool {
-	if request.appObj.Name == "mongodb-replicaset" {
+	if request.appObj.ChartName == "mongodb-replicaset" {
 		return r.handleMongoChart(request)
 	}
 	return r.handleGenericChart(request)
@@ -268,7 +268,7 @@ func (r *Runner) handleMongoChart(request *Request) bool {
 
 	mongo := commands.MongoReplicasetDriver{
 		DeploymentName: request.projObj.Name + "-mongodb",
-		ChartLocation:  request.appObj.Registry + "/" + request.appObj.Name,
+		ChartLocation:  request.appObj.ChartRegistry + "/" + request.appObj.ChartName,
 		Namespace:      request.nsObj.Name,
 		CustomerName:   request.projObj.Name,
 		Template:       commands.MongoReplicasetTemplate,
@@ -327,21 +327,14 @@ func (r *Runner) handleMongoChart(request *Request) bool {
 }
 
 func (r *Runner) handleGenericChart(request *Request) bool {
-
 	chart := commands.GenericDriver{
-		DeploymentName:  request.projObj.Name + "-chart",
-		ChartLocation:   request.appObj.Registry + "/" + request.appObj.Name,
-		Namespace:       request.nsObj.Name,
-		Image:           "projectbase/chartname",
-		ImageTag:        "latest",
-		ImagePullSecret: "",
-		DefaultHostName: "",
-		MainHostName:    "",
-		RootHostName:    "",
-		CustomerName:    request.projObj.Name,
-		Username:        "",
-		Password:        "",
-		Template:        commands.GenericTemplate,
+		DeploymentName: request.appObj.Deployment,
+		ChartLocation:  request.appObj.Server + "/" + request.appObj.ChartRegistry + "/" + request.appObj.ChartName,
+		Version:        request.appObj.ChartVersion,
+		Server:         request.appObj.Server,
+		SetConfig:      request.appObj.Config,
+		JSONValues:     request.appObj.JSONValues,
+		Namespace:      request.nsObj.Name,
 	}
 
 	if request.requestType == AddChart {

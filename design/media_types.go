@@ -80,7 +80,7 @@ var ApplicationRef = MediaType("application/application.ref+json", func() {
 
 // Application is the application resource's MediaType.
 var Application = MediaType("application/application+json", func() {
-	Description("Application representation type")
+	Description("Application deployment representation type")
 	Attributes(func() {
 		Attribute("id", String, "generated resource unique id (8 character hexadecimal value)", func() {
 			Example("e1ea1660")
@@ -88,10 +88,14 @@ var Application = MediaType("application/application+json", func() {
 		Attribute("type", String, "constant: object type", func() {
 			Example("application")
 		})
-		Attribute("name", String, "Application name")
-		Attribute("version", String, "Application version")
-		Attribute("config", String, "Configuration value settings (set) string")
+		Attribute("deployment_name", String, "Cluster application deployment name")
+		Attribute("server", String, "Application chart registry host server")
 		Attribute("registry", String, "Application registry identifier")
+		Attribute("name", String, "Application chart name")
+		Attribute("version", String, "Application chart version (tag) string")
+		Attribute("channel", String, "Application chart's channel")
+		Attribute("config", String, "Application chart config --set argument string")
+		Attribute("json_values", String, "Application chart's json values stringr")
 		Attribute("status", func() {
 			Attribute("deployed_at", DateTime, "Last deployment time")
 			Attribute("state", func() {
@@ -107,16 +111,22 @@ var Application = MediaType("application/application+json", func() {
 		})
 		Attribute("created_at", DateTime, "Date of creation")
 		Attribute("updated_at", DateTime, "Date of last update")
-		Required("id", "type", "name", "version", "status", "namespace_id", "created_at", "updated_at")
+		Required("id", "type", "namespace_id", "deployment_name", "server", "registry", "name", "version", "channel", "config", "json_values", "status", "created_at", "updated_at")
 	})
 
 	View("default", func() {
 		Attribute("id")
 		Attribute("type")
+		Attribute("namespace_id")
+		Attribute("deployment_name")
+		Attribute("server")
+		Attribute("registry")
 		Attribute("name")
 		Attribute("version")
+		Attribute("channel")
+		Attribute("config")
+		Attribute("json_values")
 		Attribute("status")
-		Attribute("namespace_id")
 		Attribute("created_at")
 		Attribute("updated_at")
 	})

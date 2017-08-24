@@ -119,7 +119,7 @@ Resolving deltas: 100% (1282/1282), done.
 
 The tools necessary to build and deploy the project are all bundled in the Makefile.
 
-  1. Make Dependencies
+  * Make Dependencies
 
   The project has only two dependencies to build and run (cutting a release is discussed separately below).  These are the [Gox](https://github.com/mitchellh/gox) Go Cross Compiler, and the [Godep](https://github.com/tools/godep) dependency tool for go.
   ```
@@ -129,7 +129,7 @@ The tools necessary to build and deploy the project are all bundled in the Makef
   ```
   The project maintains a `/vendor` directory of all the other dependencies of the project pinned to the requisite version.
 
-  2. Make the Project
+  * Make the Project
 
   The default target for the Makefile is the `build:` target.  This is a convenience to prevent building an unwanted target.  You should, as a general practices, always specify the build target on the command line.
 
@@ -140,6 +140,17 @@ The tools necessary to build and deploy the project are all bundled in the Makef
       -X main.GitCommit=fbcb8984a595eb8e563992392d2e088339ca6aab"
   ```
   **Note** that the build automatically pulls the last Git Commit SHA-1 to tag the build output with, along with a [SemVer](http://semver.org/) version number and release type that are populated as defined in the Makefile itself.
+
+3. Copy the Template File
+The project contains a Go template file that must be present in the working directory that the program is executed in.  Simply copy the file to the working directory from the repository.  
+
+For example, if you want to run the program in the same directory in which it was built, the project root directory, then simply run the following command:
+```
+$ pwd
+/Users/sostheim/work/src/krak8s
+
+$ cp commands/node_pool.tmpl .
+```
 
 That's it.  The project can now be run locally with a command string similar to the following.
 ```

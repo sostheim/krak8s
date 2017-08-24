@@ -16,19 +16,31 @@ import (
 	"unicode/utf8"
 )
 
-// Application representation type (default view)
+// Application deployment representation type (default view)
 //
 // Identifier: application/application+json; view=default
 type Application struct {
+	// Application chart's channel
+	Channel string `form:"channel" json:"channel" xml:"channel"`
+	// Application chart config --set argument string
+	Config string `form:"config" json:"config" xml:"config"`
 	// Date of creation
 	CreatedAt time.Time `form:"created_at" json:"created_at" xml:"created_at"`
+	// Cluster application deployment name
+	DeploymentName string `form:"deployment_name" json:"deployment_name" xml:"deployment_name"`
 	// generated resource unique id (8 character hexadecimal value)
 	ID string `form:"id" json:"id" xml:"id"`
-	// Application name
+	// Application chart's json values stringr
+	JSONValues string `form:"json_values" json:"json_values" xml:"json_values"`
+	// Application chart name
 	Name string `form:"name" json:"name" xml:"name"`
 	// The related namespace's generated unique id, not the namespace's name
 	NamespaceID string `form:"namespace_id" json:"namespace_id" xml:"namespace_id"`
-	Status      *struct {
+	// Application registry identifier
+	Registry string `form:"registry" json:"registry" xml:"registry"`
+	// Application chart registry host server
+	Server string `form:"server" json:"server" xml:"server"`
+	Status *struct {
 		// Last deployment time
 		DeployedAt time.Time `form:"deployed_at" json:"deployed_at" xml:"deployed_at"`
 		// Application specific notification / statuses / notes (if any)
@@ -40,7 +52,7 @@ type Application struct {
 	Type string `form:"type" json:"type" xml:"type"`
 	// Date of last update
 	UpdatedAt time.Time `form:"updated_at" json:"updated_at" xml:"updated_at"`
-	// Application version
+	// Application chart version (tag) string
 	Version string `form:"version" json:"version" xml:"version"`
 }
 
@@ -52,17 +64,35 @@ func (mt *Application) Validate() (err error) {
 	if mt.Type == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "type"))
 	}
+	if mt.NamespaceID == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace_id"))
+	}
+	if mt.DeploymentName == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "deployment_name"))
+	}
+	if mt.Server == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "server"))
+	}
+	if mt.Registry == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "registry"))
+	}
 	if mt.Name == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "name"))
 	}
 	if mt.Version == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "version"))
 	}
+	if mt.Channel == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "channel"))
+	}
+	if mt.Config == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "config"))
+	}
+	if mt.JSONValues == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "json_values"))
+	}
 	if mt.Status == nil {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "status"))
-	}
-	if mt.NamespaceID == "" {
-		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "namespace_id"))
 	}
 
 	if mt.Status != nil {
