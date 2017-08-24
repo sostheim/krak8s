@@ -162,12 +162,14 @@ Payload example:
 {
    "channel": "stable",
    "deployment_name": "samsung-mongodb-replicaset",
-   "json_values": "Autem et ea corporis.",
+   "json_values": "Ea corporis eaque id saepe aut provident.",
    "name": "mongodb-replicaset",
    "namespace_id": "da9871c7",
+   "password": "Aut minima inventore et nam.",
    "registry": "application/samsung_cnct",
    "server": "quay.io",
-   "set": "Id saepe aut provident occaecati.",
+   "set": "Et soluta assumenda iusto.",
+   "username": "Et quidem alias et corporis.",
    "version": "latest"
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp1.Run(c, args) },
@@ -185,7 +187,7 @@ Payload example:
 
 {
    "namespace_id": "da9871c7",
-   "nodePoolSize": 3
+   "nodePoolSize": 10
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp2.Run(c, args) },
 	}
@@ -201,7 +203,7 @@ Payload example:
 Payload example:
 
 {
-   "name": "Sint et."
+   "name": "Assumenda quibusdam qui tempore."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp3.Run(c, args) },
 	}
@@ -334,7 +336,7 @@ Payload example:
 Payload example:
 
 {
-   "namespaceid": "Minima inventore et nam aut et soluta."
+   "namespaceid": "Explicabo enim dicta perferendis sunt nihil ratione."
 }`,
 		RunE: func(cmd *cobra.Command, args []string) error { return tmp14.Run(c, args) },
 	}

@@ -94,6 +94,8 @@ var Application = MediaType("application/application+json", func() {
 		Attribute("name", String, "Application chart name")
 		Attribute("version", String, "Application chart version (tag) string")
 		Attribute("channel", String, "Application chart's channel")
+		Attribute("username", String, "Registry server username")
+		Attribute("password", String, "Registry server password")
 		Attribute("config", String, "Application chart config --set argument string")
 		Attribute("json_values", String, "Application chart's json values stringr")
 		Attribute("status", func() {
@@ -111,7 +113,7 @@ var Application = MediaType("application/application+json", func() {
 		})
 		Attribute("created_at", DateTime, "Date of creation")
 		Attribute("updated_at", DateTime, "Date of last update")
-		Required("id", "type", "namespace_id", "deployment_name", "server", "registry", "name", "version", "channel", "config", "json_values", "status", "created_at", "updated_at")
+		Required("id", "type", "namespace_id", "deployment_name", "server", "registry", "name", "version", "channel", "username", "password", "config", "json_values", "status", "created_at", "updated_at")
 	})
 
 	View("default", func() {
@@ -124,6 +126,7 @@ var Application = MediaType("application/application+json", func() {
 		Attribute("name")
 		Attribute("version")
 		Attribute("channel")
+		Attribute("username")
 		Attribute("config")
 		Attribute("json_values")
 		Attribute("status")

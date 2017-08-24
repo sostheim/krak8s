@@ -108,6 +108,8 @@ type ApplicationObject struct {
 	ChartName     string                   `json:"chartName,omitempty"`
 	ChartVersion  string                   `json:"chartVersion,omitempty"`
 	Channel       string                   `json:"channel,omitempty"`
+	Username      string                   `json:"username,omitempty"`
+	Password      string                   `json:"password,omitempty"`
 	Config        string                   `json:"config,omitempty"`
 	JSONValues    string                   `json:"jsonValues,omitempty"`
 	CreatedAt     time.Time                `json:"createdAt,omitempty"`
@@ -403,7 +405,7 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 
 // NewApplication creates a new application resource.
 func (ds *DataStore) NewApplication(namespace, deployment, server, registry, name, version string, channel,
-	config, jsonValues *string) *ApplicationObject {
+	username, password, config, jsonValues *string) *ApplicationObject {
 	obj := ds.NewApplicationObject(namespace)
 	if obj == nil {
 		return nil
@@ -415,6 +417,12 @@ func (ds *DataStore) NewApplication(namespace, deployment, server, registry, nam
 	obj.ChartVersion = version
 	if channel != nil {
 		obj.Channel = *channel
+	}
+	if username != nil {
+		obj.Username = *username
+	}
+	if password != nil {
+		obj.Password = *password
 	}
 	// Optional fields, may be unset (nil)
 	if config != nil {

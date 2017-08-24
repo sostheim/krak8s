@@ -52,6 +52,8 @@ type Application struct {
 	Type string `form:"type" json:"type" xml:"type"`
 	// Date of last update
 	UpdatedAt time.Time `form:"updated_at" json:"updated_at" xml:"updated_at"`
+	// Registry server username
+	Username string `form:"username" json:"username" xml:"username"`
 	// Application chart version (tag) string
 	Version string `form:"version" json:"version" xml:"version"`
 }
@@ -84,6 +86,9 @@ func (mt *Application) Validate() (err error) {
 	}
 	if mt.Channel == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "channel"))
+	}
+	if mt.Username == "" {
+		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "username"))
 	}
 	if mt.Config == "" {
 		err = goa.MergeErrors(err, goa.MissingAttributeError(`response`, "config"))

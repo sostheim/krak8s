@@ -26,12 +26,16 @@ type applicationPostBody struct {
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// The related namespace's generated unique id, not the namespace's name
 	NamespaceID *string `form:"namespace_id,omitempty" json:"namespace_id,omitempty" xml:"namespace_id,omitempty"`
+	// Registry server password
+	Password *string `form:"password,omitempty" json:"password,omitempty" xml:"password,omitempty"`
 	// Application chart's registry
 	Registry *string `form:"registry,omitempty" json:"registry,omitempty" xml:"registry,omitempty"`
 	// Application chart registry host server
 	Server *string `form:"server,omitempty" json:"server,omitempty" xml:"server,omitempty"`
 	// Application chart config --set argument string
 	Set *string `form:"set,omitempty" json:"set,omitempty" xml:"set,omitempty"`
+	// Registry server username
+	Username *string `form:"username,omitempty" json:"username,omitempty" xml:"username,omitempty"`
 	// Application chart version string
 	Version *string `form:"version,omitempty" json:"version,omitempty" xml:"version,omitempty"`
 }
@@ -91,6 +95,9 @@ func (ut *applicationPostBody) Publicize() *ApplicationPostBody {
 	if ut.NamespaceID != nil {
 		pub.NamespaceID = *ut.NamespaceID
 	}
+	if ut.Password != nil {
+		pub.Password = ut.Password
+	}
 	if ut.Registry != nil {
 		pub.Registry = *ut.Registry
 	}
@@ -99,6 +106,9 @@ func (ut *applicationPostBody) Publicize() *ApplicationPostBody {
 	}
 	if ut.Set != nil {
 		pub.Set = ut.Set
+	}
+	if ut.Username != nil {
+		pub.Username = ut.Username
 	}
 	if ut.Version != nil {
 		pub.Version = *ut.Version
@@ -118,12 +128,16 @@ type ApplicationPostBody struct {
 	Name string `form:"name" json:"name" xml:"name"`
 	// The related namespace's generated unique id, not the namespace's name
 	NamespaceID string `form:"namespace_id" json:"namespace_id" xml:"namespace_id"`
+	// Registry server password
+	Password *string `form:"password,omitempty" json:"password,omitempty" xml:"password,omitempty"`
 	// Application chart's registry
 	Registry string `form:"registry" json:"registry" xml:"registry"`
 	// Application chart registry host server
 	Server string `form:"server" json:"server" xml:"server"`
 	// Application chart config --set argument string
 	Set *string `form:"set,omitempty" json:"set,omitempty" xml:"set,omitempty"`
+	// Registry server username
+	Username *string `form:"username,omitempty" json:"username,omitempty" xml:"username,omitempty"`
 	// Application chart version string
 	Version string `form:"version" json:"version" xml:"version"`
 }

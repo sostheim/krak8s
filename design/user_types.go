@@ -54,6 +54,12 @@ var ApplicationPostBody = Type("ApplicationPostBody", func() {
 		Description("Application chart's channel")
 		Example("stable")
 	})
+	Attribute("username", String, func() {
+		Description("Registry server username")
+	})
+	Attribute("password", String, func() {
+		Description("Registry server password")
+	})
 	Attribute("set", String, func() {
 		Description("Application chart config --set argument string")
 	})
