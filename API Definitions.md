@@ -223,7 +223,7 @@ Using a cluster named "Meteor", we'll create some constellation related projects
 	2. Create a namespace for the project, `neptune-test`
 	3. Create the cluster resources associated with this project/namespaces.
 ```
-$ curl - X POST - H "Content-Type: application/json" - d '{"name":"neptune"}' http: //localhost:8080/v1/projects
+$ curl -X POST -H "Content-Type: application/json" -d '{"name":"neptune"}' http: //localhost:8080/v1/projects
 	{
 		"created_at": "2017-08-16T09:43:46.888464975-07:00",
 		"id": "a901c92b",
@@ -231,7 +231,7 @@ $ curl - X POST - H "Content-Type: application/json" - d '{"name":"neptune"}' ht
 		"namespaces": null,
 		"type": "project"
 	}
-$ curl - X POST - H "Content-Type: application/json" - d '{"name":"neptune-test"}' http: //localhost:8080/v1/projects/a901c92b/namespaces
+$ curl -X POST -H "Content-Type: application/json" -d '{"name":"neptune-test"}' http: //localhost:8080/v1/projects/a901c92b/namespaces
 	{
 		"applications": null,
 		"created_at": "2017-08-16T09:44:12.07355244-07:00",
@@ -240,7 +240,7 @@ $ curl - X POST - H "Content-Type: application/json" - d '{"name":"neptune-test"
 		"resources": null,
 		"type": "namespace"
 	}
-$ curl - X POST - H "Content-Type: application/json" - d '{"namespace_id":"70271bbf", "nodePoolSize": 3}' http: //localhost:8080/v1/projects/a901c92b/cluster
+$ curl -X POST -H "Content-Type: application/json" -d '{"namespace_id":"70271bbf", "nodePoolSize": 3}' http: //localhost:8080/v1/projects/a901c92b/cluster
 	{
 		"created_at": "2017-08-16T09:44:40.20165339-07:00",
 		"id": "e74f17d7",
@@ -289,7 +289,7 @@ $ diff config.yaml config.yaml.1502901880
 
 3. Another constellation is added to the cluster in similar fashion.
 ```
-$ curl - X POST - H "Content-Type: application/json" - d '{"name":"mars"}'
+$ curl -X POST -H "Content-Type: application/json" -d '{"name":"mars"}'
 http: //localhost:8080/v1/projects
 	{
 		"created_at": "2017-08-16T10:00:20.092785526-07:00",
@@ -298,7 +298,7 @@ http: //localhost:8080/v1/projects
 		"namespaces": null,
 		"type": "project"
 	}
-$ curl - X POST - H "Content-Type: application/json" - d '{"name":"mars-production"}'
+$ curl -X POST -H "Content-Type: application/json" -d '{"name":"mars-production"}'
 http: //localhost:8080/v1/projects/ca57d654/namespaces
 	{
 		"applications": null,
@@ -308,7 +308,7 @@ http: //localhost:8080/v1/projects/ca57d654/namespaces
 		"resources": null,
 		"type": "namespace"
 	}
-$ curl - X POST - H "Content-Type: application/json" - d '{"namespace_id":"84f70e67", "nodePoolSize": 3}'
+$ curl -X POST -H "Content-Type: application/json" -d '{"namespace_id":"84f70e67", "nodePoolSize": 3}'
 http: //localhost:8080/v1/projects/ca57d654/cluster
 	{
 		"created_at": "2017-08-16T10:01:28.436890214-07:00",
@@ -354,7 +354,7 @@ The last 4 curl commands show the resource's complete transition from `"create_r
 
 4. Bring up a MongoDB Application using the new Mars Production cluster resources.
 ```
-curl - X POST - H "Content-Type: application/json" - d '{ "name": "mongodb-replicaset", "registry": "quay.io/samsung_cnct", "set": "", "version": "", "namespace_id": "84f70e67"}'
+curl -X POST -H "Content-Type: application/json" -d '{ "name": "mongodb-replicaset", "registry": "quay.io/samsung_cnct", "set": "", "version": "", "namespace_id": "84f70e67"}'
 http: //localhost:8080/v1/projects/ca57d654/applications
 	{
 		"created_at": "2017-08-16T10:14:03.033981237-07:00",
@@ -379,7 +379,7 @@ $ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
 		"type": "Resource",
 		"updated_at": "2017-08-16T09:50:11.049940314-07:00"
 	}
-$ curl - X DELETE http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+$ curl -X DELETE http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
 	$ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
 	{
 		"created_at": "2017-08-16T09:44:40.20165339-07:00",
@@ -407,6 +407,6 @@ At this point, the API record of the resource remains in place so that it can be
 
 To permanently remove the record, we delete the enclosing namespace.  
 ```
-$ curl - X DELETE http://localhost:8080/v1/projects/f0fc2c78/namespaces/70271bbf
+$ curl -X DELETE http://localhost:8080/v1/projects/f0fc2c78/namespaces/70271bbf
 ```
 If there was no future need for the root project, the same effect can be achieved by deleting the base object, the project, if desired.  There is no need to delete all the associated elements first. 
