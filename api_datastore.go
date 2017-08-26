@@ -179,6 +179,7 @@ func NewDataStore(filepath string) (ds *DataStore) {
 	backup, err := openDataStoreFileBackup(filepath)
 	if err == nil && len(backup) > 0 {
 		var dm DataModel
+		dm.Reset()
 		if err = json.Unmarshal(backup, &dm); err == nil {
 			return &DataStore{
 				archive: make(chan bool, 1),
@@ -235,6 +236,21 @@ func (ds *DataStore) CheckedRandomHexString() string {
 		i--
 	}
 	return ""
+}
+
+// String - strigify
+func (data *DataModel) String() string {
+	json, err := json.Marshal(data)
+	if err != nil {
+		glog.Warningf("JSON marshalling error: %v", err)
+		return ""
+	}
+	return string(json)
+}
+
+// String - strigify
+func (ds *DataStore) String() string {
+	return "persistence_file: " + ds.persist + ", data_model: " + ds.data.String()
 }
 
 // NewProjectObject creates a default ProjectObject with a valid unique
@@ -321,6 +337,7 @@ func (ds *DataStore) NewNamespaceObject() *NamespaceObject {
 	}
 	ds.Lock()
 	defer ds.Unlock()
+
 	ds.data.Namespaces[obj.OID] = &obj
 	return &obj
 }
