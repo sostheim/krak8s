@@ -70,6 +70,22 @@ Not every flag can be set via an environment variable.  This is due to the fact 
 ### Details
 The health check service HTTP endpoint is available at: `/healthz`.  
 
+## Kraken Configuration File Integration
+For the krak8s API service to work with the Kraken configuration file, see reference here: [Kraken Configuration File Format](https://github.com/samsung-cnct/k2/tree/master/Documentation), we need to add a couple of markerer's to the YAML file.  The markers are necessary elements to allow the API to determine exactly where to make it's insertions for the elements of the configuration it will manage.
+
+### Services
+The first marker we'll add is for the [Helm Services](https://github.com/samsung-cnct/k2/blob/master/Documentation/kraken-configs/helmconfigs.md).  The point to insert the marker is at the very end of the section for `definitions.helmConfigs`.  There should be an existing section for the `defaultHelm`, and typically a section for the Helm configs for the current cluster, e.g. `geographHelm` would be the section for an example cluster named `geograph`.  We add the marker as the very last line the current cluster Helm configuration section.  The line text must be, exactly: 
+
+```
+# |--> SERVICES_MARKER <--|--> DO NOT REMOVE: REQUIRED FOR FOR CONFIG AUTOMATION <--|
+```
+### Node Pools
+The second marker we'll add is for the [Node Pools](https://github.com/samsung-cnct/k2/blob/master/Documentation/kraken-configs/nodepool.md).  The point to insert the marker is at the very end of the section for `deployment.clusters[0].nodePools`.  As the last line of this section, we insert the following marker.  The line text must be, exactly:
+
+```
+# |--> NODE_POOL_MARKER <--|--> DO NOT REMOVE: REQUIRED FOR FOR CONFIG AUTOMATION <--|
+```
+
 ## Deploying krak8s Example
 The best option for deploying the krak8s API service is via helm chart.  There is a chart provided for just this purpose here: [krak8s's API Helm Chart](https://github.com/samsung-cnct/chart-krak8s-api)
 
