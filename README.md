@@ -71,29 +71,7 @@ Not every flag can be set via an environment variable.  This is due to the fact 
 The health check service HTTP endpoint is available at: `/healthz`.  
 
 ## Deploying krak8s Example
-The following is an example of using a Kubernetes Deployment to run krak8s. 
-```
-aapiVersion: extensions/v1beta1
-kind: Deployment
-metadata:
-  name: krak8s
-  labels:
-    name: krak8s
-    app: krak8s
-    version: 0.1.0
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: krak8s
-        version: 0.1.0
-    spec:
-      containers:
-      - name: krak8s
-        image: quay.io/samsung_cnct/krak8s:latest
-        args: ["--v=2", "--logtostderr=true", "--kraken-kubeconfig meteorKube", "--kraken-nodepool-keypair meteorKeyPair"]
-```
+The best option for deploying the krak8s API service is via helm chart.  There is a chart provided for just this purpose here: [krak8s's API Helm Chart](https://github.com/samsung-cnct/chart-krak8s-api)
 
 ## Building and Running the Project Locally
 The following steps assume that you have a working Golang development environment on your local machine or in a container that you use for the same purpose.
