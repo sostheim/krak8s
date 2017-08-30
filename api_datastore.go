@@ -178,9 +178,11 @@ type DataStore struct {
 func NewDataStore(filepath string) (ds *DataStore) {
 	backup, err := openDataStoreFileBackup(filepath)
 	if err == nil && len(backup) > 0 {
+		glog.Infof("read initialization data from persistence file: %s", filepath)
 		var dm DataModel
 		dm.Reset()
 		if err = json.Unmarshal(backup, &dm); err == nil {
+			glog.Info("Successfully read/unmarshalled initialization JSON data from persistence file")
 			return &DataStore{
 				archive: make(chan bool, 1),
 				persist: filepath,
@@ -189,6 +191,7 @@ func NewDataStore(filepath string) (ds *DataStore) {
 		}
 		glog.Warningf("Unmarshal of JSON initialization data from backup persistence file: %s, error: %v", filepath, err)
 	}
+	glog.Infof("default initialization, no persistence data found from file: %s", filepath)
 	ds = &DataStore{archive: make(chan bool, 1), persist: filepath}
 	ds.data.Reset()
 	return ds
@@ -212,8 +215,9 @@ func (ds *DataStore) Archiver() {
 			}
 			err = ioutil.WriteFile(ds.persist, archive, 0644)
 			if err != nil {
-				glog.Warningf("failed to API persistence backup file, error: %v", err)
+				glog.Warningf("failed to write API persistence backup file, error: %v", err)
 			}
+			glog.Info("successfully archived persistent API state udpate.")
 		}
 	}
 }

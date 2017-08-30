@@ -100,6 +100,8 @@ func main() {
 		return
 	}
 
+	time.Sleep(90 * time.Second)
+
 	glog.Infof("main(): initial configuration: %v", krak8sCfg.String())
 	krak8sCfg.envParse()
 	glog.Infof("main(): env override configuration: %v", krak8sCfg.String())
