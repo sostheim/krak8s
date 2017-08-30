@@ -13,15 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License. 
 #
-# Dockerfile - External LoadBalancer (lbex).
+# Dockerfile - krak8s API service container.
 #
 
 FROM quay.io/samsung_cnct/k2:latest
 MAINTAINER Rick Sostheim
 LABEL vendor="Samsung CNCT"
-
-RUN apk update && \
-    apk add git 
 
 COPY build/linux_amd64/krak8s /
 COPY commands/node_pool.tmpl commands/services.tmpl /
