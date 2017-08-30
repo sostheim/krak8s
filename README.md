@@ -9,6 +9,45 @@ A REST based API for managing [Kraken](https://github.com/samsung-cnct/k2) and [
 
 Go directly to the [API Documentation and Specification](https://github.com/samsung-cnct/krak8s/blob/master/API%20Definitions.md) section.
 
+### How the API Service Works
+Internally the krak8s API server must have access to the current state of the cluster under management.  This state is provided by the Kraken config YAML file (more on this later) and the generated cluster manifests that Kraken relies on.  This data all, by default, lives under the directory tree rooted at `.kraken`.  
+
+In our example, we have a cluster named `geograph`.
+```
+$ pwd
+/Users/sostheim/tmp/geograph/.kraken
+$ ls -1F
+config.yaml
+datastore.jso
+geograph/
+help.txt
+``` 
+
+The `help.txt` is a list of useful commands for managing the cluster.  The file `datastore.json` is the snapshot of the API services active object model (more on this later).  Everything else, the `config.yaml` file and the directory `geograph/`, is the current record of the active state for the cluster.  The krak8s API manages this state by making updates to the `config.yaml` file that get reflected in the `geograph/` manifest when the Kraken tool chain is applied to the configuration file.
+
+#### Kraken Configuration File Integration
+For the krak8s API service to work with the Kraken configuration file, see reference here: [Kraken Configuration File Format](https://github.com/samsung-cnct/k2/tree/master/Documentation), we need to insert a couple of markers to the YAML file.  The markers are necessary elements that allow the API to determine exactly where to make it's insertions for the elements of the configuration it will manage.
+
+##### Services
+The first marker we'll add is for the [Helm Services](https://github.com/samsung-cnct/k2/blob/master/Documentation/kraken-configs/helmconfigs.md).  The point to insert the marker is at the very end of the section for `definitions.helmConfigs`.  There should be an existing section for the `defaultHelm`, and typically a section for the Helm configs for the current cluster, e.g. `geographHelm` would be the section for an example cluster named `geograph`.  We add the marker as the very last line the current cluster Helm configuration section.  The line text must be, exactly: 
+
+```
+# |--> SERVICES_MARKER <--|--> DO NOT REMOVE: REQUIRED FOR FOR CONFIG AUTOMATION <--|
+```
+##### Node Pools
+The second marker we'll add is for the [Node Pools](https://github.com/samsung-cnct/k2/blob/master/Documentation/kraken-configs/nodepool.md).  The point to insert the marker is at the very end of the section for `deployment.clusters[0].nodePools`.  As the last line of this section, we insert the following marker.  The line text must be, exactly:
+
+```
+# |--> NODE_POOL_MARKER <--|--> DO NOT REMOVE: REQUIRED FOR FOR CONFIG AUTOMATION <--|
+```
+
+#### API Object Model Persistence and Recovery
+The krak8s API service commits every change to the state of the API object model to an external datastore snapshot named `datastore.json`.  This is the persistent backup of the API server state.  So long as this file remains in tact between runs of the API service, the API services state will be maintained.  
+
+Very simply, whenever the API service starts up, it looks for the presence of the file `datastore.json`.  If the file is found, it initializes it's internal state from this file.  If the file is not found, is empty, or if the file contains only the valid JSON object `{}`, then the API service will initialize to a default new state.
+
+This file should be managed, along with the rest of the state discussed above as a durable asset of the system.  This means that the file should live a) locally and be managed by some external backup solution for the admin workstation, b) be part of a persistent volume/object store that's life time is decoupled from the container or Pod's lifetime or c) the file should be persistently backed up using the companion project (and helm chart installed sidecar), [git-archivist](https://github.com/samsung-cnct/git-archivist).
+
 ### Connectivity
 A deployment of krak8s requires network connectivity to the Kubernetes API server. The Kubernetes API server can be accessed via `kubectl proxy` for development, but this is not recommended for production deployments. For normal operation, the standard access via [`kubeconfig`](https://kubernetes.io/docs/concepts/cluster-administration/authenticate-across-clusters-kubeconfig/) or the Kubernetes API Server endpoint is supported.
 
@@ -50,7 +89,7 @@ Without going into an explanation of all of the parameters, many of which should
 <b>--kraken-kubeconfig</b> - Value for Kraken confiuration yaml: deployment.clusters[0].nodePools.kubeConfig (default "defaultKube")<br />
 <b>--kraken-nodepool-keypair</b> - Value for Kraken configuration yaml: deployment.clusters[0].nodePools.keyPair (default "defaultKeyPair")<br />
 
-### Environment Variables
+### Configuration Environment Variables
 krak8s is configurable through command line configuration flags, and through a subset of environment variables. Any configuration value set on the command line takes precedence over the same value from the environment.
 
 The format of the environment variable for a flag is composed of the prefix `KRAK8S_` and the remaining text of the flag in all uppercase with all hyphens replaced by underscores.  Fore example, `--example-flag` would map to `KRAK8S_EXAMPLE_FLAG`. 
@@ -65,26 +104,22 @@ Not every flag can be set via an environment variable.  This is due to the fact 
 * --kraken-kubeconfig
 * --kraken-nodepool-keypair
 * --kubeconfig
-* --proxy
+* --proxy 
 
-### Details
-The health check service HTTP endpoint is available at: `/healthz`.  
-
-## Kraken Configuration File Integration
-For the krak8s API service to work with the Kraken configuration file, see reference here: [Kraken Configuration File Format](https://github.com/samsung-cnct/k2/tree/master/Documentation), we need to add a couple of markerer's to the YAML file.  The markers are necessary elements to allow the API to determine exactly where to make it's insertions for the elements of the configuration it will manage.
-
-### Services
-The first marker we'll add is for the [Helm Services](https://github.com/samsung-cnct/k2/blob/master/Documentation/kraken-configs/helmconfigs.md).  The point to insert the marker is at the very end of the section for `definitions.helmConfigs`.  There should be an existing section for the `defaultHelm`, and typically a section for the Helm configs for the current cluster, e.g. `geographHelm` would be the section for an example cluster named `geograph`.  We add the marker as the very last line the current cluster Helm configuration section.  The line text must be, exactly: 
-
+### Additional Environment Variables
+krak8s makes direct use of the Kraken infrastructure tools.  The Kraken infrastructure tools themselves have a number of environment variables that enable the tool chain to directly utilize AWS resources on behalf of the user. In addition, the tools expect to find all of the configuration files in a standard location, or to be informed, via environment variable, of the location.  See, for full reference, the Kraken documentation for [Preparing the Environment](https://github.com/samsung-cnct/k2#preparing-the-environment).  The critical values are represented here for quick reference:
 ```
-# |--> SERVICES_MARKER <--|--> DO NOT REMOVE: REQUIRED FOR FOR CONFIG AUTOMATION <--|
+KRAKEN=${HOME}/.kraken                    # This is the default output directory for Kraken
+SSH_ROOT=${HOME}/.ssh
+AWS_ROOT=${HOME}/.aws
+AWS_CONFIG=${AWS_ROOT}/config             # Use these files when using the aws provider
+AWS_CREDENTIALS=${AWS_ROOT}/credentials
+SSH_KEY=${SSH_ROOT}/id_rsa                # This is the default rsa key configured
+SSH_PUB=${SSH_ROOT}/id_rsa.pub
 ```
-### Node Pools
-The second marker we'll add is for the [Node Pools](https://github.com/samsung-cnct/k2/blob/master/Documentation/kraken-configs/nodepool.md).  The point to insert the marker is at the very end of the section for `deployment.clusters[0].nodePools`.  As the last line of this section, we insert the following marker.  The line text must be, exactly:
 
-```
-# |--> NODE_POOL_MARKER <--|--> DO NOT REMOVE: REQUIRED FOR FOR CONFIG AUTOMATION <--|
-```
+### Details of the Environment and Configuration Values
+There are several values with similar names and sometimes similar purposes that need further clarification in how they are used and how they get used in the running system.
 
 ## Deploying krak8s Example
 The best option for deploying the krak8s API service is via helm chart.  There is a chart provided for just this purpose here: [krak8s's API Helm Chart](https://github.com/samsung-cnct/chart-krak8s-api)
