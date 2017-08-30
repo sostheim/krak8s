@@ -6,8 +6,8 @@ services:
 before_script:
   - docker info
 
-#variables:
-#  DOCKER_HOST: tcp://localhost:2375  
+variables:
+  DOCKER_HOST: tcp://localhost:2375  
 
 #build-branch:
 #  stage: build
@@ -32,8 +32,6 @@ before_script:
   
 deploy-tag:
   stage: deploy
-  only:
-    - tags
   script:
   - echo ${KUBECONFIG} |base64 -d > ${PWD}/kubeconfig
   - docker login -u ${KUBECTL_USERNAME} -p ${KUBECTL_PASSWORD} ${KUBECTL_HOST}
