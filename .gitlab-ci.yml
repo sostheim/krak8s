@@ -9,29 +9,31 @@ before_script:
 variables:
   DOCKER_HOST: tcp://localhost:2375  
 
-#build-branch:
-#  stage: build
-#  only:
-#    - branches
-#    - master
-#  script:
-#  - docker run --rm=true -v $PWD:/go/src/krak8s golang:1.8 bash -c "cd /go/src/krak8s; make containerprep"
-#  - docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_HOST}
-#  - docker build -t ${REGISTRY_HOST}/${REGISTRY_IMAGE_NAME}:${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA} .
-#  - docker push ${REGISTRY_HOST}/${REGISTRY_IMAGE_NAME}:${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
+build-branch:
+  stage: build
+  only:
+    - branches
+    - master
+  script:
+  - docker run --rm=true -v $PWD:/go/src/krak8s golang:1.8 bash -c "cd /go/src/krak8s; make containerprep"
+  - docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_HOST}
+  - docker build -t ${REGISTRY_HOST}/${REGISTRY_IMAGE_NAME}:${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA} .
+  - docker push ${REGISTRY_HOST}/${REGISTRY_IMAGE_NAME}:${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHA}
 
-#build-tag:
-#  stage: build
-#  only:
-#    - tags
-#  script:
-#  - docker run --rm=true -v $PWD:/go/src/krak8s golang:1.8 bash -c "cd /go/src/krak8s; make containerprep"
-#  - docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_HOST}
-#  - docker build -t ${REGISTRY_HOST}/${REGISTRY_IMAGE_NAME}:${CI_COMMIT_TAG} .
-#  - docker push ${REGISTRY_HOST}/${REGISTRY_IMAGE_NAME}:${CI_COMMIT_TAG}
+build-tag:
+  stage: build
+  only:
+    - tags
+  script:
+  - docker run --rm=true -v $PWD:/go/src/krak8s golang:1.8 bash -c "cd /go/src/krak8s; make containerprep"
+  - docker login -u ${REGISTRY_USERNAME} -p ${REGISTRY_PASSWORD} ${REGISTRY_HOST}
+  - docker build -t ${REGISTRY_HOST}/${REGISTRY_IMAGE_NAME}:${CI_COMMIT_TAG} .
+  - docker push ${REGISTRY_HOST}/${REGISTRY_IMAGE_NAME}:${CI_COMMIT_TAG}
   
 deploy-tag:
   stage: deploy
+  only:
+    - tags
   script:
   - echo ${KUBECONFIG} |base64 -d > ${PWD}/kubeconfig
   - docker login -u ${KUBECTL_USERNAME} -p ${KUBECTL_PASSWORD} ${KUBECTL_HOST}
