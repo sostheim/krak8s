@@ -19,6 +19,7 @@ package main
 import (
 	"krak8s/commands"
 	"krak8s/queue"
+	"os"
 	"path"
 	"sync"
 	"time"
@@ -229,6 +230,13 @@ func (r *Runner) handleProjects(request *Request) bool {
 func runProjectRequestWithRetries(request *Request, command []string) {
 	// Block the command state in the queue and run the command to completion.
 	queue.Started()
+	if *krak8sCfg.krakenInDocker == false {
+		if wd, err := os.Getwd(); err != nil {
+			os.Chdir("/kraken")
+			defer os.Chdir(wd)
+		}
+	}
+
 	tries := request.retryCount
 	for tries >= 0 {
 		_, err := commands.Execute(command[0], command[1:])
