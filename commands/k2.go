@@ -151,12 +151,13 @@ func K2DockerEnvExport() []string {
 func K2EnvExport() []string {
 	// TODO: reduce this list to a minimal set of required vars
 	return []string{K2ENVKraken + "=" + os.Getenv(K2ENVKraken),
-		", " + K2ENVSSHRoot + "=" + os.Getenv(K2ENVSSHRoot),
-		", " + K2ENVSSHPub + "=" + os.Getenv(K2ENVSSHPub),
-		", " + K2ENVSSHKey + "=" + os.Getenv(K2ENVSSHKey),
-		", " + K2ENVAWSRoot + "=" + os.Getenv(K2ENVAWSRoot),
-		", " + K2ENVAWSConfig + "=" + os.Getenv(K2ENVAWSConfig),
-		", " + K2ENVAWSCredentials + "=" + os.Getenv(K2ENVAWSCredentials),
+		K2ENVSSHRoot + "=" + os.Getenv(K2ENVSSHRoot),
+		K2ENVSSHPub + "=" + os.Getenv(K2ENVSSHPub),
+		K2ENVSSHKey + "=" + os.Getenv(K2ENVSSHKey),
+		K2ENVAWSRoot + "=" + os.Getenv(K2ENVAWSRoot),
+		K2ENVAWSConfig + "=" + os.Getenv(K2ENVAWSConfig),
+		K2ENVAWSCredentials + "=" + os.Getenv(K2ENVAWSCredentials),
+		";",
 	}
 }
 
@@ -164,13 +165,14 @@ func K2EnvExport() []string {
 func K2CmdUp(docker bool, config string) []string {
 	if docker {
 		cmd := DockerRunK2()
-		cmd = append(cmd, "./"+K2Up, config)
+		cmd = append(cmd, "."+K2Up, config)
 		return cmd
 	}
 
-	cmd := K2EnvExport()
-	cmd = append(cmd, "/kraken/"+K2Up, config)
-	return cmd
+	return []string{
+		"/kraken" + K2Up,
+		config,
+	}
 }
 
 // K2CmdUpdate - build a command string to call ".../bin/update.sh"
@@ -193,22 +195,30 @@ func K2CmdUpdate(docker bool, action, base, config, name string) []string {
 
 	if docker {
 		cmd := DockerRunK2()
-		cmd = append(cmd, "./"+K2Update, K2Config, config, K2Output, base, k2UpdateArg, nodePoolName)
+		cmd = append(cmd, "."+K2Update, K2Config, config, K2Output, base, k2UpdateArg, nodePoolName)
 		return cmd
 	}
-	cmd := K2EnvExport()
-	cmd = append(cmd, "/kraken/"+K2Update, K2Config, config, K2Output, base, k2UpdateArg, nodePoolName)
-	return cmd
+
+	return []string{
+		"/kraken" + K2Update,
+		K2Config,
+		config,
+		K2Output,
+		base,
+		k2UpdateArg,
+		nodePoolName,
+	}
 }
 
 // K2CmdDown - build a command string to call ".../bin/down.sh"
 func K2CmdDown(docker bool, config string) []string {
 	if docker {
 		cmd := DockerRunK2()
-		cmd = append(cmd, K2Down, config)
+		cmd = append(cmd, "."+K2Down, config)
 		return cmd
 	}
-	cmd := K2EnvExport()
-	cmd = append(cmd, "/kraken/"+K2Down, config)
-	return cmd
+	return []string{
+		"/kraken" + K2Down,
+		config,
+	}
 }
