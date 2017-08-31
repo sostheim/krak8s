@@ -24,4 +24,5 @@ COPY build/linux_amd64/krak8s /
 COPY commands/node_pool.tmpl commands/services.tmpl /
 COPY swagger /
 
+WORKDIR "/"
 ENTRYPOINT ["/krak8s"]

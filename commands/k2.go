@@ -24,11 +24,11 @@ const (
 	// K2Image - kraken container image
 	K2Image = "quay.io/samsung_cnct/k2:latest"
 	// K2Up -  "up"
-	K2Up = "./bin/up.sh"
+	K2Up = "/bin/up.sh"
 	// K2Down -  "down"
-	K2Down = "./bin/down.sh"
+	K2Down = "/bin/down.sh"
 	// K2Update -  "update"
-	K2Update = "./bin/update.sh"
+	K2Update = "/bin/update.sh"
 	// K2Config - configuration file path
 	K2Config = "--config"
 	// K2Output - configuration tree output path
@@ -134,8 +134,8 @@ func K2EnvString() string {
 		K2ENVAWSCredentials + "=" + os.Getenv(K2ENVAWSCredentials)
 }
 
-// K2EnvExport - environment variables to export (-e) in docker
-func K2EnvExport() []string {
+// K2DockerEnvExport - environment variables to export (-e) in docker
+func K2DockerEnvExport() []string {
 	// TODO: reduce this list to a minimal set of required vars
 	return []string{"-e " + K2ENVKraken + "=" + os.Getenv(K2ENVKraken),
 		"-e " + K2ENVSSHRoot + "=" + os.Getenv(K2ENVSSHRoot),
@@ -147,19 +147,33 @@ func K2EnvExport() []string {
 	}
 }
 
-// K2CmdUp - build a command string to call "./bin/upsh"
-func K2CmdUp(docker bool, config string) []string {
-	if docker {
-		cmd := DockerRunK2()
-		cmd = append(cmd, K2Up, config)
-		return cmd
-	}
-	return []string{
-		K2Down, config,
+// K2EnvExport - environment variables to export cmd prefix
+func K2EnvExport() []string {
+	// TODO: reduce this list to a minimal set of required vars
+	return []string{K2ENVKraken + "=" + os.Getenv(K2ENVKraken),
+		", " + K2ENVSSHRoot + "=" + os.Getenv(K2ENVSSHRoot),
+		", " + K2ENVSSHPub + "=" + os.Getenv(K2ENVSSHPub),
+		", " + K2ENVSSHKey + "=" + os.Getenv(K2ENVSSHKey),
+		", " + K2ENVAWSRoot + "=" + os.Getenv(K2ENVAWSRoot),
+		", " + K2ENVAWSConfig + "=" + os.Getenv(K2ENVAWSConfig),
+		", " + K2ENVAWSCredentials + "=" + os.Getenv(K2ENVAWSCredentials),
 	}
 }
 
-// K2CmdUpdate - build a command string to call "./bin/update.sh"
+// K2CmdUp - build a command string to call ".../bin/upsh"
+func K2CmdUp(docker bool, config string) []string {
+	if docker {
+		cmd := DockerRunK2()
+		cmd = append(cmd, "./"+K2Up, config)
+		return cmd
+	}
+
+	cmd := K2EnvExport()
+	cmd = append(cmd, "/kraken/"+K2Up, config)
+	return cmd
+}
+
+// K2CmdUpdate - build a command string to call ".../bin/update.sh"
 func K2CmdUpdate(docker bool, action, base, config, name string) []string {
 
 	nodePoolName := name + "Nodes"
@@ -179,22 +193,22 @@ func K2CmdUpdate(docker bool, action, base, config, name string) []string {
 
 	if docker {
 		cmd := DockerRunK2()
-		cmd = append(cmd, K2Update, K2Config, config, K2Output, base, k2UpdateArg, nodePoolName)
+		cmd = append(cmd, "./"+K2Update, K2Config, config, K2Output, base, k2UpdateArg, nodePoolName)
 		return cmd
 	}
-	return []string{
-		K2Update,
-	}
+	cmd := K2EnvExport()
+	cmd = append(cmd, "/kraken/"+K2Update, K2Config, config, K2Output, base, k2UpdateArg, nodePoolName)
+	return cmd
 }
 
-// K2CmdDown - build a command string to call "./bin/down.sh"
+// K2CmdDown - build a command string to call ".../bin/down.sh"
 func K2CmdDown(docker bool, config string) []string {
 	if docker {
 		cmd := DockerRunK2()
 		cmd = append(cmd, K2Down, config)
 		return cmd
 	}
-	return []string{
-		K2Down, config,
-	}
+	cmd := K2EnvExport()
+	cmd = append(cmd, "/kraken/"+K2Down, config)
+	return cmd
 }

@@ -38,6 +38,7 @@ type config struct {
 	krakenKeyPair    *string
 	krakenKubeConfig *string
 	krakenCommand    *string
+	krakenInDocker   *bool
 	dryrun           *bool
 	debug            *bool
 }
@@ -53,6 +54,7 @@ func newConfig() *config {
 		krakenKeyPair:    flag.String("kraken-nodepool-keypair", commands.DefaultKeyPair, "kraken configuration yaml: deployment.clusters[0].nodePools.keyPair"),
 		krakenKubeConfig: flag.String("kraken-kubeconfig", commands.DefaultKubeConfig, "kraken confiuration yaml: deployment.clusters[0].nodePools.kubeConfig"),
 		krakenCommand:    flag.String("kraken-command", commands.K2, "command to run to execute kraken operations, either `k2`, or `k2cli` only"),
+		krakenInDocker:   flag.Bool("kraken-in-docker", false, "run kraken operations in docker"),
 		dryrun:           flag.Bool("dry-run", false, "don't actually execute backend commands"),
 		debug:            flag.Bool("debug", false, "enable debug output"),
 	}
@@ -62,10 +64,11 @@ func (cfg *config) String() string {
 	return fmt.Sprintf("Configuration Data: kubeconfig: %s, proxy: %s, "+
 		"health-check: %t, version: %t, kraken-config-file: %s, "+
 		"kraken-config-dir: %s, kraken-nodepool-keypair: %s, "+
-		"kraken-kubeconfig: %s, kraken-command: %s, dry-run: %t",
+		"kraken-kubeconfig: %s, kraken-command: %s, kraken-in-docker: %t, "+
+		"dry-run: %t, debug: %t",
 		*cfg.kubeconfig, *cfg.proxy, *cfg.healthCheck, *cfg.version,
 		*cfg.krakenConfigFile, *cfg.krakenConfigDir, *cfg.krakenKeyPair,
-		*cfg.krakenKubeConfig, *cfg.krakenCommand, *cfg.dryrun)
+		*cfg.krakenKubeConfig, *cfg.krakenCommand, *cfg.krakenInDocker, *cfg.dryrun, *cfg.debug)
 }
 
 // For any configuration members that contain environment variables as values, expand them.

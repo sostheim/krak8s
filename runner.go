@@ -192,7 +192,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 		}
 
 		if *krak8sCfg.krakenCommand == commands.K2 {
-			command = commands.K2CmdUpdate(true, commands.K2ExtraVarsAddNodePools, *krak8sCfg.krakenConfigDir, configFile, request.projObj.Name)
+			command = commands.K2CmdUpdate(*krak8sCfg.krakenInDocker, commands.K2ExtraVarsAddNodePools, *krak8sCfg.krakenConfigDir, configFile, request.projObj.Name)
 		} else {
 			command = commands.ClusterUpdateAdd(request.projObj.Name)
 		}
@@ -209,7 +209,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 		}
 
 		if *krak8sCfg.krakenCommand == commands.K2 {
-			command = commands.K2CmdUpdate(true, commands.K2ExtraVarsRemoveNodePools, *krak8sCfg.krakenConfigDir, configFile, request.projObj.Name)
+			command = commands.K2CmdUpdate(*krak8sCfg.krakenInDocker, commands.K2ExtraVarsRemoveNodePools, *krak8sCfg.krakenConfigDir, configFile, request.projObj.Name)
 		} else {
 			command = commands.ClusterUpdateAdd(request.projObj.Name)
 		}

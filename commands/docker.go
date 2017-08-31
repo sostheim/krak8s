@@ -56,7 +56,7 @@ func DockerRunK2() []string {
 	run := []string{
 		Docker, DockerRun, DockerArgRM, K2VolKraken, K2VolAWSRoot, K2VolSSHRoot, K2EnvHome,
 	}
-	run = append(run, K2EnvExport()...)
+	run = append(run, K2DockerEnvExport()...)
 	run = append(run, K2Image)
 	return run
 }
