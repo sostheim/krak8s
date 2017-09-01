@@ -237,7 +237,7 @@ func runProjectRequestWithRetries(request *Request, command []string) {
 	// Block the command state in the queue and run the command to completion.
 	queue.Started()
 	if *krak8sCfg.krakenInDocker == false {
-		if wd, err := os.Getwd(); err != nil {
+		if wd, err := os.Getwd(); err == nil {
 			glog.Infof("runProjectRequestWithRetries: current working directory: %s, changing to /kraken", wd)
 			os.Chdir("/kraken")
 			s, _ := os.Getwd()
