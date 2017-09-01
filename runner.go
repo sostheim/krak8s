@@ -222,13 +222,7 @@ func (r *Runner) handleProjects(request *Request) bool {
 		return true
 	}
 
-	s, _ := os.Getwd()
-	glog.Infof("pre runProjectRequestWithRetries Chdir() current working directory: %s", s)
-
 	runProjectRequestWithRetries(request, command)
-
-	s, _ = os.Getwd()
-	glog.Infof("after runProjectRequestWithRetries Chdir() current working directory: %s", s)
 
 	return true
 }
@@ -238,13 +232,10 @@ func runProjectRequestWithRetries(request *Request, command []string) {
 	queue.Started()
 	if *krak8sCfg.krakenInDocker == false {
 		if wd, err := os.Getwd(); err == nil {
-			glog.Infof("runProjectRequestWithRetries: current working directory: %s, changing to /kraken", wd)
 			os.Chdir("/kraken")
-			s, _ := os.Getwd()
-			glog.Infof("after Chdir() current working directory: %s", s)
 			defer os.Chdir(wd)
 		} else {
-			glog.Infof("runProjectRequestWithRetries: error getting current working directory: %v", err)
+			glog.Infof("error getting current working directory: %v", err)
 		}
 	}
 
