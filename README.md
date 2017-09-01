@@ -23,7 +23,9 @@ geograph/
 help.txt
 ``` 
 
-The `help.txt` is a list of useful commands for managing the cluster.  The file `datastore.json` is the snapshot of the API services active object model (more on this later).  Everything else, the `config.yaml` file and the directory `geograph/`, is the current record of the active state for the cluster.  The krak8s API manages this state by making updates to the `config.yaml` file that get reflected in the `geograph/` manifest when the Kraken tool chain is applied to the configuration file.
+The `help.txt` is a list of useful commands for managing the cluster.  The file `datastore.json` is the snapshot of the API services active object model (more on this later).  Everything else, the `config.yaml` file and the directory `geograph/`, represents the current active state for the cluster.  
+
+The krak8s API manages this state by making updates to the `config.yaml` file that get reflected in the `geograph/` manifest when the Kraken tool chain is applied to the configuration file.
 
 #### Kraken Configuration File Integration
 For the krak8s API service to work with the Kraken configuration file, see reference here: [Kraken Configuration File Format](https://github.com/samsung-cnct/k2/tree/master/Documentation), we need to insert a couple of markers to the YAML file.  The markers are necessary elements that allow the API to determine exactly where to make it's insertions for the elements of the configuration it will manage.
@@ -41,12 +43,18 @@ The second marker we'll add is for the [Node Pools](https://github.com/samsung-c
 # |--> NODE_POOL_MARKER <--|--> DO NOT REMOVE: REQUIRED FOR FOR CONFIG AUTOMATION <--|
 ```
 
-#### API Object Model Persistence and Recovery
+#### API Object Model
 The krak8s API service commits every change to the state of the API object model to an external datastore snapshot named `datastore.json`.  This is the persistent backup of the API server state.  So long as this file remains in tact between runs of the API service, the API services state will be maintained.  
 
 Very simply, whenever the API service starts up, it looks for the presence of the file `datastore.json`.  If the file is found, it initializes it's internal state from this file.  If the file is not found, is empty, or if the file contains only the valid JSON object `{}`, then the API service will initialize to a default new state.
 
-This file should be managed, along with the rest of the state discussed above as a durable asset of the system.  This means that the file should live a) locally and be managed by some external backup solution for the admin workstation, b) be part of a persistent volume/object store that's life time is decoupled from the container or Pod's lifetime or c) the file should be persistently backed up using the companion project (and helm chart installed sidecar), [git-archivist](https://github.com/samsung-cnct/git-archivist).
+#### State Persistence and Recovery
+All of these artifacts should be managed as a durable asset of the system.  This means that these directories and files should be one of the folling:
+1. reside locally and be managed by some external backup solution for the admin workstation
+2. reside as part of a persistent volume/object store that's life time is decoupled from the container or Pod's lifetime
+3. reside in a transient volume but be persistently backed up using the companion project [git-archivist](https://github.com/samsung-cnct/git-archivist).
+
+For persistent deployments running in a Kubernetes cluster Deployment Pod, the following Helm Chart is provided: [Chart krak8s API](https://github.com/samsung-cnct/chart-krak8s-api). The chart deploys `git-archivist` as an [Init Container](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) to download the state repository specified.  When the init container is complete, two containers are added to the Pod: `git-archivist` as a long running syncronization service for the Git repository, and `krak8s` as the API service.
 
 ### Connectivity
 A deployment of krak8s requires network connectivity to the Kubernetes API server. The Kubernetes API server can be accessed via `kubectl proxy` for development, but this is not recommended for production deployments. For normal operation, the standard access via [`kubeconfig`](https://kubernetes.io/docs/concepts/cluster-administration/authenticate-across-clusters-kubeconfig/) or the Kubernetes API Server endpoint is supported.
@@ -118,8 +126,8 @@ SSH_KEY=${SSH_ROOT}/id_rsa                # This is the default rsa key configur
 SSH_PUB=${SSH_ROOT}/id_rsa.pub
 ```
 
-### Details of the Environment and Configuration Values
-There are several values with similar names and sometimes similar purposes that need further clarification in how they are used and how they get used in the running system.
+#### Using Helm to Set the Environment 
+For deployments running in a Kubernetes cluster Deployment Pod, the Helm Chart: [Chart krak8s API](https://github.com/samsung-cnct/chart-krak8s-api) manages providing all of the required environment variables to the application. 
 
 ## Deploying krak8s Example
 The best option for deploying the krak8s API service is via helm chart.  There is a chart provided for just this purpose here: [krak8s's API Helm Chart](https://github.com/samsung-cnct/chart-krak8s-api)
