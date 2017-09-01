@@ -24,11 +24,11 @@ const (
 	// K2Image - kraken container image
 	K2Image = "quay.io/samsung_cnct/k2:latest"
 	// K2Up -  "up"
-	K2Up = "/bin/up.sh"
+	K2Up = "./bin/up.sh"
 	// K2Down -  "down"
-	K2Down = "/bin/down.sh"
+	K2Down = "./bin/down.sh"
 	// K2Update -  "update"
-	K2Update = "/bin/update.sh"
+	K2Update = "./bin/update.sh"
 	// K2Config - configuration file path
 	K2Config = "--config"
 	// K2Output - configuration tree output path
@@ -165,12 +165,12 @@ func K2EnvExport() []string {
 func K2CmdUp(docker bool, config string) []string {
 	if docker {
 		cmd := DockerRunK2()
-		cmd = append(cmd, "."+K2Up, config)
+		cmd = append(cmd, K2Up, config)
 		return cmd
 	}
 
 	return []string{
-		"/kraken" + K2Up,
+		K2Up,
 		config,
 	}
 }
@@ -195,12 +195,12 @@ func K2CmdUpdate(docker bool, action, base, config, name string) []string {
 
 	if docker {
 		cmd := DockerRunK2()
-		cmd = append(cmd, "."+K2Update, K2Config, config, K2Output, base, k2UpdateArg, nodePoolName)
+		cmd = append(cmd, K2Update, K2Config, config, K2Output, base, k2UpdateArg, nodePoolName)
 		return cmd
 	}
 
 	return []string{
-		"/kraken" + K2Update,
+		K2Update,
 		K2Config,
 		config,
 		K2Output,
@@ -214,11 +214,11 @@ func K2CmdUpdate(docker bool, action, base, config, name string) []string {
 func K2CmdDown(docker bool, config string) []string {
 	if docker {
 		cmd := DockerRunK2()
-		cmd = append(cmd, "."+K2Down, config)
+		cmd = append(cmd, K2Down, config)
 		return cmd
 	}
 	return []string{
-		"/kraken" + K2Down,
+		K2Down,
 		config,
 	}
 }
