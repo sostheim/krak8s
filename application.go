@@ -35,7 +35,7 @@ func MarshalApplicationObject(obj *ApplicationObject) *app.Application {
 		Name:           obj.ChartName,
 		Version:        obj.ChartVersion,
 		Channel:        obj.Channel,
-		Username: 		obj.Username,
+		Username:       obj.Username,
 		Config:         obj.Config,
 		JSONValues:     obj.JSONValues,
 		CreatedAt:      obj.CreatedAt,
@@ -73,7 +73,7 @@ func (c *ApplicationController) Create(ctx *app.CreateApplicationContext) error 
 		ctx.Payload.Version,
 		ctx.Payload.Channel,
 		ctx.Payload.Username,
-		ctx.Payload.Password, 
+		ctx.Payload.Password,
 		ctx.Payload.Set,
 		ctx.Payload.JSONValues)
 	if app == nil {

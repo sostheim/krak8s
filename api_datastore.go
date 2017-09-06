@@ -316,10 +316,14 @@ func (ds *DataStore) AddProject(obj ProjectObject) {
 
 // DeleteProject removes the project and all subordinate objects.
 func (ds *DataStore) DeleteProject(obj *ProjectObject) {
-	for _, link := range ds.data.Projects[obj.OID].Namespaces {
-		ds.DeleteNamespace(ds.data.Namespaces[link.OID])
+	if _, ok := ds.data.Projects[obj.OID]; !ok {
+		return
 	}
-
+	if ds.data.Projects[obj.OID].Namespaces != nil {
+		for _, link := range ds.data.Projects[obj.OID].Namespaces {
+			ds.DeleteNamespace(ds.data.Namespaces[link.OID])
+		}
+	}
 	ds.Lock()
 	defer ds.Unlock()
 	delete(ds.data.Projects, obj.OID)
@@ -341,7 +345,6 @@ func (ds *DataStore) NewNamespaceObject() *NamespaceObject {
 	}
 	ds.Lock()
 	defer ds.Unlock()
-
 	ds.data.Namespaces[obj.OID] = &obj
 	return &obj
 }
@@ -393,11 +396,19 @@ func (ds *DataStore) AddNamespace(obj NamespaceObject) {
 
 // DeleteNamespace removes the Namespace and all subordinate objects.
 func (ds *DataStore) DeleteNamespace(obj *NamespaceObject) {
-	for _, link := range ds.data.Namespaces[obj.OID].Applications {
-		ds.DeleteApplication(ds.data.Applications[link.OID])
+	if _, ok := ds.data.Namespaces[obj.OID]; !ok {
+		return
 	}
-	ds.DeleteResource(ds.data.Namespaces[obj.OID].Resources.OID)
-
+	if ds.data.Namespaces[obj.OID].Applications != nil {
+		for i, link := range ds.data.Namespaces[obj.OID].Applications {
+			ds.DeleteApplication(ds.data.Applications[link.OID])
+			ds.data.Namespaces[obj.OID].Applications[i] = nil
+		}
+	}
+	if ds.data.Namespaces[obj.OID].Resources != nil {
+		ds.DeleteResource(ds.data.Namespaces[obj.OID].Resources.OID)
+		ds.data.Namespaces[obj.OID].Resources = nil
+	}
 	ds.Lock()
 	defer ds.Unlock()
 	delete(ds.data.Namespaces, obj.OID)
@@ -492,6 +503,9 @@ func (ds *DataStore) AddApplication(obj ApplicationObject) {
 
 // DeleteApplication deletes specified application
 func (ds *DataStore) DeleteApplication(obj *ApplicationObject) {
+	if _, ok := ds.data.Applications[obj.OID]; !ok {
+		return
+	}
 	ds.Lock()
 	defer ds.Unlock()
 	delete(ds.data.Applications, obj.OID)
@@ -557,6 +571,9 @@ func (ds *DataStore) AddResource(obj *ResourceObject) {
 
 // DeleteResource deletes specified application
 func (ds *DataStore) DeleteResource(resOID string) {
+	if _, ok := ds.data.Resources[resOID]; !ok {
+		return
+	}
 	ds.Lock()
 	defer ds.Unlock()
 	delete(ds.data.Resources, resOID)
