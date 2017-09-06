@@ -16,7 +16,7 @@
 # Dockerfile - krak8s API service container.
 #
 
-FROM quay.io/samsung_cnct/k2:af557b1b081824c0a1121c0c688a3e2085362301
+FROM quay.io/samsung_cnct/k2:latest
 MAINTAINER Rick Sostheim
 LABEL vendor="Samsung CNCT"
 
