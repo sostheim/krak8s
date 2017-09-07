@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"krak8s/app"
 
 	"github.com/goadesign/goa"
@@ -77,11 +78,16 @@ func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 	if !ok {
 		return ctx.NotFound()
 	}
+	if ns.Resources.OID != ctx.ResourceID {
+		return ctx.BadRequest(errors.New("Inavlid Cluster Resource Object ID specified in request"))
+	}
 
 	res.State = ResourceDeleteRequested
 	c.backend.ProjectRequest(RemoveProject, c.ds, proj, ns, res)
 
 	c.ds.DeleteResource(ctx.ResourceID)
+	ns.Resources = nil
+
 	return ctx.NoContent()
 	// ClusterController_Delete: end_implement
 }

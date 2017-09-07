@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"krak8s/app"
 	"time"
 
@@ -101,12 +102,30 @@ func (c *ApplicationController) Delete(ctx *app.DeleteApplicationContext) error 
 	}
 	ns, ok := c.ds.Namespace(app.NamespaceID)
 	if !ok {
-		return ctx.NotFound() // TODO: Should be InternalServerError()
+		return ctx.NotFound()
+	}
+
+	index := 0
+	found := false
+	for i, val := range ns.Applications {
+		if val.OID == ctx.Appid {
+			index = i
+			found = true
+			break
+		}
+	}
+	if !found {
+		return ctx.BadRequest(errors.New("Inavlid Application Object ID specified in request"))
 	}
 
 	c.backend.ChartRequest(RemoveChart, c.ds, proj, ns, app)
 
 	c.ds.DeleteApplication(app)
+
+	copy(ns.Applications[index:], ns.Applications[index+1:])
+	ns.Applications[len(ns.Applications)-1] = nil
+	ns.Applications = ns.Applications[:len(ns.Applications)-1]
+
 	return ctx.NoContent()
 
 	// ApplicationController_Delete: end_implement
