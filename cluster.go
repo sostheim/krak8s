@@ -75,7 +75,7 @@ func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 	}
 	ns, ok := c.ds.Namespace(res.NamespaceID)
 	if !ok {
-		return ctx.NotFound() // TODO: Should be InternalServerError()
+		return ctx.NotFound()
 	}
 
 	res.State = ResourceDeleteRequested
@@ -89,6 +89,9 @@ func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 // Get runs the get action.
 func (c *ClusterController) Get(ctx *app.GetClusterContext) error {
 	// ClusterController_Get: start_implement
+	if _, ok := c.ds.Project(ctx.Projectid); !ok {
+		return ctx.NotFound()
+	}
 	resource, ok := c.ds.Resource(ctx.ResourceID)
 	if !ok {
 		return ctx.NotFound()

@@ -136,7 +136,7 @@ func ListNamespacePath(projectid string) string {
 	return fmt.Sprintf("/v1/projects/%s/namespaces", param0)
 }
 
-// Retrieve all projects.
+// Retrieve all of a projects namespaces.
 func (c *Client) ListNamespace(ctx context.Context, path string) (*http.Response, error) {
 	req, err := c.NewListNamespaceRequest(ctx, path)
 	if err != nil {

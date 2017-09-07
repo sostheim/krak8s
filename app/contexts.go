@@ -621,6 +621,12 @@ func (ctx *ListNamespaceContext) OK(r NamespaceCollection) error {
 	return ctx.ResponseData.Service.Send(ctx.Context, 200, r)
 }
 
+// NotFound sends a HTTP response with status code 404.
+func (ctx *ListNamespaceContext) NotFound() error {
+	ctx.ResponseData.WriteHeader(404)
+	return nil
+}
+
 // CreateProjectContext provides the project create action context.
 type CreateProjectContext struct {
 	context.Context

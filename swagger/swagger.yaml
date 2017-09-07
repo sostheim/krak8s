@@ -1060,7 +1060,7 @@ paths:
       - cluster
   /v1/projects/{projectid}/namespaces:
     get:
-      description: Retrieve all projects.
+      description: Retrieve all of a projects namespaces.
       operationId: namespace#list
       parameters:
       - in: path
@@ -1074,6 +1074,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/NamespaceCollection'
+        "404":
+          description: Not Found
       schemes:
       - http
       summary: list namespace
