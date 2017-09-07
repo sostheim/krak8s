@@ -75,8 +75,8 @@ var _ = Resource("namespace", func() {
 
 	Action("list", func() {
 		Routing(GET(""))
-		Description("Retrieve all projects.")
-		// Can always return success, including w/ empty list.
+		Description("Retrieve all of a projects namespaces.")
+		Response(NotFound)
 		Response(OK, CollectionOf(Namespace))
 	})
 

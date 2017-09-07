@@ -72,7 +72,9 @@ func (c *NamespaceController) Create(ctx *app.CreateNamespaceContext) error {
 // Delete runs the delete action.
 func (c *NamespaceController) Delete(ctx *app.DeleteNamespaceContext) error {
 	// NamespaceController_Delete: start_implement
-
+	if _, ok := c.ds.Project(ctx.Projectid); !ok {
+		return ctx.NotFound()
+	}
 	ns, ok := c.ds.Namespace(ctx.Namespaceid)
 	if !ok {
 		return ctx.NotFound()
@@ -85,6 +87,9 @@ func (c *NamespaceController) Delete(ctx *app.DeleteNamespaceContext) error {
 // Get runs the get action.
 func (c *NamespaceController) Get(ctx *app.GetNamespaceContext) error {
 	// NamespaceController_Get: start_implement
+	if _, ok := c.ds.Project(ctx.Projectid); !ok {
+		return ctx.NotFound()
+	}
 	ns, ok := c.ds.Namespace(ctx.Namespaceid)
 	if !ok {
 		return ctx.NotFound()
@@ -97,6 +102,9 @@ func (c *NamespaceController) Get(ctx *app.GetNamespaceContext) error {
 // List runs the list action.
 func (c *NamespaceController) List(ctx *app.ListNamespaceContext) error {
 	// NamespaceController_List: start_implement
+	if _, ok := c.ds.Project(ctx.Projectid); !ok {
+		return ctx.NotFound()
+	}
 	collection := app.NamespaceCollection{}
 	nses := c.ds.NamespacesCollection(ctx.Projectid)
 	count := len(nses)
