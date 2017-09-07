@@ -43,13 +43,24 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 	if !ok {
 		return ctx.NotFound()
 	}
-	// TODO: validation step for project oid + namespace oid
 	ns, ok := c.ds.Namespace(ctx.Payload.NamespaceID)
 	if !ok {
 		return ctx.NotFound()
 	} else if ns.Resources != nil {
 		return ctx.Conflict()
 	}
+
+	found := false
+	for _, val := range proj.Namespaces {
+		if val.OID == ctx.Projectid {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return ctx.BadRequest(errors.New("Inavlid Namespace Object ID specified in request"))
+	}
+
 	res := c.ds.NewResource(ctx.Payload.NamespaceID, ctx.Payload.NodePoolSize)
 	if res == nil {
 		return ctx.InternalServerError()
