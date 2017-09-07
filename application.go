@@ -60,11 +60,22 @@ func (c *ApplicationController) Create(ctx *app.CreateApplicationContext) error 
 	if !ok {
 		return ctx.NotFound()
 	}
-	// TODO: validation step for project oid + namespace oid
 	ns, ok := c.ds.Namespace(ctx.Payload.NamespaceID)
 	if !ok {
 		return ctx.NotFound()
 	}
+
+	found := false
+	for _, val := range proj.Namespaces {
+		if val.OID == ctx.Projectid {
+			found = true
+			break
+		}
+	}
+	if !found {
+		return ctx.BadRequest(errors.New("Inavlid Namespace Object ID specified in request"))
+	}
+
 	app := c.ds.NewApplication(
 		ctx.Payload.NamespaceID,
 		ctx.Payload.DeploymentName,
