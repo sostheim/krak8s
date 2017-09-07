@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"krak8s/app"
 
 	"github.com/goadesign/goa"
@@ -72,14 +73,34 @@ func (c *NamespaceController) Create(ctx *app.CreateNamespaceContext) error {
 // Delete runs the delete action.
 func (c *NamespaceController) Delete(ctx *app.DeleteNamespaceContext) error {
 	// NamespaceController_Delete: start_implement
-	if _, ok := c.ds.Project(ctx.Projectid); !ok {
+	proj, ok := c.ds.Project(ctx.Projectid)
+	if !ok {
 		return ctx.NotFound()
 	}
 	ns, ok := c.ds.Namespace(ctx.Namespaceid)
 	if !ok {
 		return ctx.NotFound()
 	}
+
+	index := 0
+	found := false
+	for i, val := range proj.Namespaces {
+		if val.OID == ctx.Namespaceid {
+			index = i
+			found = true
+			break
+		}
+	}
+	if !found {
+		return ctx.BadRequest(errors.New("Inavlid Namespace Object ID specified in request"))
+	}
+
 	c.ds.DeleteNamespace(ns)
+
+	copy(proj.Namespaces[index:], proj.Namespaces[index+1:])
+	proj.Namespaces[len(proj.Namespaces)-1] = nil
+	proj.Namespaces = proj.Namespaces[:len(proj.Namespaces)-1]
+
 	return ctx.NoContent()
 	// NamespaceController_Delete: end_implement
 }
