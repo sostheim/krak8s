@@ -67,7 +67,7 @@ func (c *ApplicationController) Create(ctx *app.CreateApplicationContext) error 
 
 	found := false
 	for _, val := range proj.Namespaces {
-		if val.OID == ctx.Projectid {
+		if val.OID == ctx.Payload.NamespaceID {
 			found = true
 			break
 		}
