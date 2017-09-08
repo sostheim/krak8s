@@ -52,7 +52,7 @@ func (c *ClusterController) Create(ctx *app.CreateClusterContext) error {
 
 	found := false
 	for _, val := range proj.Namespaces {
-		if val.OID == ctx.Projectid {
+		if val.OID == ctx.Payload.NamespaceID {
 			found = true
 			break
 		}
