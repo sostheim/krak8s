@@ -223,7 +223,7 @@ Using a cluster named "Meteor", we'll create some constellation related projects
 	2. Create a namespace for the project, `neptune-test`
 	3. Create the cluster resources associated with this project/namespaces.
 ```
-$ curl -XPOST -H "Content-Type: application/json" -d '{"name":"neptune"}' http: //localhost:8080/v1/projects
+$ curl -XPOST -H "Content-Type: application/json" -d '{"name":"neptune"}' http://localhost:8080/v1/projects
 {
 	"created_at": "2017-08-16T09:43:46.888464975-07:00",
 	"id": "a901c92b",
@@ -231,7 +231,7 @@ $ curl -XPOST -H "Content-Type: application/json" -d '{"name":"neptune"}' http: 
 	"namespaces": null,
 	"type": "project"
 }
-$ curl -XPOST -H "Content-Type: application/json" -d '{"name":"neptune-test"}' http: //localhost:8080/v1/projects/a901c92b/namespaces
+$ curl -XPOST -H "Content-Type: application/json" -d '{"name":"neptune-test"}' http://localhost:8080/v1/projects/a901c92b/namespaces
 {
 	"applications": null,
 	"created_at": "2017-08-16T09:44:12.07355244-07:00",
@@ -240,7 +240,7 @@ $ curl -XPOST -H "Content-Type: application/json" -d '{"name":"neptune-test"}' h
 	"resources": null,
 	"type": "namespace"
 }
-$ curl -XPOST -H "Content-Type: application/json" -d '{"namespace_id":"70271bbf", "nodePoolSize": 3}' http: //localhost:8080/v1/projects/a901c92b/cluster
+$ curl -XPOST -H "Content-Type: application/json" -d '{"namespace_id":"70271bbf", "nodePoolSize": 3}' http://localhost:8080/v1/projects/a901c92b/cluster
 {
 	"created_at": "2017-08-16T09:44:40.20165339-07:00",
 	"id": "e74f17d7",
@@ -253,7 +253,7 @@ $ curl -XPOST -H "Content-Type: application/json" -d '{"namespace_id":"70271bbf"
 ```
 2. This final step can take a significant amount of time.  It's not unusual for this to take anywhere from 5 to 15 minutes, sometimes less, almost never more.  As such, it is necessary to poll the newly created endpoint periodically to see it make the transition from either `"state": "create_requested"` or `"state": "starting"` to the desired ready `"state": "active"` - shown below.
 ```
-$ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+$ curl http://localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
 {
 	"created_at": "2017-08-16T09:44:40.20165339-07:00",
 	"id": "e74f17d7",
@@ -290,7 +290,7 @@ $ diff config.yaml config.yaml.1502901880
 3. Another constellation is added to the cluster in similar fashion.
 ```
 $ curl -XPOST -H "Content-Type: application/json" -d '{"name":"mars"}'
-http: //localhost:8080/v1/projects
+http://localhost:8080/v1/projects
 {
 	"created_at": "2017-08-16T10:00:20.092785526-07:00",
 	"id": "ca57d654",
@@ -299,7 +299,7 @@ http: //localhost:8080/v1/projects
 	"type": "project"
 }
 $ curl -XPOST -H "Content-Type: application/json" -d '{"name":"mars-production"}'
-http: //localhost:8080/v1/projects/ca57d654/namespaces
+http://localhost:8080/v1/projects/ca57d654/namespaces
 {
 	"applications": null,
 	"created_at": "2017-08-16T10:01:02.179474746-07:00",
@@ -309,7 +309,7 @@ http: //localhost:8080/v1/projects/ca57d654/namespaces
 	"type": "namespace"
 }
 $ curl -XPOST -H "Content-Type: application/json" -d '{"namespace_id":"84f70e67", "nodePoolSize": 3}'
-http: //localhost:8080/v1/projects/ca57d654/cluster
+http://localhost:8080/v1/projects/ca57d654/cluster
 {
 	"created_at": "2017-08-16T10:01:28.436890214-07:00",
 	"id": "55a9bd4e",
@@ -319,7 +319,7 @@ http: //localhost:8080/v1/projects/ca57d654/cluster
 	"type": "Resource",
 	"updated_at": "0001-01-01T00:00:00Z"
 }
-$ curl http: //localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
+$ curl http://localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
 {
 	"created_at": "2017-08-16T10:01:28.436890214-07:00",
 	"id": "55a9bd4e",
@@ -329,7 +329,7 @@ $ curl http: //localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
 	"type": "Resource",
 	"updated_at": "2017-08-16T10:01:28.437887418-07:00"
 }
-$ curl http: //localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
+$ curl http://localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
 {
 	"created_at": "2017-08-16T10:01:28.436890214-07:00",
 	"id": "55a9bd4e",
@@ -339,7 +339,7 @@ $ curl http: //localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
 	"type": "Resource",
 	"updated_at": "2017-08-16T10:01:28.437887418-07:00"
 }
-$ curl http: //localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
+$ curl http://localhost:8080/v1/projects/ca57d654/cluster/55a9bd4e
 {
 	"created_at": "2017-08-16T10:01:28.436890214-07:00",
 	"id": "55a9bd4e",
@@ -355,7 +355,7 @@ The last 4 curl commands show the resource's complete transition from `"create_r
 4. Bring up a MongoDB Application using the new Mars Production cluster resources.
 ```
 curl -XPOST -H "Content-Type: application/json" -d '{ "name": "mongodb-replicaset", "registry": "quay.io/samsung_cnct", "set": "", "version": "", "namespace_id": "84f70e67"}'
-http: //localhost:8080/v1/projects/ca57d654/applications
+http://localhost:8080/v1/projects/ca57d654/applications
 {
 	"created_at": "2017-08-16T10:14:03.033981237-07:00",
 	"id": "9f0d9890",
@@ -369,7 +369,7 @@ http: //localhost:8080/v1/projects/ca57d654/applications
 ```
 5. As it appears that the Neptune Test resources are not actually getting used, remove them from the cluster.
 ```
-$ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+$ curl http://localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
 {
 	"created_at": "2017-08-16T09:44:40.20165339-07:00",
 	"id": "e74f17d7",
@@ -379,8 +379,8 @@ $ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
 	"type": "Resource",
 	"updated_at": "2017-08-16T09:50:11.049940314-07:00"
 }
-$ curl -XDELETE http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
-$ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+$ curl -XDELETE http://localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+$ curl http://localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
 {
 	"created_at": "2017-08-16T09:44:40.20165339-07:00",
 	"id": "e74f17d7",
@@ -390,7 +390,7 @@ $ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
 	"type": "Resource",
 	"updated_at": "2017-08-16T10:17:58.923457293-07:00"
 }
-$ curl http: //localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
+$ curl http://localhost:8080/v1/projects/a901c92b/cluster/e74f17d7
 {
 	"created_at": "2017-08-16T09:44:40.20165339-07:00",
 	"id": "e74f17d7",
