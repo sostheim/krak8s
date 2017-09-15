@@ -30,6 +30,8 @@ The krak8s API manages this state by making updates to the `config.yaml` file th
 #### Kraken Configuration File Integration
 For the krak8s API service to work with the Kraken configuration file, see reference here: [Kraken Configuration File Format](https://github.com/samsung-cnct/k2/tree/master/Documentation), we need to insert a couple of markers to the YAML file.  The markers are necessary elements that allow the API to determine exactly where to make it's insertions for the elements of the configuration it will manage.
 
+The following sections explain how to add the markers to a file by hand.  Attached here is an example default generated [Kraken configuration file](https://github.com/samsung-cnct/krak8s/blob/master/kraken_config.yaml) for reference.
+
 ##### Services
 The first marker we'll add is for the [Helm Services](https://github.com/samsung-cnct/k2/blob/master/Documentation/kraken-configs/helmconfigs.md).  The point to insert the marker is at the very end of the section for `definitions.helmConfigs`.  There should be an existing section for the `defaultHelm`, and typically a section for the Helm configs for the current cluster, e.g. `geographHelm` would be the section for an example cluster named `geograph`.  We add the marker as the very last line the current cluster Helm configuration section.  The line text must be, exactly: 
 
