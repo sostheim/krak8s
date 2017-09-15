@@ -204,3 +204,110 @@ func TestNewInalidDataStoreLoad(t *testing.T) {
 			len(ds.data.Projects), len(ds.data.Namespaces), len(ds.data.Resources), len(ds.data.Applications))
 	}
 }
+
+func TestNewProject(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	obj := ds.NewProjectObject()
+	if obj == nil {
+		t.Errorf("NewProjectObject() = nil, want: valid project")
+	}
+	if obj.CreatedAt.IsZero() != false {
+		t.Errorf("NewProjectObject() date = %v, want CratedAt != 0", obj.CreatedAt)
+	}
+	if obj.Name != "" {
+		t.Errorf("NewProjectObject() Name = %s, want Name == ``", obj.Name)
+	}
+	if len(obj.Namespaces) != 0 {
+		t.Errorf("NewProjectObject() namesapces = %d, want Namespaces = 0", len(obj.Namespaces))
+	}
+	if obj.ObjType != Project {
+		t.Errorf("NewProjectObject() ObjType = %s, want: ObjType == Project", obj.ObjType)
+	}
+	if obj.OID == "" {
+		t.Errorf("NewProjectObject(), OID = ``, want oid != ``")
+	}
+	if obj.UpdatedAt.IsZero() == false {
+		t.Errorf("NewProjectObject()  update = %v, want UpdatedAt == 0", obj.UpdatedAt)
+	}
+}
+
+func TestNewNamedProject(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	obj := ds.NewProject("test_object")
+	if obj == nil {
+		t.Errorf("NewProject() = nil, want: valid project")
+	}
+	if obj.CreatedAt.IsZero() != false {
+		t.Errorf("NewProject() date = %v, want CratedAt != 0", obj.CreatedAt)
+	}
+	if obj.Name != "test_object" {
+		t.Errorf("NewProject() Name = %s, want Name == `test_object`", obj.Name)
+	}
+	if len(obj.Namespaces) != 0 {
+		t.Errorf("NewProject() namesapces = %d, want Namespaces = 0", len(obj.Namespaces))
+	}
+	if obj.ObjType != Project {
+		t.Errorf("NewProject() ObjType = %s, want: ObjType == Project", obj.ObjType)
+	}
+	if obj.OID == "" {
+		t.Errorf("NewProject(), OID = ``, want oid != ``")
+	}
+	if obj.UpdatedAt.IsZero() == false {
+		t.Errorf("NewProject()  update = %v, want UpdatedAt == 0", obj.UpdatedAt)
+	}
+}
+
+func TestProjectCollection(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	ds.NewProject("test_project_1")
+	ds.NewProject("test_project_2")
+	ds.NewProject("test_project_3")
+	ds.NewProject("test_project_4")
+	ds.NewProject("test_project_5")
+	col := ds.ProjectsCollection()
+	if len(col) != 5 {
+		t.Errorf("NewProject() projects = %d, want porjects = 5", len(col))
+	}
+}
+
+func TestProject(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	ds.NewProject("test_project_1")
+	ds.NewProject("test_project_2")
+	obj := ds.NewProject("test_project_3")
+	if obj == nil {
+		t.Errorf("NewProject() = nil, want: valid project")
+	}
+	if obj.Name != "test_project_3" {
+		t.Errorf("NewProject() Name = %s, want Name == `test_object`", obj.Name)
+	}
+	ds.NewProject("test_project_4")
+	ds.NewProject("test_project_5")
+
+	proj, found := ds.Project(obj.OID)
+	if !found {
+		t.Errorf("Project(%s) not found, want found", obj.OID)
+	}
+	if obj != proj {
+		t.Errorf("Project(%s) obj != proj, want obj == proj", obj.OID)
+	}
+
+	_, found = ds.Project("badoid")
+	if found {
+		t.Errorf("Project(%s) found, want not found", "badoid")
+	}
+}
