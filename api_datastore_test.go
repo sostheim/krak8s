@@ -276,7 +276,7 @@ func TestProjectCollection(t *testing.T) {
 	ds.NewProject("test_project_5")
 	col := ds.ProjectsCollection()
 	if len(col) != 5 {
-		t.Errorf("NewProject() projects = %d, want porjects = 5", len(col))
+		t.Errorf("NewProject() projects = %d, want projects = 5", len(col))
 	}
 }
 
@@ -309,5 +309,120 @@ func TestProject(t *testing.T) {
 	_, found = ds.Project("badoid")
 	if found {
 		t.Errorf("Project(%s) found, want not found", "badoid")
+	}
+}
+
+func TestNewNamespace(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	ns := ds.NewNamespaceObject()
+	if ns == nil {
+		t.Errorf("NewNamespaceObject() = nil, want: valid Namespace")
+	}
+	if ns.ObjType != Namespace {
+		t.Errorf("NewNamespaceObject(), ObjType = %s, want ObjType = %s", ns.ObjType, Namespace)
+	}
+	if ns.OID == "" {
+		t.Errorf("NewNamespaceObject(), OID = ``, want oid != ``")
+	}
+	if ns.Name != "" {
+		t.Errorf("NewNamespaceObject() Name = %s, want Name == ``", ns.Name)
+	}
+	if ns.CreatedAt.IsZero() != false {
+		t.Errorf("NewNamespaceObject() date = %v, want CratedAt != 0", ns.CreatedAt)
+	}
+	if len(ns.Applications) != 0 {
+		t.Errorf("NewNamespaceObject() applications = %d, want Applications = 0", len(ns.Applications))
+	}
+	if ns.Resources != nil {
+		t.Error("NewNamespaceObject() resources exists, want Resources = nil")
+	}
+}
+
+func TestNewNamedNamespace(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	obj := ds.NewProject("test_object")
+	if obj == nil {
+		t.Errorf("NewProject() = nil, want: valid project")
+	}
+	ns := ds.NewNamespace("test_namespace")
+	if ns == nil {
+		t.Errorf("NewNamespaceObject() = nil, want: valid Namespace")
+	}
+	if ns.ObjType != Namespace {
+		t.Errorf("NewNamespaceObject(), ObjType = %s, want ObjType = %s", ns.ObjType, Namespace)
+	}
+	if ns.OID == "" {
+		t.Errorf("NewNamespaceObject(), OID = ``, want oid != ``")
+	}
+	if ns.Name != "test_namespace" {
+		t.Errorf("NewNamespaceObject() Name = %s, want Name == ``", ns.Name)
+	}
+	if ns.CreatedAt.IsZero() != false {
+		t.Errorf("NewNamespaceObject() date = %v, want CratedAt != 0", ns.CreatedAt)
+	}
+	if len(ns.Applications) != 0 {
+		t.Errorf("NewNamespaceObject() applications = %d, want Applications = 0", len(ns.Applications))
+	}
+	if ns.Resources != nil {
+		t.Error("NewNamespaceObject() resources exists, want Resources = nil")
+	}
+}
+
+func TestNamespaceCollection(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	proj := ds.NewProject("test_project")
+	if proj == nil {
+		t.Errorf("NewProject() = nil, want: valid project")
+	}
+	for i := 0; i < 5; i++ {
+		ns := ds.NewNamespace("test_namespace" + string(i))
+		proj.Namespaces = append(proj.Namespaces, &ObjectLink{OID: ns.OID, URL: ""})
+	}
+	col := ds.NamespacesCollection(proj.OID)
+	if len(col) != 5 {
+		t.Errorf("NewProject() projects = %d, want namespaces = 5", len(col))
+	}
+}
+
+func TestNamespace(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	proj := ds.NewProject("test_project")
+	if proj == nil {
+		t.Errorf("NewProject() = nil, want: valid project")
+	}
+	var obj *NamespaceObject
+	for i := 0; i < 5; i++ {
+		ns := ds.NewNamespace("test_namespace" + string(i))
+		if i == 4 {
+			obj = ns
+		}
+		proj.Namespaces = append(proj.Namespaces, &ObjectLink{OID: ns.OID, URL: ""})
+	}
+	nspc, found := ds.Namespace(obj.OID)
+	if !found {
+		t.Errorf("Namespace(%s) not found, want found", obj.OID)
+	}
+	if obj != nspc {
+		t.Errorf("Namespace(%s) obj != nspc, want obj == nspc", obj.OID)
+	}
+
+	_, found = ds.Namespace("badoid")
+	if found {
+		t.Errorf("Namespace(%s) found, want not found", "badoid")
 	}
 }
