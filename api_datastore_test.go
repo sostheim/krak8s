@@ -230,7 +230,7 @@ func TestNewProject(t *testing.T) {
 		t.Errorf("NewProjectObject(), OID = ``, want oid != ``")
 	}
 	if obj.UpdatedAt.IsZero() == false {
-		t.Errorf("NewProjectObject()  update = %v, want UpdatedAt == 0", obj.UpdatedAt)
+		t.Errorf("NewProjectObject()  update = %v, want UpdatedAt == Zero", obj.UpdatedAt)
 	}
 }
 
@@ -243,8 +243,8 @@ func TestNewNamedProject(t *testing.T) {
 	if obj == nil {
 		t.Errorf("NewProject() = nil, want: valid project")
 	}
-	if obj.CreatedAt.IsZero() != false {
-		t.Errorf("NewProject() date = %v, want CratedAt != 0", obj.CreatedAt)
+	if obj.CreatedAt.IsZero() == true {
+		t.Error("NewProject() have CreatedAt == Zero, want CratedAt != Zero")
 	}
 	if obj.Name != "test_object" {
 		t.Errorf("NewProject() Name = %s, want Name == `test_object`", obj.Name)
@@ -258,7 +258,7 @@ func TestNewNamedProject(t *testing.T) {
 	if obj.OID == "" {
 		t.Errorf("NewProject(), OID = ``, want oid != ``")
 	}
-	if obj.UpdatedAt.IsZero() == false {
+	if obj.UpdatedAt.IsZero() == true {
 		t.Errorf("NewProject()  update = %v, want UpdatedAt == 0", obj.UpdatedAt)
 	}
 }
@@ -276,7 +276,7 @@ func TestProjectCollection(t *testing.T) {
 	ds.NewProject("test_project_5")
 	col := ds.ProjectsCollection()
 	if len(col) != 5 {
-		t.Errorf("NewProject() projects = %d, want projects = 5", len(col))
+		t.Errorf("ProjectsCollection() projects = %d, want projects = 5", len(col))
 	}
 }
 
@@ -353,25 +353,25 @@ func TestNewNamedNamespace(t *testing.T) {
 	}
 	ns := ds.NewNamespace("test_namespace")
 	if ns == nil {
-		t.Errorf("NewNamespaceObject() = nil, want: valid Namespace")
+		t.Errorf("NewNamespace() = nil, want: valid Namespace")
 	}
 	if ns.ObjType != Namespace {
-		t.Errorf("NewNamespaceObject(), ObjType = %s, want ObjType = %s", ns.ObjType, Namespace)
+		t.Errorf("NewNamespace(), ObjType = %s, want ObjType = %s", ns.ObjType, Namespace)
 	}
 	if ns.OID == "" {
-		t.Errorf("NewNamespaceObject(), OID = ``, want oid != ``")
+		t.Errorf("NewNamespace(), OID = ``, want oid != ``")
 	}
 	if ns.Name != "test_namespace" {
-		t.Errorf("NewNamespaceObject() Name = %s, want Name == ``", ns.Name)
+		t.Errorf("NewNamespace() Name = %s, want Name == ``", ns.Name)
 	}
 	if ns.CreatedAt.IsZero() != false {
-		t.Errorf("NewNamespaceObject() date = %v, want CratedAt != 0", ns.CreatedAt)
+		t.Errorf("NewNamespace() date = %v, want CratedAt != 0", ns.CreatedAt)
 	}
 	if len(ns.Applications) != 0 {
-		t.Errorf("NewNamespaceObject() applications = %d, want Applications = 0", len(ns.Applications))
+		t.Errorf("NewNamespace() applications = %d, want Applications = 0", len(ns.Applications))
 	}
 	if ns.Resources != nil {
-		t.Error("NewNamespaceObject() resources exists, want Resources = nil")
+		t.Error("NewNamespace() resources exists, want Resources = nil")
 	}
 }
 
@@ -391,7 +391,7 @@ func TestNamespaceCollection(t *testing.T) {
 	}
 	col := ds.NamespacesCollection(proj.OID)
 	if len(col) != 5 {
-		t.Errorf("NewProject() projects = %d, want namespaces = 5", len(col))
+		t.Errorf("NamespacesCollection() projects = %d, want namespaces = 5", len(col))
 	}
 }
 
@@ -424,5 +424,159 @@ func TestNamespace(t *testing.T) {
 	_, found = ds.Namespace("badoid")
 	if found {
 		t.Errorf("Namespace(%s) found, want not found", "badoid")
+	}
+}
+
+func TestNewApplication(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	ns := ds.NewNamespace("test_namespace")
+	if ns == nil {
+		t.Errorf("NewNamespace(%s), have: nil, want: valid Namespace", "test_namespace")
+	}
+	app := ds.NewApplicationObject(ns.OID)
+	if app == nil {
+		t.Errorf("NewApplicationObject(%s), have: nil, want: Application object", ns.OID)
+	}
+	if app.ObjType != Application {
+		t.Errorf("NewApplicationObject(%s), have ObjType(%s), want: ObjType(%s)", ns.OID, app.ObjType, Application)
+	}
+	if app.OID == "" {
+		t.Errorf("NewApplicationObject(%s), have OID = ``, want oid != ``", ns.OID)
+	}
+	if app.CreatedAt.IsZero() == true {
+		t.Errorf("NewApplicationObject(%s) date = %v, want CratedAt != Zero", ns.OID, app.CreatedAt)
+	}
+	if app.NamespaceID != ns.OID {
+		t.Errorf("NewApplicationObject(%s), have ns(%s), want ns(%s)", ns.OID, app.NamespaceID, ns.OID)
+	}
+}
+
+func TestNewNamedApplication(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	obj := ds.NewProject("test_object")
+	if obj == nil {
+		t.Errorf("NewProject() = nil, want: valid project")
+	}
+	ns := ds.NewNamespace("test_namespace")
+	if ns == nil {
+		t.Errorf("NewNamespace(%s), have: nil, want: valid Namespace", "test_namespace")
+	}
+	chn := "test_channel"
+	pwd := "test_password"
+	app := ds.NewApplication(ns.OID, "test_deployment", "test_server", "test_registry",
+		"test_chart", "test_version", &chn, nil, &pwd, nil, nil)
+	if app == nil {
+		t.Errorf("NewApplication(%s), have: nil, want: Application object", ns.OID)
+	}
+	if app.ObjType != Application {
+		t.Errorf("NewApplication(%s), have ObjType(%s), want: ObjType(%s)", ns.OID, app.ObjType, Application)
+	}
+	if app.OID == "" {
+		t.Errorf("NewApplication(%s), have OID = ``, want oid != ``", ns.OID)
+	}
+	if app.CreatedAt.IsZero() == true {
+		t.Errorf("NewApplication(%s) date = %v, want CratedAt != Zero", ns.OID, app.CreatedAt)
+	}
+	if app.NamespaceID != ns.OID {
+		t.Errorf("NewApplication(%s), have ns(%s), want ns(%s)", ns.OID, app.NamespaceID, ns.OID)
+	}
+	if app.Deployment != "test_deployment" {
+		t.Errorf("NewApplication(%s), have deployment(%s), want deployment(`test_deployment`)", ns.OID, app.Deployment)
+	}
+	if app.Server != "test_server" {
+		t.Errorf("NewApplication(%s), have server(%s), want server(`test_server`)", ns.OID, app.Server)
+	}
+	if app.ChartRegistry != "test_registry" {
+		t.Errorf("NewApplication(%s), have registry(%s), want registry(`test_registry`)", ns.OID, app.ChartRegistry)
+	}
+	if app.ChartName != "test_chart" {
+		t.Errorf("NewApplication(%s), have chart(%s), want chart(`test_chart`)", ns.OID, app.ChartName)
+	}
+	if app.ChartVersion != "test_version" {
+		t.Errorf("NewApplication(%s), have version(%s), want version(`test_version`)", ns.OID, app.ChartVersion)
+	}
+	if app.Channel != "test_channel" {
+		t.Errorf("NewApplication(%s), have channel(%s), want channel(`test_channel`)", ns.OID, app.Channel)
+	}
+	if app.Username != "" {
+		t.Errorf("NewApplication(%s), have username(%s), want username(``)", ns.OID, app.Username)
+	}
+	if app.Password != "test_password" {
+		t.Errorf("NewApplication(%s), have password(%s), want password(`test_password`)", ns.OID, app.Password)
+	}
+	if app.Config != "" {
+		t.Errorf("NewApplication(%s), have config(%s), want config(``)", ns.OID, app.Config)
+	}
+	if app.JSONValues != "" {
+		t.Errorf("NewApplication(%s), have json(%s), want json(``)", ns.OID, app.JSONValues)
+	}
+}
+
+func TestApplicationCollection(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	proj := ds.NewProject("test_project")
+	if proj == nil {
+		t.Errorf("NewProject(), have: nil, want: project object")
+	}
+	ns := ds.NewNamespace("test_namespace")
+	if ns == nil {
+		t.Errorf("NewNamespace(%s), have: nil, want: namespace object", "test_namespace")
+	}
+	for i := 0; i < 5; i++ {
+		app := ds.NewApplication(ns.OID, "test_deployment", "test_server", "test_registry",
+			"test_chart", "test_version", nil, nil, nil, nil, nil)
+		ns.Applications = append(ns.Applications, &ObjectLink{OID: app.OID, URL: ""})
+	}
+	col := ds.ApplicationsCollection(ns.OID)
+	if len(col) != 5 {
+		t.Errorf("ApplicationsCollection(%s) len(applications) = %d, want len(applications) = 5", ns.OID, len(col))
+	}
+}
+
+func TestApplication(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	proj := ds.NewProject("test_project")
+	if proj == nil {
+		t.Errorf("NewProject(), have: nil, want: project object")
+	}
+	ns := ds.NewNamespace("test_namespace")
+	if ns == nil {
+		t.Errorf("NewNamespace(%s), have: nil, want: namespace object", "test_namespace")
+	}
+	var obj *ApplicationObject
+	for i := 0; i < 5; i++ {
+		app := ds.NewApplication(ns.OID, "test_deployment", "test_server", "test_registry",
+			"test_chart", "test_version", nil, nil, nil, nil, nil)
+		if i == 2 {
+			obj = app
+		}
+		ns.Applications = append(ns.Applications, &ObjectLink{OID: app.OID, URL: ""})
+	}
+	app, found := ds.Application(obj.OID)
+	if !found {
+		t.Errorf("Application(%s) not found, want found", obj.OID)
+	}
+	if obj != app {
+		t.Errorf("Application(%s) obj != app, want obj == app", obj.OID)
+	}
+
+	_, found = ds.Application("badoid")
+	if found {
+		t.Errorf("Application(%s) found, want not found", "badoid")
 	}
 }
