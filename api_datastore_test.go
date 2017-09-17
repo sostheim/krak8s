@@ -580,3 +580,99 @@ func TestApplication(t *testing.T) {
 		t.Errorf("Application(%s) found, want not found", "badoid")
 	}
 }
+
+func TestNewResource(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	ns := ds.NewNamespace("test_namespace")
+	if ns == nil {
+		t.Errorf("NewNamespace(%s), have: nil, want: valid Namespace", "test_namespace")
+	}
+	res := ds.NewResourceObject(ns.OID)
+	if res == nil {
+		t.Errorf("NewResourceObject(%s), have: nil, want: Resource object", ns.OID)
+	}
+	if res.ObjType != Resource {
+		t.Errorf("NewResourceObject(%s), have ObjType(%s), want: ObjType(%s)", ns.OID, res.ObjType, Resource)
+	}
+	if res.OID == "" {
+		t.Errorf("NewResourceObject(%s), have OID = ``, want oid != ``", ns.OID)
+	}
+	if res.CreatedAt.IsZero() == true {
+		t.Errorf("NewResourceObject(%s) date = %v, want CratedAt != Zero", ns.OID, res.CreatedAt)
+	}
+	if res.NamespaceID != ns.OID {
+		t.Errorf("NewResourceObject(%s), have ns(%s), want ns(%s)", ns.OID, res.NamespaceID, ns.OID)
+	}
+}
+
+func TestNewNamedResource(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	obj := ds.NewProject("test_object")
+	if obj == nil {
+		t.Errorf("NewProject() = nil, want: valid project")
+	}
+	ns := ds.NewNamespace("test_namespace")
+	if ns == nil {
+		t.Errorf("NewNamespace(%s), have: nil, want: valid Namespace", "test_namespace")
+	}
+	res := ds.NewResource(ns.OID, 3)
+	if res == nil {
+		t.Errorf("NewResource(%s), have: nil, want: Resource object", ns.OID)
+	}
+	if res.ObjType != Resource {
+		t.Errorf("NewResource(%s), have ObjType(%s), want: ObjType(%s)", ns.OID, res.ObjType, Resource)
+	}
+	if res.OID == "" {
+		t.Errorf("NewResource(%s), have OID = ``, want oid != ``", ns.OID)
+	}
+	if res.CreatedAt.IsZero() == true {
+		t.Errorf("NewResource(%s) date = %v, want CratedAt != Zero", ns.OID, res.CreatedAt)
+	}
+	if res.NamespaceID != ns.OID {
+		t.Errorf("NewResource(%s), have ns(%s), want ns(%s)", ns.OID, res.NamespaceID, ns.OID)
+	}
+	if res.NodePoolSize != 3 {
+		t.Errorf("NewResource(%s), have node pool size(%d), want node pool size(3)", ns.OID, res.NodePoolSize)
+	}
+}
+
+func TestResource(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	proj := ds.NewProject("test_project")
+	if proj == nil {
+		t.Errorf("NewProject(), have: nil, want: project object")
+	}
+	ns := ds.NewNamespace("test_namespace")
+	if ns == nil {
+		t.Errorf("NewNamespace(%s), have: nil, want: namespace object", "test_namespace")
+	}
+	res := ds.NewResource(ns.OID, 7)
+	if res == nil {
+		t.Errorf("NewResource(%s), have: nil, want: Resource object", ns.OID)
+	}
+	ns.Resources = &ObjectLink{OID: res.OID, URL: ""}
+
+	rsrc, found := ds.Resource(res.OID)
+	if !found {
+		t.Errorf("Resource(%s) not found, want found", res.OID)
+	}
+	if res != rsrc {
+		t.Errorf("Resource(%s) res != rsrc, want res == rsrc", res.OID)
+	}
+
+	_, found = ds.Resource("badoid")
+	if found {
+		t.Errorf("Resource(%s) found, want not found", "badoid")
+	}
+}
