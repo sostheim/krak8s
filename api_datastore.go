@@ -281,6 +281,7 @@ func (ds *DataStore) NewProject(name string) *ProjectObject {
 		return nil
 	}
 	obj.Name = name
+	obj.UpdatedAt = time.Now()
 	ds.archive <- true
 	return obj
 }
@@ -428,7 +429,6 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 	if obj.OID == "" {
 		return nil
 	}
-	obj.UpdatedAt = obj.CreatedAt
 	ds.Lock()
 	defer ds.Unlock()
 	ds.data.Applications[obj.OID] = &obj
@@ -463,6 +463,7 @@ func (ds *DataStore) NewApplication(namespace, deployment, server, registry, nam
 	if jsonValues != nil {
 		obj.JSONValues = *jsonValues
 	}
+	obj.UpdatedAt = time.Now()
 	ds.archive <- true
 	return obj
 }
