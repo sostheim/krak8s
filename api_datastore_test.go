@@ -313,6 +313,28 @@ func TestProject(t *testing.T) {
 	}
 }
 
+func TestDeleteProjectObject(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() have nil, want DataStore object")
+	}
+	go ds.Archiver()
+	ds.NewProjectObject()
+	ds.NewProjectObject()
+	obj := ds.NewProjectObject()
+	if obj == nil {
+		t.Errorf("NewProjectObject() have nil, want Project object")
+	}
+	ds.NewProjectObject()
+	ds.NewProjectObject()
+	pre := len(ds.data.Projects)
+	ds.DeleteProject(obj)
+	if len(ds.data.Projects) != pre-1 {
+		t.Errorf("TestDeleteProjectObjects() have len(%d), want len(%d)",
+			len(ds.data.Projects), pre-1)
+	}
+}
+
 func TestNewNamespace(t *testing.T) {
 	ds := NewDataStore("")
 	if ds == nil {
@@ -425,6 +447,28 @@ func TestNamespace(t *testing.T) {
 	_, found = ds.Namespace("badoid")
 	if found {
 		t.Errorf("Namespace(%s) found, want not found", "badoid")
+	}
+}
+
+func TestDeleteNamespaceObject(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() have nil, want DataStore object")
+	}
+	go ds.Archiver()
+	obj := ds.NewNamespaceObject()
+	if obj == nil {
+		t.Errorf("NewNamespaceObject() have nil, want Namespace object")
+	}
+	ds.NewNamespaceObject()
+	ds.NewNamespaceObject()
+	ds.NewNamespaceObject()
+	ds.NewNamespaceObject()
+	pre := len(ds.data.Namespaces)
+	ds.DeleteNamespace(obj)
+	if len(ds.data.Namespaces) != pre-1 {
+		t.Errorf("TestDeleteNamespaceObject() have len(%d), want len(%d)",
+			len(ds.data.Namespaces), pre-1)
 	}
 }
 
@@ -582,6 +626,31 @@ func TestApplication(t *testing.T) {
 	}
 }
 
+func TestDeleteApplicationObject(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() have nil, want DataStore object")
+	}
+	go ds.Archiver()
+	ns := ds.NewNamespaceObject()
+	if ns == nil {
+		t.Errorf("NewNamespaceObject() have nil, want Namespace object")
+	}
+	ds.NewApplicationObject(ns.OID)
+	ds.NewApplicationObject(ns.OID)
+	ds.NewApplicationObject(ns.OID)
+	ds.NewApplicationObject(ns.OID)
+	app := ds.NewApplicationObject(ns.OID)
+	if app == nil {
+		t.Errorf("NewApplicationObject(%s), have nil, want Application object", ns.OID)
+	}
+	pre := len(ds.data.Applications)
+	ds.DeleteApplication(app)
+	if len(ds.data.Applications) != pre-1 {
+		t.Errorf("TestDeleteApplicationObject() have len(%d), want len(%d)",
+			len(ds.data.Applications), pre-1)
+	}
+}
 func TestNewResource(t *testing.T) {
 	ds := NewDataStore("")
 	if ds == nil {
@@ -727,5 +796,27 @@ func BenchmarkOIDGenerator(b *testing.B) {
 		if app == nil {
 			b.Errorf("NewApplicationObject(%s), have nil, want Application object", ns.OID)
 		}
+	}
+}
+
+func TestDeleteResourceObject(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() have nil, want DataStore object")
+	}
+	go ds.Archiver()
+	ns := ds.NewNamespaceObject()
+	if ns == nil {
+		t.Errorf("NewNamespaceObject() have nil, want Namespace object")
+	}
+	res := ds.NewResourceObject(ns.OID)
+	if res == nil {
+		t.Errorf("NewResourceObject(%s), have nil, want Resource object", ns.OID)
+	}
+	pre := len(ds.data.Resources)
+	ds.DeleteResource(res.OID)
+	if len(ds.data.Resources) != pre-1 {
+		t.Errorf("TestDeleteResourceObject() have len(%d), want len(%d)",
+			len(ds.data.Resources), pre-1)
 	}
 }
