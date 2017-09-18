@@ -228,10 +228,10 @@ func (ds *DataStore) CheckedRandomHexString() string {
 	i := 9
 	for i > 0 {
 		tmp := RandHexString(OIDLength)
-		if _, ok := ds.data.Projects[tmp]; !ok {
-			if _, ok := ds.data.Namespaces[tmp]; !ok {
-				if _, ok := ds.data.Applications[tmp]; !ok {
-					if _, ok := ds.data.Resources[tmp]; !ok {
+		if _, found := ds.data.Projects[tmp]; !found {
+			if _, found := ds.data.Namespaces[tmp]; !found {
+				if _, found := ds.data.Applications[tmp]; !found {
+					if _, found := ds.data.Resources[tmp]; !found {
 						return tmp
 					}
 				}
@@ -239,6 +239,7 @@ func (ds *DataStore) CheckedRandomHexString() string {
 		}
 		i--
 	}
+	glog.Warning("failed to generate unique hex string value after 9 retries... stopping")
 	return ""
 }
 

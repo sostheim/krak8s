@@ -102,6 +102,7 @@ var validDataStoreJSON = `
   }
 `
 
+// missing comma delimiter between projects and namespaces
 var invalidDataStoreJSON = `
 {
 	"projects": {
@@ -627,7 +628,7 @@ func TestNewNamedResource(t *testing.T) {
 		t.Errorf("NewResource(%s), have: nil, want: Resource object", ns.OID)
 	}
 	if res.ObjType != Resource {
-		t.Errorf("NewResource(%s), have ObjType(%s), want: ObjType(%s)", ns.OID, res.ObjType, Resource)
+		t.Errorf("NewResource(%s), have ObjType(%s), want ObjType(%s)", ns.OID, res.ObjType, Resource)
 	}
 	if res.OID == "" {
 		t.Errorf("NewResource(%s), have OID = ``, want oid != ``", ns.OID)
@@ -636,7 +637,7 @@ func TestNewNamedResource(t *testing.T) {
 		t.Errorf("NewResource(%s) date = %v, want CratedAt != Zero", ns.OID, res.CreatedAt)
 	}
 	if res.NamespaceID != ns.OID {
-		t.Errorf("NewResource(%s), have ns(%s), want ns(%s)", ns.OID, res.NamespaceID, ns.OID)
+		t.Errorf("NewResource(%s), have ns oid(%s), want ns oid(%s)", ns.OID, res.NamespaceID, ns.OID)
 	}
 	if res.NodePoolSize != 3 {
 		t.Errorf("NewResource(%s), have node pool size(%d), want node pool size(3)", ns.OID, res.NodePoolSize)
@@ -674,5 +675,57 @@ func TestResource(t *testing.T) {
 	_, found = ds.Resource("badoid")
 	if found {
 		t.Errorf("Resource(%s) found, want not found", "badoid")
+	}
+}
+
+func TestOIDGenerator(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
+	// Generate 50M Unique Id's without a duplicate (takes ~60s)
+	iterations := 50000000
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	for i := 0; i < iterations; i++ {
+		obj := ds.NewProjectObject()
+		if obj == nil {
+			t.Errorf("NewProjectObject() = nil, want: valid project")
+		}
+	}
+	col := ds.ProjectsCollection()
+	if len(col) != iterations {
+		t.Errorf("ProjectsCollection() projects = %d, want projects = %d", len(col), iterations)
+	}
+}
+
+func BenchmarkOIDGenerator(b *testing.B) {
+	// Generate 10M Unique Id's without a duplicate
+	ds := NewDataStore("")
+	if ds == nil {
+		b.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		proj := ds.NewProjectObject()
+		if proj == nil {
+			b.Error("NewProjectObject(), have nil, want Project object")
+		}
+		ns := ds.NewNamespaceObject()
+		if ns == nil {
+			b.Error("NewNamespaceObject(), have nil, want Namespace object")
+			continue
+		}
+		res := ds.NewResourceObject(ns.OID)
+		if res == nil {
+			b.Errorf("NewResourceObject(%s), have nil, want Resource object", ns.OID)
+		}
+		app := ds.NewApplicationObject(ns.OID)
+		if app == nil {
+			b.Errorf("NewApplicationObject(%s), have nil, want Application object", ns.OID)
+		}
 	}
 }
