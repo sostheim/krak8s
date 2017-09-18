@@ -308,14 +308,6 @@ func (ds *DataStore) Project(oid string) (*ProjectObject, bool) {
 	return proj, ok
 }
 
-// AddProject add a project object to the data store.
-func (ds *DataStore) AddProject(obj ProjectObject) {
-	ds.Lock()
-	defer ds.Unlock()
-	ds.data.Projects[obj.OID] = &obj
-	ds.archive <- true
-}
-
 // DeleteProject removes the project and all subordinate objects.
 func (ds *DataStore) DeleteProject(obj *ProjectObject) {
 	if _, ok := ds.data.Projects[obj.OID]; !ok {
@@ -386,14 +378,6 @@ func (ds *DataStore) Namespace(oid string) (*NamespaceObject, bool) {
 	defer ds.Unlock()
 	ns, ok := ds.data.Namespaces[oid]
 	return ns, ok
-}
-
-// AddNamespace add a Namespace object to the data store.
-func (ds *DataStore) AddNamespace(obj NamespaceObject) {
-	ds.Lock()
-	defer ds.Unlock()
-	ds.data.Namespaces[obj.OID] = &obj
-	ds.archive <- true
 }
 
 // DeleteNamespace removes the Namespace and all subordinate objects.
@@ -495,14 +479,6 @@ func (ds *DataStore) ApplicationsCollection(nsOID string) []*ApplicationObject {
 	return collection
 }
 
-// AddApplication add a Application object to the data store.
-func (ds *DataStore) AddApplication(obj ApplicationObject) {
-	ds.Lock()
-	defer ds.Unlock()
-	ds.data.Applications[obj.OID] = &obj
-	ds.archive <- true
-}
-
 // DeleteApplication deletes specified application
 func (ds *DataStore) DeleteApplication(obj *ApplicationObject) {
 	if _, ok := ds.data.Applications[obj.OID]; !ok {
@@ -561,14 +537,6 @@ func (ds *DataStore) ResourceObject(nsOID string) (*ResourceObject, bool) {
 	ds.Lock()
 	defer ds.Unlock()
 	return ds.Resource(ns.Resources.OID)
-}
-
-// AddResource add a rsource object to the data store.
-func (ds *DataStore) AddResource(obj *ResourceObject) {
-	ds.Lock()
-	defer ds.Unlock()
-	ds.data.Resources[obj.OID] = obj
-	ds.archive <- true
 }
 
 // DeleteResource deletes specified application
