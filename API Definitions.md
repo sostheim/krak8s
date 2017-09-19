@@ -354,8 +354,12 @@ The last 4 curl commands show the resource's complete transition from `"create_r
 
 4. Bring up a MongoDB Application using the new Mars Production cluster resources.
 ```
-curl -XPOST -H "Content-Type: application/json" -d '{ "name": "mongodb-replicaset", "registry": "quay.io/samsung_cnct", "set": "", "version": "", "namespace_id": "84f70e67"}'
-http://localhost:8080/v1/projects/ca57d654/applications
+curl -XPOST -H "Content-Type: application/json"
+	-d '{ "deployment_name": "mars-production-mongodb", "server": "quay.io",
+		  "registry": "samsung_cnct", "name": "mongodb-replicaset",
+		  "version": "latest", "channel": "stable", "namespace_id": "84f70e67"
+	}'
+	http://localhost:8080/v1/projects/ca57d654/applications
 {
 	"created_at": "2017-08-16T10:14:03.033981237-07:00",
 	"id": "9f0d9890",
