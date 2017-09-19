@@ -278,7 +278,7 @@ func (r *Runner) handleMongoChart(request *Request) bool {
 
 	mongo := commands.MongoReplicasetDriver{
 		DeploymentName: request.projObj.Name + "-mongodb",
-		ChartLocation:  request.appObj.ChartRegistry + "/" + request.appObj.ChartName,
+		ChartLocation:  request.appObj.Server + "/" + request.appObj.ChartRegistry + "/" + request.appObj.ChartName,
 		Namespace:      request.nsObj.Name,
 		CustomerName:   request.projObj.Name,
 		Template:       commands.MongoReplicasetTemplate,
