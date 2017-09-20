@@ -137,7 +137,7 @@ func main() {
 	go backend.ProcessRequests()
 
 	// Create our REST Service's API Server
-	glog.V(3).Infof("main(): staring API service")
+	glog.V(3).Infof("main(): starting API service")
 	srv := newAPIServer(clientset, krak8sCfg, backend)
 
 	// Start service server

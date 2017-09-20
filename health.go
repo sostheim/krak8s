@@ -1,8 +1,10 @@
 package main
 
 import (
-	"github.com/goadesign/goa"
 	"krak8s/app"
+	"time"
+
+	"github.com/goadesign/goa"
 )
 
 // HealthController implements the health resource.
@@ -18,9 +20,6 @@ func NewHealthController(service *goa.Service) *HealthController {
 // Health runs the health action.
 func (c *HealthController) Health(ctx *app.HealthHealthContext) error {
 	// HealthController_Health: start_implement
-
-	// Put your logic here
-
+	return ctx.OK([]byte("Health OK: " + time.Now().String() + "\n"))
 	// HealthController_Health: end_implement
-	return nil
 }
