@@ -21,6 +21,8 @@ var _ = API("krak8s", func() {
 	Scheme("http")
 	Version("v1")
 	BasePath("/v1")
+	Consumes("application/json")
+	Produces("application/json")
 
 	ResponseTemplate(Created, func(pattern string) {
 		Description("The requested resource has been created")

@@ -31,8 +31,8 @@ func CreateProjectPath() string {
 }
 
 // Create a new project entry with the provided name.
-func (c *Client) CreateProject(ctx context.Context, path string, payload *CreateProjectPayload, contentType string) (*http.Response, error) {
-	req, err := c.NewCreateProjectRequest(ctx, path, payload, contentType)
+func (c *Client) CreateProject(ctx context.Context, path string, payload *CreateProjectPayload) (*http.Response, error) {
+	req, err := c.NewCreateProjectRequest(ctx, path, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -40,12 +40,9 @@ func (c *Client) CreateProject(ctx context.Context, path string, payload *Create
 }
 
 // NewCreateProjectRequest create the request corresponding to the create action endpoint of the project resource.
-func (c *Client) NewCreateProjectRequest(ctx context.Context, path string, payload *CreateProjectPayload, contentType string) (*http.Request, error) {
+func (c *Client) NewCreateProjectRequest(ctx context.Context, path string, payload *CreateProjectPayload) (*http.Request, error) {
 	var body bytes.Buffer
-	if contentType == "" {
-		contentType = "*/*" // Use default encoder
-	}
-	err := c.Encoder.Encode(payload, &body, contentType)
+	err := c.Encoder.Encode(payload, &body, "*/*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to encode body: %s", err)
 	}
@@ -59,11 +56,7 @@ func (c *Client) NewCreateProjectRequest(ctx context.Context, path string, paylo
 		return nil, err
 	}
 	header := req.Header
-	if contentType == "*/*" {
-		header.Set("Content-Type", "application/json")
-	} else {
-		header.Set("Content-Type", contentType)
-	}
+	header.Set("Content-Type", "application/json")
 	return req, nil
 }
 

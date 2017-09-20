@@ -1,8 +1,5 @@
 consumes:
 - application/json
-- application/xml
-- application/gob
-- application/x-gob
 definitions:
   Application:
     description: Application deployment representation type (default view)
@@ -1172,9 +1169,6 @@ paths:
       - namespace
 produces:
 - application/json
-- application/xml
-- application/gob
-- application/x-gob
 responses:
   Conflict:
     description: Conflict

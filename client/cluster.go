@@ -26,8 +26,8 @@ func CreateClusterPath(projectid string) string {
 }
 
 // Request the creation of the cluster resources in the project/namespace
-func (c *Client) CreateCluster(ctx context.Context, path string, payload *ClusterPostBody, contentType string) (*http.Response, error) {
-	req, err := c.NewCreateClusterRequest(ctx, path, payload, contentType)
+func (c *Client) CreateCluster(ctx context.Context, path string, payload *ClusterPostBody) (*http.Response, error) {
+	req, err := c.NewCreateClusterRequest(ctx, path, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -35,12 +35,9 @@ func (c *Client) CreateCluster(ctx context.Context, path string, payload *Cluste
 }
 
 // NewCreateClusterRequest create the request corresponding to the create action endpoint of the cluster resource.
-func (c *Client) NewCreateClusterRequest(ctx context.Context, path string, payload *ClusterPostBody, contentType string) (*http.Request, error) {
+func (c *Client) NewCreateClusterRequest(ctx context.Context, path string, payload *ClusterPostBody) (*http.Request, error) {
 	var body bytes.Buffer
-	if contentType == "" {
-		contentType = "*/*" // Use default encoder
-	}
-	err := c.Encoder.Encode(payload, &body, contentType)
+	err := c.Encoder.Encode(payload, &body, "*/*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to encode body: %s", err)
 	}
@@ -54,11 +51,7 @@ func (c *Client) NewCreateClusterRequest(ctx context.Context, path string, paylo
 		return nil, err
 	}
 	header := req.Header
-	if contentType == "*/*" {
-		header.Set("Content-Type", "application/json")
-	} else {
-		header.Set("Content-Type", contentType)
-	}
+	header.Set("Content-Type", "application/json")
 	return req, nil
 }
 

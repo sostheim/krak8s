@@ -26,8 +26,8 @@ func CreateApplicationPath(projectid string) string {
 }
 
 // Request the creation of an application deployment in the project/namespace
-func (c *Client) CreateApplication(ctx context.Context, path string, payload *ApplicationPostBody, contentType string) (*http.Response, error) {
-	req, err := c.NewCreateApplicationRequest(ctx, path, payload, contentType)
+func (c *Client) CreateApplication(ctx context.Context, path string, payload *ApplicationPostBody) (*http.Response, error) {
+	req, err := c.NewCreateApplicationRequest(ctx, path, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -35,12 +35,9 @@ func (c *Client) CreateApplication(ctx context.Context, path string, payload *Ap
 }
 
 // NewCreateApplicationRequest create the request corresponding to the create action endpoint of the application resource.
-func (c *Client) NewCreateApplicationRequest(ctx context.Context, path string, payload *ApplicationPostBody, contentType string) (*http.Request, error) {
+func (c *Client) NewCreateApplicationRequest(ctx context.Context, path string, payload *ApplicationPostBody) (*http.Request, error) {
 	var body bytes.Buffer
-	if contentType == "" {
-		contentType = "*/*" // Use default encoder
-	}
-	err := c.Encoder.Encode(payload, &body, contentType)
+	err := c.Encoder.Encode(payload, &body, "*/*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to encode body: %s", err)
 	}
@@ -54,11 +51,7 @@ func (c *Client) NewCreateApplicationRequest(ctx context.Context, path string, p
 		return nil, err
 	}
 	header := req.Header
-	if contentType == "*/*" {
-		header.Set("Content-Type", "application/json")
-	} else {
-		header.Set("Content-Type", contentType)
-	}
+	header.Set("Content-Type", "application/json")
 	return req, nil
 }
 
@@ -137,8 +130,8 @@ func ListApplicationPath(projectid string) string {
 }
 
 // Retrieve the collection of all applications in the project/namespace.
-func (c *Client) ListApplication(ctx context.Context, path string, payload *ListApplicationPayload, contentType string) (*http.Response, error) {
-	req, err := c.NewListApplicationRequest(ctx, path, payload, contentType)
+func (c *Client) ListApplication(ctx context.Context, path string, payload *ListApplicationPayload) (*http.Response, error) {
+	req, err := c.NewListApplicationRequest(ctx, path, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -146,12 +139,9 @@ func (c *Client) ListApplication(ctx context.Context, path string, payload *List
 }
 
 // NewListApplicationRequest create the request corresponding to the list action endpoint of the application resource.
-func (c *Client) NewListApplicationRequest(ctx context.Context, path string, payload *ListApplicationPayload, contentType string) (*http.Request, error) {
+func (c *Client) NewListApplicationRequest(ctx context.Context, path string, payload *ListApplicationPayload) (*http.Request, error) {
 	var body bytes.Buffer
-	if contentType == "" {
-		contentType = "*/*" // Use default encoder
-	}
-	err := c.Encoder.Encode(payload, &body, contentType)
+	err := c.Encoder.Encode(payload, &body, "*/*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to encode body: %s", err)
 	}
@@ -165,10 +155,6 @@ func (c *Client) NewListApplicationRequest(ctx context.Context, path string, pay
 		return nil, err
 	}
 	header := req.Header
-	if contentType == "*/*" {
-		header.Set("Content-Type", "application/json")
-	} else {
-		header.Set("Content-Type", contentType)
-	}
+	header.Set("Content-Type", "application/json")
 	return req, nil
 }

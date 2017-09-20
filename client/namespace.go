@@ -31,8 +31,8 @@ func CreateNamespacePath(projectid string) string {
 }
 
 // Create a namespace in the specified project
-func (c *Client) CreateNamespace(ctx context.Context, path string, payload *CreateNamespacePayload, contentType string) (*http.Response, error) {
-	req, err := c.NewCreateNamespaceRequest(ctx, path, payload, contentType)
+func (c *Client) CreateNamespace(ctx context.Context, path string, payload *CreateNamespacePayload) (*http.Response, error) {
+	req, err := c.NewCreateNamespaceRequest(ctx, path, payload)
 	if err != nil {
 		return nil, err
 	}
@@ -40,12 +40,9 @@ func (c *Client) CreateNamespace(ctx context.Context, path string, payload *Crea
 }
 
 // NewCreateNamespaceRequest create the request corresponding to the create action endpoint of the namespace resource.
-func (c *Client) NewCreateNamespaceRequest(ctx context.Context, path string, payload *CreateNamespacePayload, contentType string) (*http.Request, error) {
+func (c *Client) NewCreateNamespaceRequest(ctx context.Context, path string, payload *CreateNamespacePayload) (*http.Request, error) {
 	var body bytes.Buffer
-	if contentType == "" {
-		contentType = "*/*" // Use default encoder
-	}
-	err := c.Encoder.Encode(payload, &body, contentType)
+	err := c.Encoder.Encode(payload, &body, "*/*")
 	if err != nil {
 		return nil, fmt.Errorf("failed to encode body: %s", err)
 	}
@@ -59,11 +56,7 @@ func (c *Client) NewCreateNamespaceRequest(ctx context.Context, path string, pay
 		return nil, err
 	}
 	header := req.Header
-	if contentType == "*/*" {
-		header.Set("Content-Type", "application/json")
-	} else {
-		header.Set("Content-Type", contentType)
-	}
+	header.Set("Content-Type", "application/json")
 	return req, nil
 }
 
