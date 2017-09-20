@@ -38,8 +38,8 @@ var ApplicationPostBody = Type("ApplicationPostBody", func() {
 	})
 	Attribute("registry", String, func() {
 		Description("Application chart's registry")
-		Default("application/samsung_cnct")
-		Example("application/samsung_cnct")
+		Default("samsung_cnct")
+		Example("samsung_cnct")
 	})
 	Attribute("name", String, func() {
 		Description("Application chart name")

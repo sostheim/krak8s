@@ -46,7 +46,7 @@ func (ut *applicationPostBody) Finalize() {
 	if ut.DeploymentName == nil {
 		ut.DeploymentName = &defaultDeploymentName
 	}
-	var defaultRegistry = "application/samsung_cnct"
+	var defaultRegistry = "samsung_cnct"
 	if ut.Registry == nil {
 		ut.Registry = &defaultRegistry
 	}

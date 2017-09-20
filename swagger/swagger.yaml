@@ -201,7 +201,7 @@ definitions:
       name: mongodb-replicaset
       namespace_id: da9871c7
       password: Aut minima inventore et nam.
-      registry: application/samsung_cnct
+      registry: samsung_cnct
       server: quay.io
       set: Et soluta assumenda iusto.
       username: Et quidem alias et corporis.
@@ -234,9 +234,9 @@ definitions:
         example: Aut minima inventore et nam.
         type: string
       registry:
-        default: application/samsung_cnct
+        default: samsung_cnct
         description: Application chart's registry
-        example: application/samsung_cnct
+        example: samsung_cnct
         type: string
       server:
         default: quay.io
