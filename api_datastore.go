@@ -200,8 +200,10 @@ func NewDataStore(filepath string) (ds *DataStore) {
 // Archiver - archiver's main loop
 func (ds *DataStore) Archiver() {
 	for {
-		<-ds.archive
-
+		if false == <-ds.archive {
+			// exit signal
+			return
+		}
 		ds.Lock()
 		archive, err := json.Marshal(ds.data)
 		ds.Unlock()
@@ -270,8 +272,8 @@ func (ds *DataStore) NewProjectObject() *ProjectObject {
 		return nil
 	}
 	ds.Lock()
-	defer ds.Unlock()
 	ds.data.Projects[obj.OID] = &obj
+	ds.Unlock()
 	return &obj
 }
 
@@ -289,22 +291,22 @@ func (ds *DataStore) NewProject(name string) *ProjectObject {
 
 // ProjectsCollection returns all projects.
 func (ds *DataStore) ProjectsCollection() []*ProjectObject {
-	ds.Lock()
-	defer ds.Unlock()
 	i := 0
+	ds.Lock()
 	collection := make([]*ProjectObject, len(ds.data.Projects))
 	for _, proj := range ds.data.Projects {
 		collection[i] = proj
 		i++
 	}
+	ds.Unlock()
 	return collection
 }
 
 // Project returns the rquested project object or, nil if not found.
 func (ds *DataStore) Project(oid string) (*ProjectObject, bool) {
 	ds.Lock()
-	defer ds.Unlock()
 	proj, ok := ds.data.Projects[oid]
+	ds.Unlock()
 	return proj, ok
 }
 
@@ -319,8 +321,8 @@ func (ds *DataStore) DeleteProject(obj *ProjectObject) {
 		}
 	}
 	ds.Lock()
-	defer ds.Unlock()
 	delete(ds.data.Projects, obj.OID)
+	ds.Unlock()
 	ds.archive <- true
 }
 
@@ -338,8 +340,8 @@ func (ds *DataStore) NewNamespaceObject() *NamespaceObject {
 		return nil
 	}
 	ds.Lock()
-	defer ds.Unlock()
 	ds.data.Namespaces[obj.OID] = &obj
+	ds.Unlock()
 	return &obj
 }
 
@@ -361,22 +363,22 @@ func (ds *DataStore) NamespacesCollection(projectOID string) []*NamespaceObject 
 		return nil
 	}
 
-	ds.Lock()
-	defer ds.Unlock()
 	i := 0
+	ds.Lock()
 	collection := make([]*NamespaceObject, len(proj.Namespaces))
 	for _, link := range proj.Namespaces {
 		collection[i] = ds.data.Namespaces[link.OID]
 		i++
 	}
+	ds.Unlock()
 	return collection
 }
 
 // Namespace returns the rquested Namespace object or, nil if not found.
 func (ds *DataStore) Namespace(oid string) (*NamespaceObject, bool) {
 	ds.Lock()
-	defer ds.Unlock()
 	ns, ok := ds.data.Namespaces[oid]
+	ds.Unlock()
 	return ns, ok
 }
 
@@ -396,8 +398,8 @@ func (ds *DataStore) DeleteNamespace(obj *NamespaceObject) {
 		ds.data.Namespaces[obj.OID].Resources = nil
 	}
 	ds.Lock()
-	defer ds.Unlock()
 	delete(ds.data.Namespaces, obj.OID)
+	ds.Unlock()
 	ds.archive <- true
 }
 
@@ -415,8 +417,8 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 		return nil
 	}
 	ds.Lock()
-	defer ds.Unlock()
 	ds.data.Applications[obj.OID] = &obj
+	ds.Unlock()
 	return &obj
 }
 
@@ -456,8 +458,8 @@ func (ds *DataStore) NewApplication(namespace, deployment, server, registry, nam
 // Application returns the app with the given oid if found
 func (ds *DataStore) Application(oid string) (*ApplicationObject, bool) {
 	ds.Lock()
-	defer ds.Unlock()
 	app, ok := ds.data.Applications[oid]
+	ds.Unlock()
 	return app, ok
 }
 
@@ -485,8 +487,8 @@ func (ds *DataStore) DeleteApplication(obj *ApplicationObject) {
 		return
 	}
 	ds.Lock()
-	defer ds.Unlock()
 	delete(ds.data.Applications, obj.OID)
+	ds.Unlock()
 	ds.archive <- true
 }
 
@@ -504,8 +506,8 @@ func (ds *DataStore) NewResourceObject(nsOID string) *ResourceObject {
 		return nil
 	}
 	ds.Lock()
-	defer ds.Unlock()
 	ds.data.Resources[obj.OID] = &obj
+	ds.Unlock()
 	return &obj
 }
 
@@ -523,8 +525,8 @@ func (ds *DataStore) NewResource(namespace string, nodes int) *ResourceObject {
 // Resource returns the app with the given oid if found
 func (ds *DataStore) Resource(oid string) (*ResourceObject, bool) {
 	ds.Lock()
-	defer ds.Unlock()
 	res, ok := ds.data.Resources[oid]
+	ds.Unlock()
 	return res, ok
 }
 
@@ -545,8 +547,8 @@ func (ds *DataStore) DeleteResource(resOID string) {
 		return
 	}
 	ds.Lock()
-	defer ds.Unlock()
 	delete(ds.data.Resources, resOID)
+	ds.Unlock()
 	ds.archive <- true
 }
 
