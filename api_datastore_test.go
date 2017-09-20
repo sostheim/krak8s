@@ -22,6 +22,12 @@ import (
 	"testing"
 )
 
+const neptuneProjectID = "dbc5b124"
+const validProjects = 2
+const validNamesapces = 3
+const validResources = 2
+const validApps = 0
+
 var validDataStoreJSON = `
 {
 	"projects": {
@@ -129,6 +135,234 @@ var invalidDataStoreJSON = `
   }
 `
 
+const illinoisProjectID = "6f6c206e"
+const urbanaNamespaceID = "fc0c6a6b"
+const urbanaMongoAppID = "7412131c"
+const urbanaClusterID = "3e635557"
+const geoProjects = 5
+const geoNamesapces = 5
+const geoResources = 3
+const geoApps = 4
+
+var geographJSON = `
+{
+	"projects": {
+		"17bc9fa1": {
+			"oid": "17bc9fa1",
+			"objType": "project",
+			"name": "texas",
+			"createdAt": "2017-09-18T23:35:37.855666965-07:00",
+			"updatedAt": "2017-09-18T23:35:37.855667561-07:00",
+			"namespaces": [{
+				"oid": "3a268717",
+				"url": "/v1/projects/17bc9fa1/namespaces/3a268717"
+			}]
+		},
+		"6f6c206e": {
+			"oid": "6f6c206e",
+			"objType": "project",
+			"name": "illinois",
+			"createdAt": "2017-09-18T22:17:45.866844928-07:00",
+			"updatedAt": "2017-09-18T22:17:45.866845523-07:00",
+			"namespaces": [{
+				"oid": "fc0c6a6b",
+				"url": "/v1/projects/6f6c206e/namespaces/fc0c6a6b"
+			}, {
+				"oid": "9b4ed8d3",
+				"url": "/v1/projects/6f6c206e/namespaces/9b4ed8d3"
+			}]
+		},
+		"72e3b7bd": {
+			"oid": "72e3b7bd",
+			"objType": "project",
+			"name": "utah",
+			"createdAt": "2017-09-20T00:27:51.486993229-07:00",
+			"updatedAt": "2017-09-20T00:27:51.486993753-07:00"
+		},
+		"a397fe98": {
+			"oid": "a397fe98",
+			"objType": "project",
+			"name": "alaska",
+			"createdAt": "2017-09-18T21:45:52.039344512-07:00",
+			"updatedAt": "2017-09-18T21:45:52.039346014-07:00",
+			"namespaces": [{
+				"oid": "c37c08c0",
+				"url": "/v1/projects/a397fe98/namespaces/c37c08c0"
+			}]
+		},
+		"d16c6120": {
+			"oid": "d16c6120",
+			"objType": "project",
+			"name": "florida",
+			"createdAt": "2017-09-20T00:29:11.154709289-07:00",
+			"updatedAt": "2017-09-20T00:29:11.154710127-07:00",
+			"namespaces": [{
+				"oid": "7041c0fd",
+				"url": "/v1/projects/d16c6120/namespaces/7041c0fd"
+			}]
+		}
+	},
+	"namespaces": {
+		"3a268717": {
+			"oid": "3a268717",
+			"objType": "namespace",
+			"name": "texas-houston",
+			"createdAt": "2017-09-18T23:36:27.401279441-07:00"
+		},
+		"7041c0fd": {
+			"oid": "7041c0fd",
+			"objType": "namespace",
+			"name": "florida-panhandle",
+			"createdAt": "2017-09-20T00:29:43.069764356-07:00"
+		},
+		"9b4ed8d3": {
+			"oid": "9b4ed8d3",
+			"objType": "namespace",
+			"name": "illinois-chicago",
+			"createdAt": "2017-09-19T23:30:50.615063003-07:00",
+			"resources": {
+				"oid": "66b9fc13",
+				"url": "/v1/projects/6f6c206e/cluster/66b9fc13"
+			},
+			"applications": [{
+				"oid": "58498d77",
+				"url": "/v1/projects/6f6c206e/applications/58498d77"
+			}, {
+				"oid": "00acc901",
+				"url": "/v1/projects/6f6c206e/applications/00acc901"
+			}]
+		},
+		"c37c08c0": {
+			"oid": "c37c08c0",
+			"objType": "namespace",
+			"name": "alaska-juneau",
+			"createdAt": "2017-09-18T21:46:10.981700708-07:00",
+			"resources": {
+				"oid": "f3c4c520",
+				"url": "/v1/projects/a397fe98/cluster/f3c4c520"
+			},
+			"applications": [{
+				"oid": "33f77ac2",
+				"url": "/v1/projects/a397fe98/applications/33f77ac2"
+			}]
+		},
+		"fc0c6a6b": {
+			"oid": "fc0c6a6b",
+			"objType": "namespace",
+			"name": "illinois-urbana",
+			"createdAt": "2017-09-18T22:18:13.432763982-07:00",
+			"resources": {
+				"oid": "3e635557",
+				"url": "/v1/projects/6f6c206e/cluster/3e635557"
+			},
+			"applications": [{
+				"oid": "7412131c",
+				"url": "/v1/projects/6f6c206e/applications/7412131c"
+			}]
+		}
+	},
+	"resources": {
+		"3e635557": {
+			"oid": "3e635557",
+			"objType": "Resource",
+			"nodePoolSize": 5,
+			"createdAt": "2017-09-18T22:18:49.396831343-07:00",
+			"updatedAt": "2017-09-18T22:18:49.397778692-07:00",
+			"state": "active",
+			"namespaceId": "fc0c6a6b"
+		},
+		"66b9fc13": {
+			"oid": "66b9fc13",
+			"objType": "Resource",
+			"nodePoolSize": 7,
+			"createdAt": "2017-09-19T23:33:07.535247-07:00",
+			"updatedAt": "0001-01-01T00:00:00Z",
+			"state": "create_requested",
+			"namespaceId": "9b4ed8d3"
+		},
+		"f3c4c520": {
+			"oid": "f3c4c520",
+			"objType": "Resource",
+			"nodePoolSize": 5,
+			"createdAt": "2017-09-18T21:46:46.573235148-07:00",
+			"updatedAt": "2017-09-18T21:46:46.576602106-07:00",
+			"state": "active",
+			"namespaceId": "c37c08c0"
+		}
+	},
+	"applications": {
+		"00acc901": {
+			"oid": "00acc901",
+			"objType": "application",
+			"namespaceId": "9b4ed8d3",
+			"deploymentName": "illinois-chicago-mongodb",
+			"resgistryServer": "quay.io",
+			"chartRegistry": "samsung_cnct",
+			"chartName": "mongodb-replicaset",
+			"chartVersion": "latest",
+			"channel": "stable",
+			"createdAt": "2017-09-19T23:51:41.482334361-07:00",
+			"updatedAt": "2017-09-19T23:51:41.484729279-07:00",
+			"status": {
+				"deployedAt": "2017-09-19T23:51:41.484729262-07:00",
+				"state": "DEPLOYED"
+			}
+		},
+		"33f77ac2": {
+			"oid": "33f77ac2",
+			"objType": "application",
+			"namespaceId": "c37c08c0",
+			"deploymentName": "alaska-juneau-mongodb",
+			"resgistryServer": "quay.io",
+			"chartRegistry": "samsung_cnct",
+			"chartName": "mongodb-replicaset",
+			"chartVersion": "latest",
+			"channel": "stable",
+			"createdAt": "2017-09-18T21:56:03.633589716-07:00",
+			"updatedAt": "2017-09-18T21:56:03.635134882-07:00",
+			"status": {
+				"deployedAt": "2017-09-18T21:56:03.635134774-07:00",
+				"state": "DEPLOYED"
+			}
+		},
+		"58498d77": {
+			"oid": "58498d77",
+			"objType": "application",
+			"namespaceId": "9b4ed8d3",
+			"deploymentName": "illinois-chicago-web",
+			"resgistryServer": "quay.io",
+			"chartRegistry": "samsung_cnct",
+			"chartName": "apache",
+			"chartVersion": "latest",
+			"channel": "stable",
+			"createdAt": "2017-09-19T23:49:33.757606234-07:00",
+			"updatedAt": "2017-09-19T23:49:33.760895338-07:00",
+			"status": {
+				"deployedAt": "2017-09-19T23:49:33.760895017-07:00",
+				"state": "DEPLOYED"
+			}
+		},
+		"7412131c": {
+			"oid": "7412131c",
+			"objType": "application",
+			"namespaceId": "fc0c6a6b",
+			"deploymentName": "illinois-urbana-mongodb",
+			"resgistryServer": "quay.io",
+			"chartRegistry": "samsung_cnct",
+			"chartName": "mongodb-replicaset",
+			"chartVersion": "latest",
+			"channel": "stable",
+			"createdAt": "2017-09-18T22:32:31.325098155-07:00",
+			"updatedAt": "2017-09-18T22:32:31.325669175-07:00",
+			"status": {
+				"deployedAt": "2017-09-18T22:32:31.325669159-07:00",
+				"state": "DEPLOYED"
+			}
+		}
+	}
+}
+`
+
 func TestNewDefaultDataStore(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
@@ -169,10 +403,11 @@ func TestNewValidDataStoreLoad(t *testing.T) {
 		ds.data.Namespaces == nil || ds.data.Projects == nil || ds.data.Resources == nil {
 		t.Errorf("NewDataStore(%s) = nil, want: valid datastore", file.Name())
 	}
-	if len(ds.data.Projects) != 2 || len(ds.data.Namespaces) != 3 ||
-		len(ds.data.Resources) != 2 || len(ds.data.Applications) != 0 {
-		t.Errorf("NewDataStore(\"\") invalid dimensions P:%d/N:%d/R:%d/A:%d, want: P:2/N:3/R:2/A:0",
-			len(ds.data.Projects), len(ds.data.Namespaces), len(ds.data.Resources), len(ds.data.Applications))
+	if len(ds.data.Projects) != validProjects || len(ds.data.Namespaces) != validNamesapces ||
+		len(ds.data.Resources) != validResources || len(ds.data.Applications) != validApps {
+		t.Errorf("NewDataStore(\"\") invalid dimensions P:%d/N:%d/R:%d/A:%d, want: P:%d/N:%d/R:%d/A:%d",
+			len(ds.data.Projects), len(ds.data.Namespaces), len(ds.data.Resources), len(ds.data.Applications),
+			validProjects, validNamesapces, validResources, validApps)
 	}
 }
 
@@ -355,9 +590,8 @@ func TestDeleteProject(t *testing.T) {
 	ds := NewDataStore(file.Name())
 	go ds.Archiver()
 	defer close(ds.archive)
-	preproj, prens, prers := len(ds.data.Projects), len(ds.data.Namespaces), len(ds.data.Resources)
-
-	proj, found := ds.Project("dbc5b124")
+	preproj, prens, prers, preapp := len(ds.data.Projects), len(ds.data.Namespaces), len(ds.data.Resources), len(ds.data.Applications)
+	proj, found := ds.Project(neptuneProjectID)
 	if proj == nil || !found {
 		t.Errorf("Project() have nil/not found, want Project object")
 	}
@@ -375,6 +609,10 @@ func TestDeleteProject(t *testing.T) {
 	if len(ds.data.Resources) != prers-2 {
 		t.Errorf("TestDeleteProject() have resource len(%d), want resource len(%d)",
 			len(ds.data.Resources), prers-2)
+	}
+	if len(ds.data.Applications) != preapp {
+		t.Errorf("TestDeleteProject() have applications len(%d), want applications len(%d)",
+			len(ds.data.Resources), preapp)
 	}
 }
 
@@ -516,6 +754,49 @@ func TestDeleteNamespaceObject(t *testing.T) {
 	if len(ds.data.Namespaces) != pre-1 {
 		t.Errorf("TestDeleteNamespaceObject() have len(%d), want len(%d)",
 			len(ds.data.Namespaces), pre-1)
+	}
+}
+
+func TestDeleteNamespace(t *testing.T) {
+	file, err := ioutil.TempFile(os.TempDir(), "test-dns")
+	if err != nil {
+		t.Errorf("TestDeleteNamespace() have err: %v, want valid file", err)
+	}
+	defer os.Remove(file.Name())
+
+	if _, err := file.Write([]byte(geographJSON)); err != nil {
+		t.Errorf("TestDeleteNamespace() write temporary datastore err: %v", err)
+	}
+	if err := file.Close(); err != nil {
+		t.Errorf("TestDeleteNamespace() close temporary datastore file err: %v", err)
+	}
+
+	ds := NewDataStore(file.Name())
+	go ds.Archiver()
+	defer close(ds.archive)
+	preproj, prens, prers, preapp := len(ds.data.Projects), len(ds.data.Namespaces), len(ds.data.Resources), len(ds.data.Applications)
+
+	ns, found := ds.Namespace(urbanaNamespaceID)
+	if ns == nil || !found {
+		t.Errorf("Namespace() have nil/not found, want Project object")
+	}
+	ds.DeleteNamespace(ns)
+	// project collection remains unchanged
+	if len(ds.data.Projects) != preproj {
+		t.Errorf("TestDeleteNamespace() have proj len(%d), want proj len(%d)",
+			len(ds.data.Projects), preproj-1)
+	}
+	if len(ds.data.Namespaces) != prens-1 {
+		t.Errorf("TestDeleteNamespace() have ns len(%d), want ns len(%d)",
+			len(ds.data.Namespaces), prens-1)
+	}
+	if len(ds.data.Resources) != prers-1 {
+		t.Errorf("TestDeleteNamespace() have resource len(%d), want resource len(%d)",
+			len(ds.data.Resources), prers-1)
+	}
+	if len(ds.data.Applications) != preapp-1 {
+		t.Errorf("TestDeleteNamespace() have applications len(%d), want applications len(%d)",
+			len(ds.data.Resources), preapp-1)
 	}
 }
 
@@ -702,6 +983,50 @@ func TestDeleteApplicationObject(t *testing.T) {
 			len(ds.data.Applications), pre-1)
 	}
 }
+
+func TestDeleteApplication(t *testing.T) {
+	file, err := ioutil.TempFile(os.TempDir(), "test-da")
+	if err != nil {
+		t.Errorf("TestDeleteApplication() have err: %v, want valid file", err)
+	}
+	defer os.Remove(file.Name())
+
+	if _, err := file.Write([]byte(geographJSON)); err != nil {
+		t.Errorf("TestDeleteApplication() write temporary datastore err: %v", err)
+	}
+	if err := file.Close(); err != nil {
+		t.Errorf("TestDeleteApplication() close temporary datastore file err: %v", err)
+	}
+
+	ds := NewDataStore(file.Name())
+	go ds.Archiver()
+	defer close(ds.archive)
+	preproj, prens, prers, preapp := len(ds.data.Projects), len(ds.data.Namespaces), len(ds.data.Resources), len(ds.data.Applications)
+
+	app, found := ds.Application(urbanaMongoAppID)
+	if app == nil || !found {
+		t.Errorf("Application() have nil/not found, want Application object")
+	}
+	ds.DeleteApplication(app)
+	// project, namespace, resources collection remains unchanged
+	if len(ds.data.Projects) != preproj {
+		t.Errorf("TestDeleteApplication() have proj len(%d), want proj len(%d)",
+			len(ds.data.Projects), preproj-1)
+	}
+	if len(ds.data.Namespaces) != prens {
+		t.Errorf("TestDeleteApplication() have ns len(%d), want ns len(%d)",
+			len(ds.data.Namespaces), prens)
+	}
+	if len(ds.data.Resources) != prers {
+		t.Errorf("TestDeleteApplication() have resource len(%d), want resource len(%d)",
+			len(ds.data.Resources), prers)
+	}
+	if len(ds.data.Applications) != preapp-1 {
+		t.Errorf("TestDeleteApplication() have applications len(%d), want applications len(%d)",
+			len(ds.data.Resources), preapp-1)
+	}
+}
+
 func TestNewResource(t *testing.T) {
 	ds := NewDataStore("")
 	if ds == nil {
@@ -820,6 +1145,49 @@ func TestDeleteResourceObject(t *testing.T) {
 	if len(ds.data.Resources) != pre-1 {
 		t.Errorf("TestDeleteResourceObject() have len(%d), want len(%d)",
 			len(ds.data.Resources), pre-1)
+	}
+}
+
+func TestDeleteResource(t *testing.T) {
+	file, err := ioutil.TempFile(os.TempDir(), "test-da")
+	if err != nil {
+		t.Errorf("TestDeleteResource() have err: %v, want valid file", err)
+	}
+	defer os.Remove(file.Name())
+
+	if _, err := file.Write([]byte(geographJSON)); err != nil {
+		t.Errorf("TestDeleteResource() write temporary datastore err: %v", err)
+	}
+	if err := file.Close(); err != nil {
+		t.Errorf("TestDeleteResource() close temporary datastore file err: %v", err)
+	}
+
+	ds := NewDataStore(file.Name())
+	go ds.Archiver()
+	defer close(ds.archive)
+	preproj, prens, prers, preapp := len(ds.data.Projects), len(ds.data.Namespaces), len(ds.data.Resources), len(ds.data.Applications)
+
+	res, found := ds.Resource(urbanaClusterID)
+	if res == nil || !found {
+		t.Errorf("Resource() have nil/not found, want Resource object")
+	}
+	ds.DeleteResource(res.OID)
+	// project, namespace, application collections remain unchanged
+	if len(ds.data.Projects) != preproj {
+		t.Errorf("TestDeleteResource() have proj len(%d), want proj len(%d)",
+			len(ds.data.Projects), preproj-1)
+	}
+	if len(ds.data.Namespaces) != prens {
+		t.Errorf("TestDeleteResource() have ns len(%d), want ns len(%d)",
+			len(ds.data.Namespaces), prens)
+	}
+	if len(ds.data.Applications) != preapp {
+		t.Errorf("TestDeleteResource() have applications len(%d), want applications len(%d)",
+			len(ds.data.Resources), preapp)
+	}
+	if len(ds.data.Resources) != prers-1 {
+		t.Errorf("TestDeleteApplication() have resource len(%d), want resource len(%d)",
+			len(ds.data.Resources), prers-1)
 	}
 }
 
