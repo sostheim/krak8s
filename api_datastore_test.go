@@ -270,6 +270,7 @@ func TestProjectCollection(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	ds.NewProject("test_project_1")
 	ds.NewProject("test_project_2")
 	ds.NewProject("test_project_3")
@@ -287,6 +288,7 @@ func TestProject(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	ds.NewProject("test_project_1")
 	ds.NewProject("test_project_2")
 	obj := ds.NewProject("test_project_3")
@@ -319,6 +321,7 @@ func TestDeleteProjectObject(t *testing.T) {
 		t.Errorf("NewDataStore() have nil, want DataStore object")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	ds.NewProjectObject()
 	ds.NewProjectObject()
 	obj := ds.NewProjectObject()
@@ -332,6 +335,46 @@ func TestDeleteProjectObject(t *testing.T) {
 	if len(ds.data.Projects) != pre-1 {
 		t.Errorf("TestDeleteProjectObjects() have len(%d), want len(%d)",
 			len(ds.data.Projects), pre-1)
+	}
+}
+
+func TestDeleteProject(t *testing.T) {
+	file, err := ioutil.TempFile(os.TempDir(), "test-dp")
+	if err != nil {
+		t.Errorf("TestDeleteProject() have err: %v, want valid file", err)
+	}
+	defer os.Remove(file.Name())
+
+	if _, err := file.Write([]byte(validDataStoreJSON)); err != nil {
+		t.Errorf("TestDeleteProject() write temporary datastore err: %v", err)
+	}
+	if err := file.Close(); err != nil {
+		t.Errorf("TestDeleteProject() close temporary datastore file err: %v", err)
+	}
+
+	ds := NewDataStore(file.Name())
+	go ds.Archiver()
+	defer close(ds.archive)
+	preproj, prens, prers := len(ds.data.Projects), len(ds.data.Namespaces), len(ds.data.Resources)
+
+	proj, found := ds.Project("dbc5b124")
+	if proj == nil || !found {
+		t.Errorf("Project() have nil/not found, want Project object")
+	}
+	ds.DeleteProject(proj)
+	if len(ds.data.Projects) != preproj-1 {
+		t.Errorf("TestDeleteProject() have proj len(%d), want proj len(%d)",
+			len(ds.data.Projects), preproj-1)
+	}
+	// project has 2 namespaces
+	if len(ds.data.Namespaces) != prens-2 {
+		t.Errorf("TestDeleteProject() have ns len(%d), want ns len(%d)",
+			len(ds.data.Namespaces), prens-2)
+	}
+	// each namespacce has a resource
+	if len(ds.data.Resources) != prers-2 {
+		t.Errorf("TestDeleteProject() have resource len(%d), want resource len(%d)",
+			len(ds.data.Resources), prers-2)
 	}
 }
 
@@ -370,6 +413,7 @@ func TestNewNamedNamespace(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	obj := ds.NewProject("test_object")
 	if obj == nil {
 		t.Errorf("NewProject() = nil, want: valid project")
@@ -404,6 +448,7 @@ func TestNamespaceCollection(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	proj := ds.NewProject("test_project")
 	if proj == nil {
 		t.Errorf("NewProject() = nil, want: valid project")
@@ -424,6 +469,7 @@ func TestNamespace(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	proj := ds.NewProject("test_project")
 	if proj == nil {
 		t.Errorf("NewProject() = nil, want: valid project")
@@ -456,6 +502,7 @@ func TestDeleteNamespaceObject(t *testing.T) {
 		t.Errorf("NewDataStore() have nil, want DataStore object")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	obj := ds.NewNamespaceObject()
 	if obj == nil {
 		t.Errorf("NewNamespaceObject() have nil, want Namespace object")
@@ -505,6 +552,7 @@ func TestNewNamedApplication(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	obj := ds.NewProject("test_object")
 	if obj == nil {
 		t.Errorf("NewProject() = nil, want: valid project")
@@ -570,6 +618,7 @@ func TestApplicationCollection(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	proj := ds.NewProject("test_project")
 	if proj == nil {
 		t.Errorf("NewProject(), have: nil, want: project object")
@@ -595,6 +644,7 @@ func TestApplication(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	proj := ds.NewProject("test_project")
 	if proj == nil {
 		t.Errorf("NewProject(), have: nil, want: project object")
@@ -632,6 +682,7 @@ func TestDeleteApplicationObject(t *testing.T) {
 		t.Errorf("NewDataStore() have nil, want DataStore object")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	ns := ds.NewNamespaceObject()
 	if ns == nil {
 		t.Errorf("NewNamespaceObject() have nil, want Namespace object")
@@ -684,6 +735,7 @@ func TestNewNamedResource(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	obj := ds.NewProject("test_object")
 	if obj == nil {
 		t.Errorf("NewProject() = nil, want: valid project")
@@ -719,6 +771,7 @@ func TestResource(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	proj := ds.NewProject("test_project")
 	if proj == nil {
 		t.Errorf("NewProject(), have: nil, want: project object")
@@ -747,6 +800,29 @@ func TestResource(t *testing.T) {
 	}
 }
 
+func TestDeleteResourceObject(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() have nil, want DataStore object")
+	}
+	go ds.Archiver()
+	defer close(ds.archive)
+	ns := ds.NewNamespaceObject()
+	if ns == nil {
+		t.Errorf("NewNamespaceObject() have nil, want Namespace object")
+	}
+	res := ds.NewResourceObject(ns.OID)
+	if res == nil {
+		t.Errorf("NewResourceObject(%s), have nil, want Resource object", ns.OID)
+	}
+	pre := len(ds.data.Resources)
+	ds.DeleteResource(res.OID)
+	if len(ds.data.Resources) != pre-1 {
+		t.Errorf("TestDeleteResourceObject() have len(%d), want len(%d)",
+			len(ds.data.Resources), pre-1)
+	}
+}
+
 func TestOIDGenerator(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
@@ -758,6 +834,7 @@ func TestOIDGenerator(t *testing.T) {
 		t.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	for i := 0; i < iterations; i++ {
 		obj := ds.NewProjectObject()
 		if obj == nil {
@@ -777,6 +854,7 @@ func BenchmarkOIDGenerator(b *testing.B) {
 		b.Errorf("NewDataStore() = nil, want: valid datastore")
 	}
 	go ds.Archiver()
+	defer close(ds.archive)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		proj := ds.NewProjectObject()
@@ -796,27 +874,5 @@ func BenchmarkOIDGenerator(b *testing.B) {
 		if app == nil {
 			b.Errorf("NewApplicationObject(%s), have nil, want Application object", ns.OID)
 		}
-	}
-}
-
-func TestDeleteResourceObject(t *testing.T) {
-	ds := NewDataStore("")
-	if ds == nil {
-		t.Errorf("NewDataStore() have nil, want DataStore object")
-	}
-	go ds.Archiver()
-	ns := ds.NewNamespaceObject()
-	if ns == nil {
-		t.Errorf("NewNamespaceObject() have nil, want Namespace object")
-	}
-	res := ds.NewResourceObject(ns.OID)
-	if res == nil {
-		t.Errorf("NewResourceObject(%s), have nil, want Resource object", ns.OID)
-	}
-	pre := len(ds.data.Resources)
-	ds.DeleteResource(res.OID)
-	if len(ds.data.Resources) != pre-1 {
-		t.Errorf("TestDeleteResourceObject() have len(%d), want len(%d)",
-			len(ds.data.Resources), pre-1)
 	}
 }
