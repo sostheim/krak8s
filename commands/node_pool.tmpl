@@ -6,7 +6,7 @@
           nodeConfig: 
             << : *defaultAwsClusterNode
             taints:
-              - key: node-role.kubernetes.io/{{.Name}}
+              - key: customer
                 value: {{.Name}}
                 effect: NoSchedule
           keyPair: *{{.KeyPair}}
