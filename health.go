@@ -4,6 +4,7 @@ import (
 	"krak8s/app"
 	"time"
 
+	"github.com/blang/semver"
 	"github.com/goadesign/goa"
 )
 
@@ -20,6 +21,11 @@ func NewHealthController(service *goa.Service) *HealthController {
 // Health runs the health action.
 func (c *HealthController) Health(ctx *app.HealthHealthContext) error {
 	// HealthController_Health: start_implement
-	return ctx.OK([]byte("Health OK: " + time.Now().String() + "\n"))
+	ver := "unknown"
+	semVer, err := semver.Make(MajorMinorPatch + "-" + ReleaseType + "+git.sha." + GitCommit)
+	if err == nil {
+		ver = semVer.String()
+	}
+	return ctx.OK([]byte("Health OK: " + time.Now().String() + ", semVer: " + ver + "\n"))
 	// HealthController_Health: end_implement
 }
