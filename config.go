@@ -48,7 +48,7 @@ func newConfig() *config {
 		kubeconfig:       flag.String("kubeconfig", "", "absolute path to the kubeconfig file"),
 		proxy:            flag.String("proxy", "", "kubctl proxy server running at the given url"),
 		version:          flag.Bool("version", false, "display version info and exit"),
-		healthCheck:      flag.Bool("health-check", false, "enable health checking for API service"),
+		healthCheck:      flag.Bool("health-check", true, "enable health checking for API service"),
 		krakenConfigFile: flag.String("kraken-config-file", commands.DefaultConfigFile, "kraken configuration yaml file name"),
 		krakenConfigDir:  flag.String("kraken-config-dir", commands.DefaultConfigDir, "kraken configuration yaml directory path"),
 		krakenKeyPair:    flag.String("kraken-nodepool-keypair", commands.DefaultKeyPair, "kraken configuration yaml: deployment.clusters[0].nodePools.keyPair"),
