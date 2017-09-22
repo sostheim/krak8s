@@ -31,22 +31,13 @@ const (
   affinity:
     node:
       labels:
-        - key: customer
+        - key: nodepool
           operator: In
-          values: [ "{{ .CustomerName }}" ]
+          values: [ "{{ .CustomerName }}Nodes" ]
   tolerations:
     - key: customer
       value: {{ .CustomerName }}
       effect: NoSchedule
-networkPolicy:
-  ingress:
-    enabled: true
-    namespaceLabels:
-      - key: customer
-        value: {{ .CustomerName }}
-    podLabels:
-      - key: customer
-        value: {{ .CustomerName }}
 resources:
   limits:
     cpu: 200m
