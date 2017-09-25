@@ -423,9 +423,8 @@ func (r *Runner) DeleteRequest(index int) {
 
 	// ok to remove the request from the pending map
 	r.mutex.Lock()
-	defer r.mutex.Unlock()
 	delete(r.pendingRequests, index)
-
+	r.mutex.Unlock()
 	return
 }
 
@@ -437,9 +436,9 @@ func (r *Runner) ProjectRequest(action RequestType, ds *DataStore, proj *Project
 
 	// add the request to the pending map
 	r.mutex.Lock()
-	defer r.mutex.Unlock()
 	r.index++
 	r.pendingRequests[r.index] = req
+	r.mutex.Unlock()
 	r.sync <- r.index
 
 	return Waiting
@@ -452,9 +451,9 @@ func (r *Runner) ChartRequest(action RequestType, ds *DataStore, proj *ProjectOb
 
 	// add the request to the pending map
 	r.mutex.Lock()
-	defer r.mutex.Unlock()
 	r.index++
 	r.pendingRequests[r.index] = req
+	r.mutex.Unlock()
 	r.sync <- r.index
 
 	return Waiting
