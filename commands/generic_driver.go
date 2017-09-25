@@ -77,12 +77,14 @@ func registryLogin(r GenericDriver) ([]byte, error) {
 
 // convert internal json to yaml for api objects
 func jsonToYaml(r *GenericDriver) error {
+	glog.Infof("raw json: %s\n", r.JSONValues)
 	json := []byte(r.JSONValues)
 	yaml, err := yaml.JSONToYAML(json)
 	if err != nil {
 		glog.Infof("err: %v\n", err)
 		return err
 	}
+	glog.Infof("raw yaml: %s\n", string(yaml))
 	r.YAMLValues = yaml
 	return nil
 }

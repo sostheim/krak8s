@@ -23,6 +23,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -437,7 +438,7 @@ func (ds *DataStore) NewApplicationObject(nsOID string) *ApplicationObject {
 
 // NewApplication creates a new application resource.
 func (ds *DataStore) NewApplication(namespace, deployment, server, registry, name, version string, channel,
-	username, password, config, jsonValues *string) *ApplicationObject {
+	username, password, set, jsonValues *string) *ApplicationObject {
 	obj := ds.NewApplicationObject(namespace)
 	if obj == nil {
 		return nil
@@ -456,12 +457,16 @@ func (ds *DataStore) NewApplication(namespace, deployment, server, registry, nam
 	if password != nil {
 		obj.Password = *password
 	}
+
+	// removed escaped "\" input from stored values
+	rep := strings.NewReplacer("\\", "")
+
 	// Optional fields, may be unset (nil)
-	if config != nil {
-		obj.Config = *config
+	if set != nil {
+		obj.Config = rep.Replace(*set)
 	}
 	if jsonValues != nil {
-		obj.JSONValues = *jsonValues
+		obj.JSONValues = rep.Replace(*jsonValues)
 	}
 	obj.UpdatedAt = time.Now()
 	ds.archive <- true
