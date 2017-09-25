@@ -345,6 +345,8 @@ func (r *Runner) handleGenericChart(request *Request) bool {
 		SetConfig:      request.appObj.Config,
 		JSONValues:     request.appObj.JSONValues,
 		Namespace:      request.nsObj.Name,
+		Username:       request.appObj.Username,
+		Password:       request.appObj.Password,
 	}
 
 	if request.requestType == AddChart {

@@ -38,92 +38,105 @@ type GenericDriver struct {
 	Password       string
 }
 
-func (r GenericDriver) jsonToYaml() {
+// setup temp file for YAML --value parameter
+func tempValues(r GenericDriver) (string, error) {
+	file, err := ioutil.TempFile(os.TempDir(), "chartvalues")
+	if err != nil {
+		glog.Infof("err: %v\n", err)
+		return "", err
+	}
+	glog.Infof("temporary file is %s", file.Name())
+
+	if _, err := file.Write(r.YAMLValues); err != nil {
+		glog.Infof("err: %v\n", err)
+		os.Remove(file.Name())
+		return "", err
+	}
+	if err := file.Close(); err != nil {
+		glog.Infof("err: %v\n", err)
+		os.Remove(file.Name())
+		return "", err
+	}
+	return file.Name(), nil
+}
+
+// if credentials are present, they try login and return result
+func registryLogin(r GenericDriver) ([]byte, error) {
+	if r.Username != "" && r.Password != "" && r.Server != "" {
+		// Login requried for private application repos
+		arguments := []string{"registry",
+			"login",
+			"-u " + r.Username,
+			"-p " + r.Password,
+			r.Server,
+		}
+		return r.execute(arguments)
+	}
+	return nil, nil
+}
+
+// convert internal json to yaml for api objects
+func jsonToYaml(r *GenericDriver) error {
 	json := []byte(r.JSONValues)
 	yaml, err := yaml.JSONToYAML(json)
 	if err != nil {
 		glog.Infof("err: %v\n", err)
-		return
+		return err
 	}
 	r.YAMLValues = yaml
+	return nil
 }
 
 // Install - isntall the chart.
 func (r GenericDriver) Install() ([]byte, error) {
-	file, err := ioutil.TempFile(os.TempDir(), "chartvalues")
+	if output, err := registryLogin(r); err != nil {
+		return output, err
+	}
+
+	filename, err := tempValues(r)
 	if err != nil {
-		glog.Infof("err: %v\n", err)
 		return nil, err
 	}
-	glog.Infof("temporary file is %s", file.Name())
-	defer os.Remove(file.Name())
+	defer os.Remove(filename)
 
-	if _, err := file.Write(r.YAMLValues); err != nil {
-		glog.Infof("err: %v\n", err)
+	if err = jsonToYaml(&r); err != nil {
 		return nil, err
 	}
-	if err := file.Close(); err != nil {
-		glog.Infof("err: %v\n", err)
-		return nil, err
-	}
-
-	// Login
-	arguments := []string{"registry",
-		"login",
-		"-u " + r.Username,
-		"-p " + r.Password,
-		"quay.io",
-	}
-	r.execute(arguments)
 
 	// Do the install
-	arguments = []string{"registry",
+	arguments := []string{"registry",
 		"install",
 		r.ChartLocation,
 		"--namespace " + r.Namespace,
 		"--name " + r.DeploymentName,
-		"--values " + file.Name(),
+		"--values " + filename,
 		"--version " + r.Version,
 	}
 	return r.execute(arguments)
-
 }
 
 // Upgrade - upgrade the chart.
 func (r GenericDriver) Upgrade() ([]byte, error) {
-	file, err := ioutil.TempFile(os.TempDir(), "chartvalues")
+	if output, err := registryLogin(r); err != nil {
+		return output, err
+	}
+
+	filename, err := tempValues(r)
 	if err != nil {
-		glog.Infof("err: %v\n", err)
 		return nil, err
 	}
-	glog.Infof("Template file is %s", file.Name())
-	defer os.Remove(file.Name())
+	defer os.Remove(filename)
 
-	if _, err := file.Write(r.YAMLValues); err != nil {
-		glog.Infof("err: %v\n", err)
+	if err = jsonToYaml(&r); err != nil {
 		return nil, err
 	}
-
-	if err := file.Close(); err != nil {
-		glog.Infof("err: %v\n", err)
-		return nil, err
-	}
-
-	// Login
-	arguments := []string{"registry",
-		"login",
-		"-u " + r.Username,
-		"-p " + r.Password,
-		r.Server,
-	}
-	r.execute(arguments)
 
 	// Do the upgrade
-	arguments = []string{"registry",
+	arguments := []string{"registry",
 		"upgrade",
-		r.ChartLocation + "@0.1.0",
+		r.ChartLocation + "@" + r.Version,
 		r.DeploymentName,
-		"--values " + file.Name(),
+		"--values " + filename,
 	}
 	return r.execute(arguments)
 }
