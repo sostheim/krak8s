@@ -1,5 +1,5 @@
 NAME      := krak8s
-VERSION   := 0.3.28
+VERSION   := 0.3.29
 TYPE      := beta
 COMMIT    := $(shell git rev-parse HEAD)
 IMAGE     := quay.io/samsung_cnct/krak8s

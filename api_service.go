@@ -75,7 +75,7 @@ func newAPIServer(clientset *kubernetes.Clientset, cfg *config, backend *Runner)
 	openapi := NewOpenapiController(as.server)
 	app.MountOpenapiController(as.server, openapi)
 
-	project := NewProjectController(as.server, as.ds)
+	project := NewProjectController(as.server, as.ds, backend)
 	app.MountProjectController(as.server, project)
 
 	ns := NewNamespaceController(as.server, as.ds)

@@ -9,14 +9,16 @@ import (
 // ProjectController implements the project resource.
 type ProjectController struct {
 	*goa.Controller
-	ds *DataStore
+	ds      *DataStore
+	backend *Runner
 }
 
 // NewProjectController creates a project controller.
-func NewProjectController(service *goa.Service, store *DataStore) *ProjectController {
+func NewProjectController(service *goa.Service, store *DataStore, backend *Runner) *ProjectController {
 	return &ProjectController{
 		Controller: service.NewController("ProjectController"),
 		ds:         store,
+		backend:    backend,
 	}
 }
 
@@ -67,6 +69,20 @@ func (c *ProjectController) Delete(ctx *app.DeleteProjectContext) error {
 	if !ok {
 		return ctx.NotFound()
 	}
+
+	for _, nslink := range proj.Namespaces {
+		if ns, ok := c.ds.Namespace(nslink.OID); ok {
+			for _, applink := range ns.Applications {
+				if app, ok := c.ds.Application(applink.OID); ok {
+					c.backend.ChartRequest(RemoveChart, c.ds, proj, ns, app)
+				}
+			}
+			if res, ok := c.ds.Resource(ns.Resources.OID); ok {
+				c.backend.ProjectRequest(RemoveProject, c.ds, proj, ns, res)
+			}
+		}
+	}
+
 	c.ds.DeleteProject(proj)
 	return ctx.NoContent()
 	// ProjectController_Delete: end_implement
