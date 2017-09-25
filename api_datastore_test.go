@@ -364,10 +364,6 @@ var geographJSON = `
 `
 
 func TestNewDefaultDataStore(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-
 	ds := NewDataStore("")
 	if ds == nil || ds.archive == nil || ds.persist != "" || ds.data.Applications == nil ||
 		ds.data.Namespaces == nil || ds.data.Projects == nil || ds.data.Resources == nil {
@@ -381,10 +377,6 @@ func TestNewDefaultDataStore(t *testing.T) {
 }
 
 func TestNewValidDataStoreLoad(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-
 	file, err := ioutil.TempFile(os.TempDir(), "test-vds")
 	if err != nil {
 		t.Error("TestNewValidDataStoreLoad() can't create temporary datastore file")
@@ -412,10 +404,6 @@ func TestNewValidDataStoreLoad(t *testing.T) {
 }
 
 func TestNewInalidDataStoreLoad(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping test in short mode.")
-	}
-
 	file, err := ioutil.TempFile(os.TempDir(), "test-invds")
 	if err != nil {
 		t.Error("TestNewValidDataStoreLoad() can't create temporary datastore file")
