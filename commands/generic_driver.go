@@ -63,7 +63,7 @@ func tempValues(r GenericDriver) (string, error) {
 // if credentials are present, they try login and return result
 func registryLogin(r GenericDriver) ([]byte, error) {
 	if r.Username != "" && r.Password != "" && r.Server != "" {
-		// Login requried for private application repos
+		// Login required for private application repos
 		arguments := []string{"registry",
 			"login",
 			"-u " + r.Username,

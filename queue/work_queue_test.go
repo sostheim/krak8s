@@ -50,9 +50,6 @@ func TestSubmitStartDoneDeleteStatus(t *testing.T) {
 	if Status(task2.ID) != Queued {
 		t.Errorf("TestSubmit() have status: %d, want: %d", Status(task2.ID), Queued)
 	}
-	if Status(9000) != NotFound {
-		t.Errorf("TestSubmit() have status: %d, want: %d", Status(9000), NotFound)
-	}
 	time.Sleep(500 * time.Millisecond)
 	Done() // task 1
 	task3 := NewTask()
@@ -95,5 +92,4 @@ func TestSubmitStartDoneDeleteStatus(t *testing.T) {
 	if depth != 0 {
 		t.Errorf("TestSubmit() have depth: %d, want depth: 0", depth)
 	}
-
 }
