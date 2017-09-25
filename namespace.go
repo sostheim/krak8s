@@ -10,14 +10,16 @@ import (
 // NamespaceController implements the namespace resource.
 type NamespaceController struct {
 	*goa.Controller
-	ds *DataStore
+	ds      *DataStore
+	backend *Runner
 }
 
 // NewNamespaceController creates a namespace controller.
-func NewNamespaceController(service *goa.Service, store *DataStore) *NamespaceController {
+func NewNamespaceController(service *goa.Service, store *DataStore, backend *Runner) *NamespaceController {
 	return &NamespaceController{
 		Controller: service.NewController("NamespaceController"),
 		ds:         store,
+		backend:    backend,
 	}
 }
 
@@ -82,6 +84,7 @@ func (c *NamespaceController) Delete(ctx *app.DeleteNamespaceContext) error {
 		return ctx.NotFound()
 	}
 
+	// ensure that the namespace specified in the request is a member of this project
 	index := 0
 	found := false
 	for i, val := range proj.Namespaces {
@@ -95,6 +98,14 @@ func (c *NamespaceController) Delete(ctx *app.DeleteNamespaceContext) error {
 		return ctx.BadRequest(errors.New("Inavlid Namespace Object ID specified in request"))
 	}
 
+	for _, applink := range ns.Applications {
+		if app, ok := c.ds.Application(applink.OID); ok {
+			c.backend.ChartRequest(RemoveChart, c.ds, proj, ns, app)
+		}
+	}
+	if res, ok := c.ds.Resource(ns.Resources.OID); ok {
+		c.backend.ProjectRequest(RemoveProject, c.ds, proj, ns, res)
+	}
 	c.ds.DeleteNamespace(ns)
 
 	copy(proj.Namespaces[index:], proj.Namespaces[index+1:])
