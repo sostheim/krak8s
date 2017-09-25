@@ -1141,7 +1141,7 @@ func TestDeleteResourceObject(t *testing.T) {
 		t.Errorf("NewResourceObject(%s), have nil, want Resource object", ns.OID)
 	}
 	pre := len(ds.data.Resources)
-	ds.DeleteResource(res.OID)
+	ds.DeleteResource(res)
 	if len(ds.data.Resources) != pre-1 {
 		t.Errorf("TestDeleteResourceObject() have len(%d), want len(%d)",
 			len(ds.data.Resources), pre-1)
@@ -1171,7 +1171,7 @@ func TestDeleteResource(t *testing.T) {
 	if res == nil || !found {
 		t.Errorf("Resource() have nil/not found, want Resource object")
 	}
-	ds.DeleteResource(res.OID)
+	ds.DeleteResource(res)
 	// project, namespace, application collections remain unchanged
 	if len(ds.data.Projects) != preproj {
 		t.Errorf("TestDeleteResource() have proj len(%d), want proj len(%d)",

@@ -319,6 +319,9 @@ func (ds *DataStore) Project(oid string) (*ProjectObject, bool) {
 
 // DeleteProject removes the project and all subordinate objects.
 func (ds *DataStore) DeleteProject(obj *ProjectObject) {
+	if obj == nil {
+		return
+	}
 	if _, ok := ds.data.Projects[obj.OID]; !ok {
 		return
 	}
@@ -391,6 +394,9 @@ func (ds *DataStore) Namespace(oid string) (*NamespaceObject, bool) {
 
 // DeleteNamespace removes the Namespace and all subordinate objects.
 func (ds *DataStore) DeleteNamespace(obj *NamespaceObject) {
+	if obj == nil {
+		return
+	}
 	if _, ok := ds.data.Namespaces[obj.OID]; !ok {
 		return
 	}
@@ -400,8 +406,8 @@ func (ds *DataStore) DeleteNamespace(obj *NamespaceObject) {
 			ds.data.Namespaces[obj.OID].Applications[i] = nil
 		}
 	}
-	if ds.data.Namespaces[obj.OID].Resources != nil {
-		ds.DeleteResource(ds.data.Namespaces[obj.OID].Resources.OID)
+	if res := ds.data.Namespaces[obj.OID].Resources; res != nil {
+		ds.DeleteResource(ds.data.Resources[res.OID])
 		ds.data.Namespaces[obj.OID].Resources = nil
 	}
 	ds.Lock()
@@ -490,6 +496,9 @@ func (ds *DataStore) ApplicationsCollection(nsOID string) []*ApplicationObject {
 
 // DeleteApplication deletes specified application
 func (ds *DataStore) DeleteApplication(obj *ApplicationObject) {
+	if obj == nil {
+		return
+	}
 	if _, ok := ds.data.Applications[obj.OID]; !ok {
 		return
 	}
@@ -549,12 +558,15 @@ func (ds *DataStore) ResourceObject(nsOID string) (*ResourceObject, bool) {
 }
 
 // DeleteResource deletes specified application
-func (ds *DataStore) DeleteResource(resOID string) {
-	if _, ok := ds.data.Resources[resOID]; !ok {
+func (ds *DataStore) DeleteResource(obj *ResourceObject) {
+	if obj == nil {
+		return
+	}
+	if _, ok := ds.data.Resources[obj.OID]; !ok {
 		return
 	}
 	ds.Lock()
-	delete(ds.data.Resources, resOID)
+	delete(ds.data.Resources, obj.OID)
 	ds.Unlock()
 	ds.archive <- true
 }

@@ -96,7 +96,7 @@ func (c *ClusterController) Delete(ctx *app.DeleteClusterContext) error {
 	res.State = ResourceDeleteRequested
 	c.backend.ProjectRequest(RemoveProject, c.ds, proj, ns, res)
 
-	c.ds.DeleteResource(ctx.ResourceID)
+	c.ds.DeleteResource(res)
 	ns.Resources = nil
 
 	return ctx.NoContent()
