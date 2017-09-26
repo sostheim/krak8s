@@ -418,7 +418,7 @@ func (r *Runner) DeleteRequest(index int) {
 		return
 	}
 
-	glog.Infof("Queued task delted: type: %s, name: %s, namespace: %s, queueing duration: %s, running duration %s",
+	glog.Infof("Queued task deleted: type: %s, name: %s, namespace: %s, queueing duration: %s, running duration %s",
 		request.requestType.String(), request.projObj.Name, request.nsObj.Name, queue.QueuedDuration().String(), queue.RunningDuration().String())
 
 	// ok to remove the request from the pending map
