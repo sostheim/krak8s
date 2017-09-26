@@ -95,15 +95,15 @@ func (r GenericDriver) Install() ([]byte, error) {
 		return output, err
 	}
 
+	if err := jsonToYaml(&r); err != nil {
+		return nil, err
+	}
+
 	filename, err := tempValues(r)
 	if err != nil {
 		return nil, err
 	}
 	defer os.Remove(filename)
-
-	if err = jsonToYaml(&r); err != nil {
-		return nil, err
-	}
 
 	// Do the install
 	arguments := []string{"registry",
