@@ -20,6 +20,9 @@ import (
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/ghodss/yaml"
+	"github.com/golang/glog"
 )
 
 const neptuneProjectID = "dbc5b124"
@@ -879,6 +882,46 @@ func TestNewNamedApplication(t *testing.T) {
 	if app.JSONValues != "" {
 		t.Errorf("NewApplication(%s), have json(%s), want json(``)", ns.OID, app.JSONValues)
 	}
+}
+
+func TestNewApplicationValues(t *testing.T) {
+	ds := NewDataStore("")
+	if ds == nil {
+		t.Errorf("NewDataStore() = nil, want: valid datastore")
+	}
+	go ds.Archiver()
+	defer close(ds.archive)
+	obj := ds.NewProject("test_object")
+	if obj == nil {
+		t.Errorf("NewProject() = nil, want: valid project")
+	}
+	ns := ds.NewNamespace("test_namespace")
+	if ns == nil {
+		t.Errorf("NewNamespace(%s), have: nil, want: valid Namespace", "test_namespace")
+	}
+	chn := "test_channel"
+	pwd := "test_password"
+	rawSet := "list --namespace neptune-test"
+	rawValues := "{\"ingress\":{\"defaultHost\":{\"hostname\":\"neptune.getreaction.io\"}},\"app\":{\"envVars\":[{\"key\":\"ROOT_URL\",\"value\":\"https://neptune.getreaction.io\"}]},\"mongo\":{\"deploymentName\":\"neptune-mongodb\"}}"
+	storedValues := `{"ingress":{"defaultHost":{"hostname":"neptune.getreaction.io"}},"app":{"envVars":[{"key":"ROOT_URL","value":"https://neptune.getreaction.io"}]},"mongo":{"deploymentName":"neptune-mongodb"}}`
+	app := ds.NewApplication(ns.OID, "test_deployment", "test_server", "test_registry",
+		"test_chart", "test_version", &chn, nil, &pwd, &rawSet, &rawValues)
+	if app == nil {
+		t.Errorf("NewApplication(%s), have: nil, want: Application object", ns.OID)
+	}
+	if app.Config != rawSet {
+		t.Errorf("NewApplication(%s), have config(%s), want config(%s)", ns.OID, app.Config, rawSet)
+	}
+	if app.JSONValues != storedValues {
+		t.Errorf("NewApplication(%s), have json(%s), want json(%s)", ns.OID, app.JSONValues, storedValues)
+	}
+	glog.Infof("raw json: %s\n", app.JSONValues)
+	json := []byte(app.JSONValues)
+	yaml, err := yaml.JSONToYAML(json)
+	if err != nil {
+		glog.Infof("err: %v\n", err)
+	}
+	glog.Infof("raw yaml: %s\n", string(yaml))
 }
 
 func TestApplicationCollection(t *testing.T) {
