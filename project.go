@@ -74,11 +74,17 @@ func (c *ProjectController) Delete(ctx *app.DeleteProjectContext) error {
 		if ns, ok := c.ds.Namespace(nslink.OID); ok {
 			for _, applink := range ns.Applications {
 				if app, ok := c.ds.Application(applink.OID); ok {
-					c.backend.ChartRequest(RemoveChart, c.ds, proj, ns, app)
+					if app.Status.State == ApplicationDeployed {
+						c.backend.ChartRequest(RemoveChart, c.ds, proj, ns, app)
+					}
 				}
 			}
-			if res, ok := c.ds.Resource(ns.Resources.OID); ok {
-				c.backend.ProjectRequest(RemoveProject, c.ds, proj, ns, res)
+			if ns.Resources != nil {
+				if res, ok := c.ds.Resource(ns.Resources.OID); ok {
+					if res.State == ResourceErrorStarting || res.State == ResourceActive || res.State == ResourceErrorDeleting {
+						c.backend.ProjectRequest(RemoveProject, c.ds, proj, ns, res)
+					}
+				}
 			}
 		}
 	}

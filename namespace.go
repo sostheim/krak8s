@@ -103,8 +103,10 @@ func (c *NamespaceController) Delete(ctx *app.DeleteNamespaceContext) error {
 			c.backend.ChartRequest(RemoveChart, c.ds, proj, ns, app)
 		}
 	}
-	if res, ok := c.ds.Resource(ns.Resources.OID); ok {
-		c.backend.ProjectRequest(RemoveProject, c.ds, proj, ns, res)
+	if ns.Resources != nil {
+		if res, ok := c.ds.Resource(ns.Resources.OID); ok {
+			c.backend.ProjectRequest(RemoveProject, c.ds, proj, ns, res)
+		}
 	}
 	c.ds.DeleteNamespace(ns)
 
