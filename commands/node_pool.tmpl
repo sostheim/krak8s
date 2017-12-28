@@ -3,10 +3,10 @@
           kubeConfig: *{{.KubeConfigName}}
           containerConfig: *defaultDocker
           osConfig: *defaultCoreOs
-          nodeConfig: 
-            << : *defaultAwsClusterNode
+          nodeConfig: *defaultAwsClusterNode
+          keyPair: *{{.KeyPair}}
+          schedulingConfig:
             taints:
               - key: customer
                 value: {{.Name}}
                 effect: NoSchedule
-          keyPair: *{{.KeyPair}}

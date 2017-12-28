@@ -1,5 +1,5 @@
 NAME      := krak8s
-VERSION   := 0.3.35
+VERSION   := 0.4.0
 TYPE      := beta
 COMMIT    := $(shell git rev-parse HEAD)
 IMAGE     := quay.io/samsung_cnct/krak8s
@@ -12,6 +12,16 @@ GOAGEN_FILES := openapi.go swagger.go project.go namespace.go application.go clu
 
 build:
 	@go build -ldflags "-X main.MajorMinorPatch=$(VERSION) \
+		-X main.ReleaseType=$(TYPE) \
+		-X main.GitCommit=$(COMMIT)"
+
+test:
+	@go test -ldflags "-X main.MajorMinorPatch=$(VERSION) \
+		-X main.ReleaseType=$(TYPE) \
+		-X main.GitCommit=$(COMMIT)"
+
+test_short:
+	@go test -short -ldflags "-X main.MajorMinorPatch=$(VERSION) \
 		-X main.ReleaseType=$(TYPE) \
 		-X main.GitCommit=$(COMMIT)"
 
@@ -94,4 +104,4 @@ release: dist push
 	github-release samsung-cnct/$(NAME) $(VERSION) "$$(git rev-parse --abbrev-ref HEAD)" "**Changelog**<br/>$$changelog" 'dist/*'; \
 	git pull
 
-.PHONY: design build compile install deps dist release push tag container containerprep
+.PHONY: design build compile install deps dist release push tag container containerprep test
